@@ -13,3 +13,112 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Adimins {
+  id         Int        @id @default(autoincrement())
+  name       String
+  cpf        String     @unique
+  email      String     @unique
+  teamId     Int
+  team       AdiminTeam @relation(fields: [teamId], references: [id])
+  createDate DateTime   @default(now())
+  updateDate DateTime   @updatedAt
+}
+
+model AdiminTeam {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  createDate  DateTime  @default(now())
+  updateDate  DateTime  @updatedAt
+  Adimins     Adimins[]
+}
+
+model Team {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  members     TeamMember[]
+  createDate  DateTime     @default(now())
+  updateDate  DateTime     @updatedAt
+}
+
+model Employees {
+  id         Int      @id @default(autoincrement())
+  name       String
+  cpf        String   @unique
+  email      String   @unique
+  phone      String
+  birthDate  DateTime
+  role       Role
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+
+  inspector   Inspector?
+  maintainer  Maintainer?
+  memberships TeamMember[]
+}
+
+model TeamMember {
+  id       Int       @id @default(autoincrement())
+  team     Team      @relation(fields: [teamId], references: [id])
+  teamId   Int
+  person   Employees @relation(fields: [personId], references: [id])
+  personId Int
+
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+
+  @@unique([teamId, personId])
+}
+
+model Inspector {
+  id     Int       @id
+  person Employees @relation(fields: [id], references: [id])
+  tasks  Task[]
+
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+}
+
+model Maintainer {
+  id     Int       @id
+  person Employees @relation(fields: [id], references: [id])
+
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String
+  inspector   Inspector @relation(fields: [inspectorId], references: [id])
+  inspectorId Int
+
+  machine   Machine @relation(fields: [machineId], references: [id])
+  machineId Int // Relacionamento com Machine
+
+  createDate DateTime @default(now())
+  updateDate DateTime @updatedAt
+}
+
+model Machine {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  location    String
+  Task        Task[]
+  createDate  DateTime @default(now())
+  updateDate  DateTime @updatedAt
+}
+
+model Routes {
+  id        Int    @id @default(autoincrement())
+  name      String
+  questions String
+}
+
+enum Role {
+  INSPECTOR
+  MAINTAINER
+}
