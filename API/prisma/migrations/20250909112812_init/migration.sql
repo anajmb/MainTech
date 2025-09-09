@@ -4,6 +4,8 @@ CREATE TABLE `Adimins` (
     `name` VARCHAR(191) NOT NULL,
     `cpf` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `birthDate` DATETIME(3) NOT NULL,
     `teamId` INTEGER NOT NULL,
     `createDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateDate` DATETIME(3) NOT NULL,
