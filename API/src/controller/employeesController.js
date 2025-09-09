@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { login } = require("../../../../../LogiDev/LogiDevAPI/src/controllers/userController");
 const prisma = new PrismaClient();
 
 const employeesController = {
