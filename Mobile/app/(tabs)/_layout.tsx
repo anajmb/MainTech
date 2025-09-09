@@ -11,7 +11,7 @@ export default function TabsLayout() {
 
             <Tabs.Screen name="index" options={{tabBarLabel: "", tabBarIcon: ({color, size}) => (<House size={25} color={color} />)}} />
             <Tabs.Screen name="tarefas" options={{tabBarLabel: "", tabBarIcon: ({color, size}) => (<SquareCheckBig size={25} color={color} />)}} />
-            <Tabs.Screen name="QRCode" options={{tabBarLabel: "", tabBarIcon: ({color, size}) => (<Camera size={30} color={"#fff"} style={{backgroundColor: "#BF201C", margin: 10, padding: 10, borderRadius: "50%"}} />)}} />
+            <Tabs.Screen name="QRCode" options={{tabBarLabel: "", tabBarIcon: ({color, size}) => (<Camera size={30} color={"#fff "} style={{backgroundColor: "#BF201C", margin: 10, padding: 10, borderRadius: "50%"}} />)}} />
             <Tabs.Screen name="documento" options={{tabBarLabel: "", tabBarIcon: ({color, size}) => (<FileText size={25} color={color} />)}} />
             <Tabs.Screen name="configuracao" options={{tabBarLabel: "", tabBarIcon: ({color, size}) => (<Settings size={25} color={color} />)}} />
  
@@ -19,7 +19,7 @@ export default function TabsLayout() {
     )
 
     // tentar esconde a barra de navegação nativa
-    // arrumar o tamanho dos icones 
+    // arrumar o tamanho dos icones
     // ajustar o background da camera
     // centralizar a tab bar
 }

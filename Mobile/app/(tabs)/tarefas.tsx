@@ -1,3 +1,4 @@
+import SetaVoltar from "@/components/setaVoltar";
 import { CircleArrowLeft, CirclePlus } from "lucide-react-native";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -7,7 +8,7 @@ export default function Tarefas() {
             {/* Logo */}
 
             <View style={styles.header}>
-                <CircleArrowLeft />
+                <SetaVoltar/>
                 <Text style={styles.titulo}>Tarefas</Text>
                 <Text style={styles.subtitulo}>3 tarefas</Text>
                 <CirclePlus />

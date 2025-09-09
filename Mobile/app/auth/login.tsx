@@ -1,7 +1,12 @@
 import { Link } from "expo-router";
+import { Eye, EyeOff } from "lucide-react-native";
+import { useState } from "react";
 import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
+
+  const [trocarOlho, setTrocarOlho] = useState()
+
   return (
     <View style={styles.container}>
       <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} />
@@ -18,7 +23,13 @@ export default function Login() {
 
           <View style={{ gap: 8 }}>
             <Text style={styles.labelLogin}>Senha:</Text>
-            <TextInput style={styles.inputLogin} secureTextEntry={true} />
+
+            <View>
+              <TextInput style={styles.inputLogin} secureTextEntry={true} />
+              <EyeOff style={styles.eyeFechado} onPress={trocarOlho}/>
+
+              <Eye style={styles.eyeAberto} />
+            </View>
           </View>
 
 
@@ -96,6 +107,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#E6E6E6",
     borderRadius: 12,
     height: 35,
+    position: "relative"
+  },
+  eyeAberto: {
+    position: "absolute",
+    width: 16,
+    height: 16,
+    right: 15,
+    top: 10,
+    display: "none"
+  },
+  eyeFechado: {
+    position: "absolute",
+    width: 16,
+    height: 16,
+    right: 15,
+    top: 10
   },
   botaoLogin: {
     backgroundColor: "#A50702",
