@@ -88,4 +88,61 @@ const employeesController = {
         });
     },
 
+    delete: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const employeeDelete = await prisma.employees.delete({
+                where: { id: Number(id) }
+            })
+
+            if (!id) {
+                return res.status(400).json({
+                    msg: "ID necessário",
+                    employeeDelete
+                })
+            }
+
+            return res.status(200).json({
+                msg: "Employee deleted successfully",
+            })
+        } catch (error) {
+
+            console.log(error)
+
+            return res.status(500).json({
+                msg: "Internal server error"
+            })
+        }
+
+    },
+
+    update: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { name, cpf, email, phone, birthDate, password } = req.body;
+
+
+            if (!name || !cpf || !email || !phone || !birthDate || !password) {
+                return res.status(400).json({
+                    msg: 'All fields are necessary'
+                });
+            }
+
+            await prisma.employees.update({
+                data: {
+                    name, cpf, email, phone, birthDate: new Date(birthDate), password
+                }, where: {
+                    id: Number(id)
+                }
+            });
+
+            return res.status(200).json({
+                msg: 'Employee updated successfully',
+            });
+        } catch (error) {
+
+        }
+
+    }
 }
