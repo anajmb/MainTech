@@ -19,6 +19,7 @@ model Adimins {
   name       String
   cpf        String     @unique
   email      String     @unique
+  password   String
   teamId     Int
   team       AdiminTeam @relation(fields: [teamId], references: [id])
   createDate DateTime   @default(now())
@@ -49,6 +50,7 @@ model Employees {
   cpf        String   @unique
   email      String   @unique
   phone      String
+  password   String
   birthDate  DateTime
   role       Role
   createDate DateTime @default(now())
