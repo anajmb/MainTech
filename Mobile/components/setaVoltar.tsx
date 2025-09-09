@@ -6,7 +6,7 @@ export default function SetaVoltar() {
         <View>
             <ArrowLeft 
             color="#575353"
-            size={20}
+            size={25}
             strokeWidth={2.5}
             style={{backgroundColor: "#EAE7E7", padding: 10, borderRadius: "50%"}}/>
         </View>

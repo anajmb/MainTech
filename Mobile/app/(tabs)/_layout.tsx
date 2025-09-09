@@ -6,7 +6,7 @@ export default function TabsLayout() {
         <Tabs screenOptions={{
             tabBarActiveTintColor: "#BF201C",  // parte das notificações
             headerShown: false,
-            tabBarStyle: { height: 60, paddingBottom: 5, borderRadius: 20, width: "90%", }
+         tabBarStyle: { paddingBottom: 5, borderRadius: 20, marginHorizontal: 20 }
         }}>
 
             <Tabs.Screen name="index" options={{tabBarLabel: "", tabBarIcon: ({color, size}) => (<House size={25} color={color} />)}} />

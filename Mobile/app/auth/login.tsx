@@ -1,14 +1,14 @@
 import { Link } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
-import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
 
   const [trocarOlho, setTrocarOlho] = useState()
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} />
 
       <KeyboardAvoidingView behavior="padding" style={styles.cardLogin}>
@@ -26,9 +26,9 @@ export default function Login() {
 
             <View>
               <TextInput style={styles.inputLogin} secureTextEntry={true} />
-              <EyeOff style={styles.eyeFechado} onPress={trocarOlho}/>
+              <EyeOff style={styles.eyeFechado} onPress={trocarOlho} size={20}/>
 
-              <Eye style={styles.eyeAberto} />
+              {/* <Eye style={styles.eyeAberto} /> */}
             </View>
           </View>
 
@@ -55,7 +55,7 @@ export default function Login() {
         </View>
 
       </KeyboardAvoidingView>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -64,6 +64,7 @@ export default function Login() {
 // adicionar validação de campos
 // não tem checkbox
 // Colocar a logo no fundo
+// tirar o teclado quando clicar fora do input
 
 const styles = StyleSheet.create({
   container: {
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
   },
   cardLogin: {
     flex: 1,
-    top: "50%",
+    top: "40%",
     position: "absolute",
     backgroundColor: "#fff",
     width: "100%",
@@ -106,21 +107,19 @@ const styles = StyleSheet.create({
   inputLogin: {
     backgroundColor: "#E6E6E6",
     borderRadius: 12,
-    height: 35,
+    height: 40,
     position: "relative"
   },
-  eyeAberto: {
-    position: "absolute",
-    width: 16,
-    height: 16,
-    right: 15,
-    top: 10,
-    display: "none"
-  },
+  // eyeAberto: {
+  //   position: "absolute",
+  //   width: 16,
+  //   height: 16,
+  //   right: 15,
+  //   top: 10,
+  //   display: "none"
+  // },
   eyeFechado: {
     position: "absolute",
-    width: 16,
-    height: 16,
     right: 15,
     top: 10
   },
@@ -138,7 +137,6 @@ const styles = StyleSheet.create({
   hrefLogin: {
     flexDirection: "row",
     fontSize: 12,
-    justifyContent: "space-between",
-    alignItems: "baseline",
-  },
+    justifyContent: "space-between"
+    },
 });
