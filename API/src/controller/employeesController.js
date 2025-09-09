@@ -9,7 +9,7 @@ const employeesController = {
         try {
             const { name, cpf, email, phone, birthDate, password } = req.body;
 
-            if (!name || !cpf || !email, !phone, !birthDate, !password) {
+            if (!name || !cpf || !email || !phone || !birthDate || !password) {
                 return res.status(400).json({
                     msg: "All the fields are necessary"
                 });
