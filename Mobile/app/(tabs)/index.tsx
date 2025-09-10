@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Bell, Calendar, ChartColumn, Plus, TrendingUp, Users } from "lucide-react-native";
+import { Bell, Calendar, ChartColumn, Plus, User, Users } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../styles/globalTabs";
 
@@ -9,12 +9,19 @@ export default function Home() {
     <ScrollView style={TabsStyles.container}>
       {/* Logo */}
 
-      <View style={styles.header}>
-        {/* foto de perfil */}
-        <Text style={styles.tituloHeader}>Olá, Usuário</Text>
-        <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
-        <Bell />
-      </View>
+      <TouchableOpacity style={styles.header}>
+
+        <View style={{flexDirection: 'row', gap: 10}}>
+          <User color={'#fff'} size={20} style={{ backgroundColor: '#D10B03', padding: 10, borderRadius: '50%', right: 2 }} />
+
+          <View>
+            <Text style={styles.tituloHeader}>Olá, Usuário</Text>
+            <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
+          </View>
+        </View>
+
+        <Bell color={"#D6231C"} fill={"#D6231C"} size={20} />
+      </TouchableOpacity>
 
       {/* Ações rápidas */}
       <View>
@@ -22,7 +29,7 @@ export default function Home() {
 
         <View style={styles.cardsAcoes}>
           <TouchableOpacity style={styles.acaoCard}>
-            <Plus color={"#CE221E"} size={40} style={styles.iconAcao}/>
+            <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
             <Text style={styles.tituloAcao}>Nova Tarefa</Text>
           </TouchableOpacity>
 
@@ -41,9 +48,10 @@ export default function Home() {
             <Text style={styles.tituloAcao}>Dashboard</Text>
           </TouchableOpacity>
 
-          <View style={styles.ativRecente}>
-            <Text style={styles.titulo}>Atividades Recentes</Text>
-          </View>
+        </View>
+
+        <View style={styles.ativRecente}>
+          <Text style={styles.titulo}>Atividades Recentes</Text>
         </View>
 
       </View>
@@ -55,18 +63,29 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   header: {
-
+    backgroundColor: "#eeeeee69",
+    boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+    padding: 18,
+    margin: 9,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'space-between',
   },
   tituloHeader: {
-
+    fontSize: 16,
+    fontWeight: 700
   },
   subtitulo: {
-
+    color: '#676565'
   },
   titulo: {
-    fontSize: 22,
+    fontSize: 23,
     fontWeight: 600,
     textAlign: "left",
+    marginTop: 40,
+    marginBottom: 40
   },
   acaoCard: {
     backgroundColor: "#eeeeee69",
@@ -82,18 +101,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 30,
-    marginTop: 20,
-    marginBottom: 20,
-    paddingLeft: 4,
-    paddingRight: 4
-    // justifyContent: "space-between",
+    justifyContent: "space-evenly",
   },
   tituloAcao: {
     fontSize: 16,
     fontWeight: 400,
   },
   iconAcao: {
-    
+
   },
   ativRecente: {
 

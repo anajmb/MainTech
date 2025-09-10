@@ -1,16 +1,21 @@
 import SetaVoltar from "@/components/setaVoltar";
+import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Tarefas() {
     return (
-        <View style={styles.container}>
+        <View style={TabsStyles.container}>
             {/* Logo */}
 
             <View style={styles.header}>
                 <SetaVoltar />
-                <Text style={styles.titulo}>Tarefas</Text>
-                <Text style={styles.subtitulo}>3 tarefas</Text>
+
+                <View style={TabsStyles.conjHeaderPrincipal}>
+                    <Text style={TabsStyles.tituloPrincipal}>Tarefas</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>3 tarefas</Text>
+                </View>
+
                 <Plus color={"#fff"} strokeWidth={1.8} size={30} style={{ backgroundColor: "#D10B03", borderRadius: "50%", padding: 8 }} />
             </View>
 
@@ -25,11 +30,9 @@ export default function Tarefas() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        top: "8%",
-    },
     header: {
-
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     titulo: {
 
