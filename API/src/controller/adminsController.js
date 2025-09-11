@@ -110,7 +110,7 @@ const adminsController = {
 
             await prisma.admins.update({
                 where: { id: Number(id) },
-                data: { name, cpf, email, phone, birthDate: new Date(birthDate), password }
+                data: { name, cpf, email, phone, birthDate: new Date(birthDate), password, teamId: 1 }
             });
 
             
