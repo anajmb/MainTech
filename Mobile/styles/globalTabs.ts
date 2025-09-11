@@ -12,7 +12,7 @@ export const TabsStyles = StyleSheet.create({
     },
     tituloPrincipal: {
         fontSize: 28,
-        // fontFamily: 'Poppins-Regular'
+        fontFamily: 'Poppins-Regular'
     },
     subtituloPrincipal: {
         fontSize: 16,

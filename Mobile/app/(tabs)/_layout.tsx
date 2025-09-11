@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router"
-import { Camera, FileText, House, Settings, SquareCheckBig, } from 'lucide-react-native'
+import { Camera, FileText, Focus, House, ScanQrCode, Settings, SquareCheckBig, } from 'lucide-react-native'
 import { View } from "react-native"
 
 export default function TabsLayout() {
@@ -13,9 +13,7 @@ export default function TabsLayout() {
             <Tabs.Screen name="index" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<House size={25} color={color} />) }} />
             <Tabs.Screen name="tarefas" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<SquareCheckBig size={25} color={color} />) }} />
 
-            {/* <View style={{ backgroundColor: "#BF201C", padding: 10, borderRadius: "50%" }}> */}
-                <Tabs.Screen name="QRCode" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<Camera size={30} color={"#fff"} />) }} />
-            {/* </View> */}
+            <Tabs.Screen name="QRCode" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<Focus size={35} color={"#BF201C"} strokeWidth={1.8}/>) }} />
 
             <Tabs.Screen name="documento" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<FileText size={25} color={color} />) }} />
             <Tabs.Screen name="configuracao" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<Settings size={25} color={color} />) }} />
