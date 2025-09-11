@@ -16,8 +16,8 @@ export default function Tarefas() {
                 </View>
             </View>
 
-            <View>
-                <Search/>
+            <View style={styles.searchContainer}>
+                <Search style={styles.searchIcon}/>
                 <TextInput placeholderTextColor={'#9D9D9D'} placeholder="Buscar documentos" style={styles.input} />
             </View>
 
@@ -35,6 +35,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
+    searchContainer: {
+          flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#E6E6E6',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        marginVertical: 8,
+        marginTop: 20,
+        marginBottom: 20,
+    },
+     searchIcon: {
+        marginRight: 6,
+        color: '#9D9D9D',
+     },
     input: {
         backgroundColor: '#E6E6E6',
         padding: 10,

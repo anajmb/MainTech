@@ -1,11 +1,11 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, UserCircle, UserCircleIcon, UserRound } from "lucide-react-native";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Tarefas() {
     return (
-        <View style={TabsStyles.container}>
+        <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
@@ -15,100 +15,103 @@ export default function Tarefas() {
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.card}>
-                {/* imagem de perfil */}
-                <View style={styles.opcao}>
-                    <User size={22} color={'#fff'} style={TabsStyles.userFotoIcon} />
+            <View style={styles.cardContainer}>
 
-                    <View style={styles.infoCard}>
-                        <Text style={styles.nomePerfil}>João Silva</Text>
-                        <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
-
-            {/* Conta */}
-            <View style={styles.bloco}>
-                <Text style={styles.tituloCard}>Conta</Text>
-
-                <View style={styles.card}>
+                <TouchableOpacity style={styles.card}>
+                    {/* imagem de perfil */}
                     <View style={styles.opcao}>
-                        <UserRound />
+                        <User size={40} color={'#fff'} style={TabsStyles.userFotoIcon} />
 
                         <View style={styles.infoCard}>
-                            <Text style={styles.tituloOpcao}>Perfil do Usuário</Text>
-                            <Text style={styles.subtitulo}>Editar informações pessoais</Text>
+                            <Text style={styles.nomePerfil}>João Silva</Text>
+                            <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
                         </View>
                     </View>
+                </TouchableOpacity>
 
-                    <View style={styles.opcao}>
-                        <Shield />
+                {/* Conta */}
+                <View style={styles.bloco}>
+                    <Text style={styles.tituloCard}>Conta</Text>
 
-                        <View style={styles.infoCard}>
-                            <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
-                            <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
+                    <View style={styles.card}>
+                        <View style={styles.opcao}>
+                            <UserRound />
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.tituloOpcao}>Perfil do Usuário</Text>
+                                <Text style={styles.subtitulo}>Editar informações pessoais</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.opcao}>
+                            <Shield />
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
+                                <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
+                            </View>
                         </View>
                     </View>
                 </View>
+
+                {/* Preferências */}
+                <View style={styles.bloco}>
+                    <Text style={styles.tituloCard}>Preferências</Text>
+
+                    <View style={styles.card}>
+                        <View style={styles.opcao}>
+                            <BellRing />
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.tituloOpcao}>Notificações</Text>
+                                <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.opcao}>
+                            <PersonStanding />
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.tituloOpcao}>Acessibilidade</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Suporte */}
+                <View style={styles.bloco}>
+                    <Text style={styles.tituloCard}>Suporte</Text>
+
+                    <View style={styles.card}>
+                        <View style={styles.opcao}>
+                            <CircleQuestionMark />
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
+                                <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Outros */}
+                <View style={styles.bloco}>
+                    <Text style={styles.tituloCard}>Outros</Text>
+
+                    <View style={styles.card}>
+                        <View style={styles.opcao}>
+                            <LogOut />
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.tituloOpcao}>Sair</Text>
+                                <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
             </View>
-
-            {/* Preferências */}
-            <View style={styles.bloco}>
-                <Text style={styles.tituloCard}>Preferências</Text>
-
-                <View style={styles.card}>
-                    <View style={styles.opcao}>
-                        <BellRing />
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.tituloOpcao}>Notificações</Text>
-                            <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.opcao}>
-                        <PersonStanding />
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.tituloOpcao}>Acessibilidade</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-
-            {/* Suporte */}
-            <View style={styles.bloco}>
-                <Text style={styles.tituloCard}>Suporte</Text>
-
-                <View style={styles.card}>
-                    <View style={styles.opcao}>
-                        <CircleQuestionMark />
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
-                            <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-
-            {/* Outros */}
-            <View style={styles.bloco}>
-                <Text style={styles.tituloCard}>Outros</Text>
-
-                <View style={styles.card}>
-                    <View style={styles.opcao}>
-                        <LogOut />
-
-                        <View style={styles.infoCard}>
-                            <Text style={styles.tituloOpcao}>Sair</Text>
-                            <Text style={styles.subtitulo}>Desconectar da conta</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-
-        </View>
+        </ScrollView>
     )
 }
 
@@ -122,10 +125,15 @@ const styles = StyleSheet.create({
     titulo: {
 
     },
+    cardContainer: {
+        marginTop: 40,
+    },
     card: {
         backgroundColor: "#eeeeee69",
         boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
         borderRadius: 10,
+        marginBottom: 10,
+        marginHorizontal: 2,
     },
     infoCard: {
         flexDirection: 'column',
