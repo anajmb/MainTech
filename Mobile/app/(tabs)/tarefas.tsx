@@ -8,7 +8,7 @@ export default function Tarefas() {
         <View style={TabsStyles.container}>
             {/* Logo */}
 
-            <View style={styles.header}>
+            <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -30,10 +30,6 @@ export default function Tarefas() {
 }
 
 const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
     titulo: {
 
     },

@@ -1,18 +1,30 @@
-import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, UserCircle } from "lucide-react-native";
+import SetaVoltar from "@/components/setaVoltar";
+import { TabsStyles } from "@/styles/globalTabs";
+import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, UserCircle, UserCircleIcon, UserRound } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Tarefas() {
     return (
-        <View style={styles.container}>
+        <View style={TabsStyles.container}>
 
-            <View style={styles.header}>
-                <Text style={styles.titulo}>Configuração</Text>
+            <View style={TabsStyles.headerPrincipal}>
+                <SetaVoltar />
+
+                <View style={TabsStyles.conjHeaderPrincipal}>
+                    <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
+                </View>
             </View>
 
             <TouchableOpacity style={styles.card}>
                 {/* imagem de perfil */}
-                <Text style={styles.nomePerfil}>João Silva</Text>
-                <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
+                <View style={styles.opcao}>
+                    <User size={22} color={'#fff'} style={TabsStyles.userFotoIcon} />
+
+                    <View style={styles.infoCard}>
+                        <Text style={styles.nomePerfil}>João Silva</Text>
+                        <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
+                    </View>
+                </View>
             </TouchableOpacity>
 
             {/* Conta */}
@@ -21,15 +33,21 @@ export default function Tarefas() {
 
                 <View style={styles.card}>
                     <View style={styles.opcao}>
-                        <UserCircle/>
-                        <Text style={styles.tituloOpcao}>Perfil do Usuário</Text>
-                        <Text style={styles.subtitulo}>Editar informações pessoais</Text>
+                        <UserRound />
+
+                        <View style={styles.infoCard}>
+                            <Text style={styles.tituloOpcao}>Perfil do Usuário</Text>
+                            <Text style={styles.subtitulo}>Editar informações pessoais</Text>
+                        </View>
                     </View>
 
                     <View style={styles.opcao}>
-                        <Shield/>
-                        <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
-                        <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
+                        <Shield />
+
+                        <View style={styles.infoCard}>
+                            <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
+                            <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -40,14 +58,20 @@ export default function Tarefas() {
 
                 <View style={styles.card}>
                     <View style={styles.opcao}>
-                        <BellRing/>
-                        <Text style={styles.tituloOpcao}>Notificações</Text>
-                        <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
+                        <BellRing />
+
+                        <View style={styles.infoCard}>
+                            <Text style={styles.tituloOpcao}>Notificações</Text>
+                            <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
+                        </View>
                     </View>
 
                     <View style={styles.opcao}>
-                        <PersonStanding/>
-                        <Text style={styles.tituloOpcao}>Acessibilidade</Text>
+                        <PersonStanding />
+
+                        <View style={styles.infoCard}>
+                            <Text style={styles.tituloOpcao}>Acessibilidade</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -58,9 +82,12 @@ export default function Tarefas() {
 
                 <View style={styles.card}>
                     <View style={styles.opcao}>
-                        <CircleQuestionMark/>
-                        <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
-                        <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
+                        <CircleQuestionMark />
+
+                        <View style={styles.infoCard}>
+                            <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
+                            <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -71,9 +98,12 @@ export default function Tarefas() {
 
                 <View style={styles.card}>
                     <View style={styles.opcao}>
-                        <LogOut/>
-                        <Text style={styles.tituloOpcao}>Sair</Text>
-                        <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                        <LogOut />
+
+                        <View style={styles.infoCard}>
+                            <Text style={styles.tituloOpcao}>Sair</Text>
+                            <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -93,27 +123,44 @@ const styles = StyleSheet.create({
 
     },
     card: {
-
+        backgroundColor: "#eeeeee69",
+        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        borderRadius: 10,
     },
-    nomePerfil:{
-
+    infoCard: {
+        flexDirection: 'column',
+        marginLeft: 16,
     },
-    emailPerfil:{
-
+    opcao: {
+        flexDirection: 'row',
+        padding: 20,
+        alignItems: 'center'
+    },
+    nomePerfil: {
+        fontSize: 16,
+        fontWeight: 700,
+    },
+    emailPerfil: {
+        fontSize: 12,
+        fontWeight: 'medium',
+        color: '#00000075'
     },
     bloco: {
 
     },
     tituloCard: {
-
-    },
-    opcao: {
-
+        fontSize: 15,
+        fontWeight: 500,
+        marginTop: 20,
+        marginBottom: 10
     },
     tituloOpcao: {
-
+        fontSize: 14,
+        fontWeight: 'medium'
     },
     subtitulo: {
-        
+        fontSize: 12,
+        fontWeight: 'medium',
+        color: '#00000075'
     },
 })

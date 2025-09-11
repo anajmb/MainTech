@@ -12,7 +12,7 @@ export default function Home() {
       <TouchableOpacity style={styles.header}>
 
         <View style={{flexDirection: 'row', gap: 10}}>
-          <User color={'#fff'} size={20} style={{ backgroundColor: '#D10B03', padding: 10, borderRadius: '50%', right: 2 }} />
+          <User color={'#fff'} size={22} style={TabsStyles.userFotoIcon} />
 
           <View>
             <Text style={styles.tituloHeader}>Olá, Usuário</Text>

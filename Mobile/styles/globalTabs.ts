@@ -19,5 +19,15 @@ export const TabsStyles = StyleSheet.create({
     conjHeaderPrincipal: {
         marginLeft: 30,
         flex: 1
-    }
+    },
+    headerPrincipal: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    userFotoIcon: {
+        backgroundColor: '#D10B03',
+        padding: 10,
+        borderRadius: '50%',
+        right: 2,
+    },
 })
