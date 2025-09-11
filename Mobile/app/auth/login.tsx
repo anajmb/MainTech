@@ -5,10 +5,8 @@ import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, T
 
 export default function Login() {
 
-  const [trocarOlho, setTrocarOlho] = useState()
-
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} />
 
       <KeyboardAvoidingView behavior="padding" style={styles.cardLogin}>
@@ -26,14 +24,14 @@ export default function Login() {
 
             <View>
               <TextInput style={styles.inputLogin} secureTextEntry={true} />
-              <EyeOff style={styles.eyeFechado} onPress={trocarOlho} size={20}/>
+              <EyeOff style={styles.eyeFechado} size={20}/>
 
               {/* <Eye style={styles.eyeAberto} /> */}
             </View>
           </View>
 
 
-          <Text style={{ textAlign: "right", }}>Mantenha-me conectado</Text>
+          <Text style={{ textAlign: "right", fontSize: 12 }}>Mantenha-me conectado</Text>
 
           <View style={{ alignItems: "center" }}>
             <TouchableOpacity style={styles.botaoLogin}>
@@ -55,7 +53,7 @@ export default function Login() {
         </View>
 
       </KeyboardAvoidingView>
-    </ScrollView>
+    </View>
   );
 }
 

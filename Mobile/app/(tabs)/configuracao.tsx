@@ -20,7 +20,7 @@ export default function Tarefas() {
                 <TouchableOpacity style={styles.card}>
                     {/* imagem de perfil */}
                     <View style={styles.opcao}>
-                        <User size={40} color={'#fff'} style={TabsStyles.userFotoIcon} />
+                        <User size={22} color={'#fff'} style={TabsStyles.userFotoIcon} />
 
                         <View style={styles.infoCard}>
                             <Text style={styles.nomePerfil}>João Silva</Text>
