@@ -141,7 +141,11 @@ const employeesController = {
                 msg: 'Employee updated successfully',
             });
         } catch (error) {
+            console.log(error)
 
+            return res.status(500).json({
+                msg: "Internal server error"
+            })
         }
 
     }
