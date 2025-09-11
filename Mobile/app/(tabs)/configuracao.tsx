@@ -6,7 +6,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 export default function Configuracao() {
     return (
 
-        
+
         <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>
@@ -22,7 +22,10 @@ export default function Configuracao() {
                 <TouchableOpacity style={styles.card}>
                     {/* imagem de perfil */}
                     <View style={styles.opcao}>
-                        <User size={22} color={'#fff'} style={TabsStyles.userFotoIcon} />
+
+                        <View style={TabsStyles.userFotoIcon}>
+                            <User size={22} color={'#fff'} />
+                        </View>
 
                         <View style={styles.infoCard}>
                             <Text style={styles.nomePerfil}>João Silva</Text>

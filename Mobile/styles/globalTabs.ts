@@ -28,7 +28,7 @@ export const TabsStyles = StyleSheet.create({
     },
     userFotoIcon: {
         backgroundColor: '#D10B03',
-        padding: 16,
+        padding: 12,
         borderRadius: '50%',
         right: 2,
     },

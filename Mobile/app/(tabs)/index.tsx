@@ -2,17 +2,22 @@ import { Link } from "expo-router";
 import { Bell, Calendar, ChartColumn, Plus, User, Users } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../styles/globalTabs";
+import NovaTarefa from "../pages/novaTarefa";
 
 
 export default function Home() {
+
   return (
     <ScrollView style={TabsStyles.container}>
       {/* Logo */}
 
       <TouchableOpacity style={styles.header}>
 
-        <View style={{flexDirection: 'row', gap: 10}}>
-          <User color={'#fff'} size={22} style={TabsStyles.userFotoIcon} />
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+
+          <View style={TabsStyles.userFotoIcon}>
+            <User color={'#fff'} size={22} />
+          </View>
 
           <View>
             <Text style={styles.tituloHeader}>Olá, Usuário</Text>
@@ -27,8 +32,9 @@ export default function Home() {
       <View>
         <Text style={styles.titulo}>Ações Rápidas</Text>
 
-        <View style={styles.cardsAcoes}>
-          <TouchableOpacity style={styles.acaoCard}>
+        <View style={styles.cardsAcoes} >
+          
+          <TouchableOpacity style={styles.acaoCard} >
             <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
             <Text style={styles.tituloAcao}>Nova Tarefa</Text>
           </TouchableOpacity>
