@@ -1,10 +1,12 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, UserCircle, UserCircleIcon, UserRound } from "lucide-react-native";
+import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, UserRound } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function Tarefas() {
+export default function Configuracao() {
     return (
+
+        
         <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>
@@ -100,7 +102,7 @@ export default function Tarefas() {
 
                     <View style={styles.card}>
                         <View style={styles.opcao}>
-                            <LogOut />
+                            <LogOut color={'#F24040'} />
 
                             <View style={styles.infoCard}>
                                 <Text style={styles.tituloOpcao}>Sair</Text>

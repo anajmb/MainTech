@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-export default function Tarefas() {
+export default function QRCode() {
     return (
         <View>
             <Text>QR Code</Text>

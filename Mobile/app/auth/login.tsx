@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
 
