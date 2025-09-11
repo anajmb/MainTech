@@ -8,4 +8,7 @@ const router = express.Router();
 const employeesRouter = require("./employeesRouter");
 router.use("/employees", employeesRouter);
 
+const adminsRouter = require("./adminsRouter");
+router.use("/admins", adminsRouter);
+
 module.exports = router;

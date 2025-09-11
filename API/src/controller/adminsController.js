@@ -19,9 +19,15 @@ const adminsController = {
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const adminsCreated = await prisma.adimins.create({
+            const adminsCreated = await prisma.admins.create({
                 data: {
-                    name, cpf, email, phone, birthDate: new Date(birthDate), password: hashedPassword
+                    name, 
+                    cpf, 
+                    email, 
+                    phone, 
+                    birthDate: new Date(birthDate), 
+                    password: hashedPassword,
+                    teamId: 1
                 }
             });
 
@@ -55,7 +61,7 @@ const adminsController = {
             });
         }
 
-        const adminFind = await prisma.adimins.findUnique({
+        const adminFind = await prisma.admins.findUnique({
             where: { cpf }
         });
 
@@ -102,7 +108,7 @@ const adminsController = {
                 });
             }
 
-            await prisma.adimins.update({
+            await prisma.admins.update({
                 where: { id: Number(id) },
                 data: { name, cpf, email, phone, birthDate: new Date(birthDate), password }
             });
@@ -124,7 +130,7 @@ const adminsController = {
         try {
             const { id } = req.params;
 
-            const adminDelete = await prisma.adimins.delete({
+            const adminDelete = await prisma.admins.delete({
                 where: { id: Number(id) }
             });
 

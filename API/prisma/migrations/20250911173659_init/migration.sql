@@ -1,17 +1,18 @@
 -- CreateTable
-CREATE TABLE `Adimins` (
+CREATE TABLE `Admins` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `cpf` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
     `birthDate` DATETIME(3) NOT NULL,
     `teamId` INTEGER NOT NULL,
     `createDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updateDate` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Adimins_cpf_key`(`cpf`),
-    UNIQUE INDEX `Adimins_email_key`(`email`),
+    UNIQUE INDEX `Admins_cpf_key`(`cpf`),
+    UNIQUE INDEX `Admins_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -44,6 +45,7 @@ CREATE TABLE `Employees` (
     `cpf` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
     `birthDate` DATETIME(3) NOT NULL,
     `role` ENUM('INSPECTOR', 'MAINTAINER') NOT NULL,
     `createDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -118,7 +120,7 @@ CREATE TABLE `Routes` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Adimins` ADD CONSTRAINT `Adimins_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `AdiminTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Admins` ADD CONSTRAINT `Admins_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `AdiminTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `TeamMember` ADD CONSTRAINT `TeamMember_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

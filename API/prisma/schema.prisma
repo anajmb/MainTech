@@ -13,12 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Adimins {
+model Admins {
   id         Int        @id @default(autoincrement())
   name       String
   cpf        String     @unique
   email      String     @unique
   password   String
+  phone      String
+  birthDate  DateTime
   teamId     Int
   team       AdiminTeam @relation(fields: [teamId], references: [id])
   createDate DateTime   @default(now())
@@ -31,7 +33,7 @@ model AdiminTeam {
   description String
   createDate  DateTime  @default(now())
   updateDate  DateTime  @updatedAt
-  Adimins     Adimins[]
+  Adimins     Admins[]
 }
 
 model Team {
