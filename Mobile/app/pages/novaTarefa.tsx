@@ -1,14 +1,15 @@
-import { CircleArrowLeft } from "lucide-react-native";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import SetaVoltar from "@/components/setaVoltar";
+import { TabsStyles } from "@/styles/globalTabs";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function NovaTarefa() {
     return (
-        <View style={styles.container}>
+        <ScrollView style={TabsStyles.container}>
             {/* Logo */}
 
             <View style={styles.header}>
-                <CircleArrowLeft />
-                <Text style={styles.tituloHeader}>Nova Tarefas</Text>
+                <SetaVoltar/>
+                <Text style={styles.tituloHeader}>Nova Tarefa</Text>
             </View>
 
             {/* Titulo e descrição */}
@@ -58,7 +59,7 @@ export default function NovaTarefa() {
             <View style={styles.botao}>
                 <Text>Salvar</Text>
             </View>
-        </View>
+        </ScrollView>
     )
 }
 

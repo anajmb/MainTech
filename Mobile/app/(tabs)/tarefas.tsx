@@ -2,7 +2,7 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Tarefas() {
 
@@ -72,6 +72,10 @@ export default function Tarefas() {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            <ScrollView>
+                
+            </ScrollView>
 
         </View>
     )

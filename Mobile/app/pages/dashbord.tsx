@@ -1,9 +1,9 @@
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
-export default function Agenda() {
+export default function Dashboard() {
     return (
-        <View>
+        <ScrollView>
             <Text>Dashboard</Text>
-        </View>
+        </ScrollView>
     )
 }

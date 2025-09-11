@@ -47,15 +47,20 @@ export default function Home() {
             </TouchableOpacity>
           </Link>
 
-          <TouchableOpacity style={styles.acaoCard}>
-            <Users color={'#11C463'} size={35} style={styles.iconAcao} />
-            <Text style={styles.tituloAcao}>Equipes</Text>
-          </TouchableOpacity>
+          <Link href="/pages/equipes" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <Users color={'#11C463'} size={35} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Equipes</Text>
+            </TouchableOpacity>
+          </Link>
 
-          <TouchableOpacity style={styles.acaoCard}>
-            <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
-            <Text style={styles.tituloAcao}>Dashboard</Text>
-          </TouchableOpacity>
+          <Link href="/pages/dashbord" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Dashboard</Text>
+            </TouchableOpacity>
+          </Link>
+
 
         </View>
 

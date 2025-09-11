@@ -6,7 +6,6 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 export default function Configuracao() {
     return (
 
-
         <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>

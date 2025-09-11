@@ -1,10 +1,5 @@
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router";
 
 export default function PagesLayout() {
-  return (
-    <Tabs screenOptions={{
-      headerShown: false,
-    }}>
-    </Tabs>
-  )
+  return <Stack screenOptions={{headerShown: false}}/>
 }

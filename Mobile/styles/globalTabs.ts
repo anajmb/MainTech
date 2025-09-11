@@ -1,10 +1,8 @@
 import { StyleSheet } from "react-native";
 
-
 export const TabsStyles = StyleSheet.create({
     container: {
         paddingTop: 60,
-        // paddingBottom: 80,
         paddingLeft: 20,
         paddingRight: 20,
         flex: 1,

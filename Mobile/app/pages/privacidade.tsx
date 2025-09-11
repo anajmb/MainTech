@@ -1,9 +1,9 @@
 import { CircleArrowLeft, Lock, Shield, TriangleAlert } from "lucide-react-native";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Privacidade() {
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
 
             <View style={styles.header}>
                 <CircleArrowLeft />
@@ -64,7 +64,7 @@ export default function Privacidade() {
                 <Text style={styles.dicas}>Faça logout em dispositivos desconhecidos.</Text>
             </View>
 
-        </View>
+        </ScrollView>
     )
 }
 
