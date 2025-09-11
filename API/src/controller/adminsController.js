@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
-const { update } = require("../../../../../LogiDev/LogiDevAPI/src/controllers/produtosController");
 const prisma = new PrismaClient();
+const bcrypt = require('bcrypt');
 
 
 const adminsController = {
@@ -150,3 +150,6 @@ const adminsController = {
 
     }
 }
+
+
+module.exports = adminsController;

@@ -1,6 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
-const { getAll, getUnique } = require("../../../../../LogiDev/LogiDevAPI/src/controllers/produtosController");
+const { PrismaClient } = require("@prisma/client");     
 const prisma = new PrismaClient();
+const bcrypt = require('bcrypt');
 
 const employeesController = {
 
@@ -8,9 +8,9 @@ const employeesController = {
     create: async (req, res) => {
 
         try {
-            const { name, cpf, email, phone, birthDate, password } = req.body;
+            const { name, cpf, email, phone, birthDate, password, role } = req.body;
 
-            if (!name || !cpf || !email || !phone || !birthDate || !password) {
+            if (!name || !cpf || !email || !phone || !birthDate || !password || !role)  {
                 return res.status(400).json({
                     msg: "All the fields are necessary"
                 });
@@ -20,7 +20,7 @@ const employeesController = {
 
             const employeeCreated = await prisma.employees.create({
                 data: {
-                    name, cpf, email, phone, birthDate: new Date(birthDate), password: hashedPassword
+                    name, cpf, email, phone, birthDate: new Date(birthDate), password: hashedPassword, role
                 }
             });
 
@@ -28,6 +28,7 @@ const employeesController = {
                 msg: "Employee created successfully",
                 id: employeeCreated.id
             });
+
         } catch (error) {
 
             if (error.code === 'P2002') {
@@ -186,3 +187,5 @@ const employeesController = {
         }
     }
 }
+
+module.exports = employeesController;

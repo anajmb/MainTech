@@ -3,4 +3,9 @@ const express = require('express');
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient()
 
-const authenticate = require('');
+const router = express.Router();
+
+const employeesRouter = require("./employeesRouter");
+router.use("/employees", employeesRouter);
+
+module.exports = router;
