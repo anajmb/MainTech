@@ -4,15 +4,15 @@ import { StyleSheet } from "react-native";
 export const TabsStyles = StyleSheet.create({
     container: {
         paddingTop: 60,
-        paddingBottom: 80,
+        // paddingBottom: 80,
         paddingLeft: 20,
         paddingRight: 20,
-        // flex: 1,
+        flex: 1,
         backgroundColor: '#F5F5F5',
     },
     tituloPrincipal: {
         fontSize: 28,
-        fontFamily: 'Poppins-Regular'
+        // fontFamily: 'Poppins-Regular'
     },
     subtituloPrincipal: {
         fontSize: 16,

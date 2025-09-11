@@ -1,6 +1,5 @@
 import { Link } from "expo-router";
-import { Eye, EyeOff } from "lucide-react-native";
-import { useState } from "react";
+import { EyeOff } from "lucide-react-native";
 import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
@@ -79,8 +78,8 @@ const styles = StyleSheet.create({
   },
   cardLogin: {
     flex: 1,
-    top: "40%",
-    position: "absolute",
+/*     top: "40%",
+    position: "absolute", */
     backgroundColor: "#fff",
     width: "100%",
     height: "100%",

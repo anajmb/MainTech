@@ -2,7 +2,6 @@ import { Link } from "expo-router";
 import { Bell, Calendar, ChartColumn, Plus, User, Users } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../styles/globalTabs";
-import NovaTarefa from "../pages/novaTarefa";
 
 
 export default function Home() {
@@ -33,16 +32,20 @@ export default function Home() {
         <Text style={styles.titulo}>Ações Rápidas</Text>
 
         <View style={styles.cardsAcoes} >
-          
-          <TouchableOpacity style={styles.acaoCard} >
-            <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
-            <Text style={styles.tituloAcao}>Nova Tarefa</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.acaoCard}>
-            <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
-            <Text style={styles.tituloAcao}>Agenda</Text>
-          </TouchableOpacity>
+          <Link href="/pages/novaTarefa" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Nova Tarefa</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/pages/agenda" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Agenda</Text>
+            </TouchableOpacity>
+          </Link>
 
           <TouchableOpacity style={styles.acaoCard}>
             <Users color={'#11C463'} size={35} style={styles.iconAcao} />

@@ -1,9 +1,10 @@
-import { View } from "react-native";
+import { Tabs } from "expo-router";
 
 export default function PagesLayout() {
   return (
-    <View>
-
-    </View>
+    <Tabs screenOptions={{
+      headerShown: false,
+    }}>
+    </Tabs>
   )
 }
