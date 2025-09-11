@@ -31,12 +31,14 @@ export default function Documento() {
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Documentos</Text>
+                      <Text style={TabsStyles.subtituloPrincipal}>Veja as O.S.</Text>
                 </View>
             </View>
 
             <View style={styles.searchContainer}>
                 <View style={styles.searchCard}>
-                    <Search style={styles.searchIcon} />
+                    
+                    <Search  size={20} style={styles.searchIcon} />
                     <TextInput placeholderTextColor={'#9D9D9D'} placeholder="Buscar documentos" style={styles.input} />
                 </View>
             </View>
@@ -143,9 +145,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     searchContainer: {
-        backgroundColor: '#eeeeee',
-        paddingHorizontal: 20,
-        borderRadius: 10,
+        paddingHorizontal: 10,
         marginTop: 20,
         marginBottom: 10
 
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     searchIcon: {
-        marginRight: 6,
+        marginRight: 2,
         color: '#9D9D9D',
     },
     input: {
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         backgroundColor: '#eeeeee',
         paddingVertical: 30,
-        borderRadius: 10,
+        borderRadius: 12,
         paddingHorizontal: 5,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
 
