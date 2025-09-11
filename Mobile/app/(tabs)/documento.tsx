@@ -79,7 +79,7 @@ export default function Documento() {
                     <View style={styles.infosDocumentos}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
                             <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText color={styles.documentosIcon.color} />
+                                <FileText color={'#fff'} />
                             </View>
                             <Text style={styles.documentosNome}>Ordem de serviço 100</Text>
                         </View>
@@ -90,7 +90,7 @@ export default function Documento() {
                     <View style={styles.infosDocumentos}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
                             <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText color={styles.documentosIcon.color} />
+                                <FileText color={'#fff'} />
                             </View>
                             <Text style={styles.documentosNome}>Ordem de serviço 99</Text>
                         </View>
@@ -101,7 +101,7 @@ export default function Documento() {
                     <View style={styles.infosDocumentos}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
                             <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText style={styles.documentosIcon} />
+                                <FileText color={'#fff'} />
                             </View>
                             <Text style={styles.documentosNome}>Ordem de serviço 98</Text>
                         </View>
@@ -112,7 +112,7 @@ export default function Documento() {
                     <View style={styles.infosDocumentos}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
                             <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText style={styles.documentosIcon} />
+                                <FileText color={'#fff'} />
                             </View>
                             <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
                         </View>
@@ -123,7 +123,7 @@ export default function Documento() {
                      <View style={styles.infosDocumentos}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
                             <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText style={styles.documentosIcon} />
+                                <FileText color={'#fff'} />
                             </View>
                             <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
                         </View>
@@ -196,9 +196,6 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 10,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-    },
-    documentosIcon: {
-        color: '#fff',
     },
     documentosNome: {
         marginTop: 8,
