@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const { getAll, getUnique } = require("../../../../../LogiDev/LogiDevAPI/src/controllers/produtosController");
 const prisma = new PrismaClient();
 
 const employeesController = {
@@ -120,19 +121,25 @@ const employeesController = {
     update: async (req, res) => {
         try {
             const { id } = req.params;
-            const { name, cpf, email, phone, birthDate, password } = req.body;
+            const { name, cpf, email, phone, birthDate, password, role } = req.body;
 
-
-            if (!name || !cpf || !email || !phone || !birthDate || !password) {
+            if (!name || !cpf || !email || !phone || !birthDate || !password || !role) {
                 return res.status(400).json({
-                    msg: 'All fields are necessary'
+                    msg: 'All fields (including role) are necessary'
                 });
             }
 
             await prisma.employees.update({
                 data: {
-                    name, cpf, email, phone, birthDate: new Date(birthDate), password
-                }, where: {
+                    name,
+                    cpf,
+                    email,
+                    phone,
+                    birthDate: new Date(birthDate),
+                    password,
+                    role
+                },
+                where: {
                     id: Number(id)
                 }
             });
@@ -147,6 +154,35 @@ const employeesController = {
                 msg: "Internal server error"
             })
         }
+    },
 
+    getAll: async (req, res) => {
+        try {
+            const employees = await prisma.employees.findMany();
+
+            return res.json(employees)
+
+        } catch (error) {
+            console.log("Error searching for employees:", error)
+        }
+    },
+
+    getUnique: async (req, res) => {
+        try {
+            const { id } = req.params
+
+            const employee = await prisma.employees.findUnique({
+                where: { id: Number(id) }
+            })
+
+            if (!employee) {
+                return res.status(404).json({ error: "Employee not found" })
+            }
+
+            return res.status(200).json(employee)
+        } catch (error) {
+            
+            console.log("Error searching for employee:", error)
+        }
     }
 }
