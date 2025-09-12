@@ -1,28 +1,56 @@
-import { Tabs } from "expo-router"
-import { Camera, FileText, Focus, House, ScanQrCode, Settings, SquareCheckBig, } from 'lucide-react-native'
-import { View } from "react-native"
+import { Tabs } from "expo-router";
+import { FileText, Focus, House, Settings, SquareCheckBig } from 'lucide-react-native';
 
 export default function TabsLayout() {
     return (
-        <Tabs screenOptions={{
-            tabBarActiveTintColor: "#BF201C",  // parte das notificações
-            headerShown: false,
-            tabBarStyle: { paddingBottom: 5, paddingTop: 5, borderRadius: 20, alignItems: 'center' }
-        }}>
+        <Tabs
+            screenOptions={{
+                tabBarActiveTintColor: "#BF201C",
+                headerShown: false,
+                tabBarStyle: {
+                    paddingBottom: 5,
+                    paddingTop: 5,
+                    borderRadius: 20,
+                    alignItems: 'center'
+                }
+            }} >
+            <Tabs.Screen name="index"
+                options={{
+                    tabBarLabel: "",
+                    tabBarIcon: ({ color }) => <House size={25} color={color} />
+                }}
+            />
+            <Tabs.Screen name="tarefas"
+                options={{
+                    tabBarLabel: "",
+                    tabBarIcon: ({ color }) => <SquareCheckBig size={25} color={color} />
+                }}
+            />
+            <Tabs.Screen name="QRCode"
+                options={{
+                    tabBarLabel: "",
+                    tabBarIcon: () => <Focus size={35} color="#BF201C" strokeWidth={1.8} />
+                }}
+            />
+            <Tabs.Screen name="documento"
+                options={{
+                    tabBarLabel: "",
+                    tabBarIcon: ({ color }) => <FileText size={25} color={color} />
+                }}
+            />
+            <Tabs.Screen name="configuracao"
+                options={{
+                    tabBarLabel: "",
+                    tabBarIcon: ({ color }) => <Settings size={25} color={color} />
+                }}
+            />
 
-            <Tabs.Screen name="index" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<House size={25} color={color} />) }} />
-            <Tabs.Screen name="tarefas" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<SquareCheckBig size={25} color={color} />) }} />
-
-            <Tabs.Screen name="QRCode" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<Focus size={35} color={"#BF201C"} strokeWidth={1.8}/>) }} />
-
-            <Tabs.Screen name="documento" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<FileText size={25} color={color} />) }} />
-            <Tabs.Screen name="configuracao" options={{ tabBarLabel: "", tabBarIcon: ({ color, size }) => (<Settings size={25} color={color} />) }} />
-
+            {/* Pages não aparece como botão */}
+            <Tabs.Screen name="pages"
+                options={{
+                    href: null, // esconde o ícone
+                }}
+            />
         </Tabs>
-    )
-
-    // tentar esconde a barra de navegação nativa
-    // arrumar o tamanho dos icones
-    // ajustar o background da camera
-    // centralizar a tab bar
+    );
 }

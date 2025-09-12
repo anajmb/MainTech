@@ -107,7 +107,7 @@ export default function Configuracao() {
                             <LogOut color={'#F24040'} />
 
                             <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcao}>Sair</Text>
+                                <Text style={styles.tituloOpcaoSair}>Sair</Text>
                                 <Text style={styles.subtitulo}>Desconectar da conta</Text>
                             </View>
                         </View>
@@ -169,6 +169,11 @@ const styles = StyleSheet.create({
     tituloOpcao: {
         fontSize: 14,
         fontWeight: 'medium'
+    },
+    tituloOpcaoSair: {
+        fontSize: 14,
+        fontWeight: 'medium',
+        color: '#F24040'
     },
     subtitulo: {
         fontSize: 12,

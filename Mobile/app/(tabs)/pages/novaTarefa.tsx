@@ -73,7 +73,7 @@ export default function NovaTarefa() {
                 </View>
             </KeyboardAvoidingView>
 
-            <View style={{ alignItems: 'center', marginTop: 30 }}>
+            <View style={{alignItems: 'center', marginTop: 30}}>
                 <View style={styles.botao} >
                     <Text style={{ padding: 8, textAlign: 'center', color: '#fff' }}>Salvar</Text>
                 </View>

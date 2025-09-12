@@ -3,6 +3,7 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
 
 export default function Tarefas() {
 
@@ -35,11 +36,11 @@ export default function Tarefas() {
                     <Text style={TabsStyles.subtituloPrincipal}>Minhas tarefas</Text>
                 </View>
 
-                <View style={{ backgroundColor: "#D10B03", borderRadius: "50%", padding: 8 }} >
-                    <Plus color={"#fff"} strokeWidth={1.8} size={30} />
-                </View>
+                <Link href={'/(tabs)/pages/novaTarefa'} style={{ backgroundColor: "#D10B03", borderRadius: "50%", padding: 8, height: 50, width: 50 }} >
+                    <Plus color={"#fff"} strokeWidth={1.8} size={30} style={{alignItems: 'center', justifyContent: 'center'}}/>
+                </Link>
             </View>
-
+        
             <View style={styles.filtro}>
                 <TouchableOpacity onPress={() => setFiltro("todas")}>
                     <Text

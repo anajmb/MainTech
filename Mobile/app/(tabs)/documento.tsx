@@ -212,6 +212,5 @@ const styles = StyleSheet.create({
     downloadIcon: {
         color: '#333',
         marginLeft: 'auto',
-
     }
 })
