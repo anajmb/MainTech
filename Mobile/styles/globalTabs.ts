@@ -23,7 +23,8 @@ export const TabsStyles = StyleSheet.create({
     },
     headerPrincipal: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 20
     },
     userFotoIcon: {
         backgroundColor: '#D10B03',
@@ -31,4 +32,16 @@ export const TabsStyles = StyleSheet.create({
         borderRadius: '50%',
         right: 2,
     },
+    viewBotaoPrincipal: {
+        backgroundColor: '#CE221E',
+        borderRadius: 10,
+        width: '50%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    botaoText: {
+        padding: 8,
+        textAlign: 'center',
+        color: '#fff'
+    }
 })

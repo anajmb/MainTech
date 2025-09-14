@@ -28,7 +28,7 @@ export default function Documento() {
         <View style={TabsStyles.container}>
             {/* Logo */}
 
-            <View style={styles.header}>
+            <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
