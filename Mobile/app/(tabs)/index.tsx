@@ -1,8 +1,9 @@
 import { Link } from "expo-router";
-import { Bell, Calendar, ChartColumn, Plus, User, Users } from "lucide-react-native";
+import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../styles/globalTabs";
 
+// achar um icone de máquina para por no lugar de Nova Tarefa
 
 export default function Home() {
 
@@ -10,22 +11,24 @@ export default function Home() {
     <ScrollView style={TabsStyles.container}>
       {/* Logo */}
 
-      <TouchableOpacity style={styles.header}>
+      <Link href={'/(tabs)/pages/editarPerfil'} style={{alignItems: 'center', justifyContent: 'center'}}>
+        <TouchableOpacity style={styles.header}>
 
-        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
 
-          <View style={TabsStyles.userFotoIcon}>
-            <User color={'#fff'} size={22} />
+            <View style={TabsStyles.userFotoIcon}>
+              <User color={'#fff'} size={22} />
+            </View>
+
+            <View>
+              <Text style={styles.tituloHeader}>Olá, Usuário</Text>
+              <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
+            </View>
           </View>
 
-          <View>
-            <Text style={styles.tituloHeader}>Olá, Usuário</Text>
-            <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
-          </View>
-        </View>
-
-        <Bell color={"#D6231C"} fill={"#D6231C"} size={20} />
-      </TouchableOpacity>
+          <Bell color={"#D6231C"} fill={"#D6231C"} size={20} />
+        </TouchableOpacity>
+      </Link>
 
       {/* Ações rápidas */}
       <View>
@@ -61,16 +64,26 @@ export default function Home() {
             </TouchableOpacity>
           </Link>
 
-
         </View>
 
         <View style={styles.ativRecente}>
           <Text style={styles.titulo}>Atividades Recentes</Text>
+
+          <View style={styles.ativRecenteCard}>
+
+            <View style={styles.iconAtivRecente}>
+            <CheckCircle color={'#51C385'} size={22} />
+            </View>
+
+            <View style={styles.ativInfo}>
+              <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
+              <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
+            </View>
+          </View>
         </View>
 
       </View>
 
-      <Link href="../auth/login">Go to Login</Link>
     </ScrollView>
   )
 }
@@ -85,6 +98,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    width: '100%',
     justifyContent: 'space-between',
   },
   tituloHeader: {
@@ -127,4 +141,29 @@ const styles = StyleSheet.create({
   ativRecente: {
 
   },
+  ativRecenteCard: {
+    flexDirection: 'row',
+    boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  iconAtivRecente: {
+    backgroundColor: '#C7FFDD',
+    borderRadius: '50%',
+    padding: 7,
+  },
+  ativInfo: {
+    flexDirection: 'column',
+    marginLeft: 10,
+    gap: 4
+  },
+  ativInfoTitulo: {
+    fontSize: 16
+  },
+  ativInfoSubtitulo: {
+    color: '#848484',
+    fontSize: 11
+  }
 })

@@ -4,6 +4,8 @@ import { Download, FileText, Search } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+// está com margem 
+
 export default function Documento() {
     const [filtro, setFiltro] = useState("todas");
 

@@ -5,6 +5,8 @@ import { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Link } from "expo-router";
 
+// icon plus desalinhado
+
 export default function Tarefas() {
 
     const [filtro, setFiltro] = useState("todas");
@@ -36,7 +38,7 @@ export default function Tarefas() {
                     <Text style={TabsStyles.subtituloPrincipal}>Minhas tarefas</Text>
                 </View>
 
-                <Link href={'/(tabs)/pages/novaTarefa'} style={{ backgroundColor: "#D10B03", borderRadius: "50%", padding: 8, height: 50, width: 50 }} >
+                <Link href={'/(tabs)/pages/novaTarefa'} style={{ backgroundColor: "#D10B03", borderRadius: "50%", padding: 8, height: 50, width: 50, alignItems: 'center' }} >
                     <Plus color={"#fff"} strokeWidth={1.8} size={30} style={{alignItems: 'center', justifyContent: 'center'}}/>
                 </Link>
             </View>
