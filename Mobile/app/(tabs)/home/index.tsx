@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { TabsStyles } from "../../styles/globalTabs";
+import { TabsStyles } from "../../../styles/globalTabs";
 
 // achar um icone de máquina para por no lugar de Nova Tarefa
 
@@ -11,7 +11,7 @@ export default function Home() {
     <ScrollView style={TabsStyles.container}>
       {/* Logo */}
 
-      <Link href={'/(tabs)/pages/editarPerfil'} style={{alignItems: 'center', justifyContent: 'center'}}>
+      <Link href={'/(tabs)/configuracao/editarPerfil'} style={{alignItems: 'center', justifyContent: 'center'}}>
         <TouchableOpacity style={styles.header}>
 
           <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -36,28 +36,28 @@ export default function Home() {
 
         <View style={styles.cardsAcoes} >
 
-          <Link href="/pages/novaTarefa" asChild>
+          {/* <Link href="/(tabs)/tarefas/novaTarefa" asChild> */}
             <TouchableOpacity style={styles.acaoCard}>
               <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Nova Tarefa</Text>
+              <Text style={styles.tituloAcao}>Máquinas</Text>
             </TouchableOpacity>
-          </Link>
+          {/* </Link> */}
 
-          <Link href="/pages/agenda" asChild>
+          <Link href="/(tabs)/home/agenda" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Agenda</Text>
             </TouchableOpacity>
           </Link>
 
-          <Link href="/pages/equipes" asChild>
+          <Link href="/(tabs)/home/equipes" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <Users color={'#11C463'} size={35} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Equipes</Text>
             </TouchableOpacity>
           </Link>
 
-          <Link href="/pages/dashbord" asChild>
+          <Link href="/(tabs)/home/dashboard" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Dashboard</Text>

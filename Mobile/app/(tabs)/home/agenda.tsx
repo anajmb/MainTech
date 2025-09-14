@@ -8,7 +8,9 @@ export default function Agenda() {
 
         <ScrollView style={TabsStyles.container}>
 
-            <View style={TabsStyles.headerPrincipal}>
+            <Text>Agenda</Text>
+
+            {/* <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -19,7 +21,7 @@ export default function Agenda() {
 
             {/* input data */}
 
-            <View style={style.cardCalen}>
+            {/* <View style={style.cardCalen}>
                 <View style={style.groupCalen}>
                     <Calendar />
                     <Text>Calendário</Text>
@@ -33,7 +35,7 @@ export default function Agenda() {
                     <Clock /> <Text style={style.infoCard}>09:00 / 09:30</Text>
                     <MapPin /> <Text style={style.infoCard}>Sala 9 - Laboratório</Text>
                 </View>
-            </View>
+            </View> */}
 
 
         </ScrollView>

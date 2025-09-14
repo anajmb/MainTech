@@ -14,43 +14,42 @@ export default function TabsLayout() {
                     alignItems: 'center'
                 }
             }} >
-            <Tabs.Screen name="index"
+            <Tabs.Screen name="home"
                 options={{
+                    title: "Inicio",
                     tabBarLabel: "",
                     tabBarIcon: ({ color }) => <House size={25} color={color} />
                 }}
             />
             <Tabs.Screen name="tarefas"
                 options={{
+                    title: "Tarefas",
                     tabBarLabel: "",
                     tabBarIcon: ({ color }) => <SquareCheckBig size={25} color={color} />
                 }}
             />
             <Tabs.Screen name="QRCode"
                 options={{
+                    title: "QRCode",
                     tabBarLabel: "",
                     tabBarIcon: () => <Focus size={35} color="#BF201C" strokeWidth={1.8} />
                 }}
             />
             <Tabs.Screen name="documento"
                 options={{
+                    title: "Documento",
                     tabBarLabel: "",
                     tabBarIcon: ({ color }) => <FileText size={25} color={color} />
                 }}
             />
             <Tabs.Screen name="configuracao"
                 options={{
+                    title: "Configurações",
                     tabBarLabel: "",
                     tabBarIcon: ({ color }) => <Settings size={25} color={color} />
                 }}
             />
 
-            {/* Pages não aparece como botão */}
-            <Tabs.Screen name="pages"
-                options={{
-                    href: null, // esconde o ícone
-                }}
-            />
         </Tabs>
     );
 }

@@ -26,7 +26,7 @@ export default function Configuracao() {
                 <TouchableOpacity style={styles.card}>
                     {/* imagem de perfil */}
 
-                    <Link href={'./pages/editarPerfil'}>
+                    <Link href={'/(tabs)/configuracao/editarPerfil'}>
                         <View style={styles.opcao}>
 
                             <View style={TabsStyles.userFotoIcon}>
@@ -58,7 +58,7 @@ export default function Configuracao() {
                             </TouchableOpacity>
                         </Link> */}
 
-                        <Link href={'/(tabs)/pages/privacidade'}>
+                        <Link href={'/(tabs)/configuracao/privacidade'}>
                             <TouchableOpacity style={styles.opcao}>
                                 <Shield />
 

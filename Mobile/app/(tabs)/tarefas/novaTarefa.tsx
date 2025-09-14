@@ -1,7 +1,9 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Calendar, User } from "lucide-react-native";
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+
+// editar o subtituloPrincipal
 
 export default function NovaTarefa() {
     return (
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
         backgroundColor: '#eeeeee',
         padding: 20,
-        borderRadius: 10
+        // borderRadius: 10,
     },
     label: {
         fontSize: 12,
