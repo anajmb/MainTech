@@ -41,7 +41,7 @@ export default function Home() {
               <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Máquinas</Text>
             </TouchableOpacity>
-          {/* </Link> */}
+          {/* </Link>  */}
 
           <Link href="/(tabs)/home/agenda" asChild>
             <TouchableOpacity style={styles.acaoCard}>

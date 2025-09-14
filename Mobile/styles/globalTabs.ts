@@ -5,8 +5,8 @@ export const TabsStyles = StyleSheet.create({
         paddingTop: 60,
         paddingLeft: 20,
         paddingRight: 20,
-        paddingBottom: 60,
-        flex: 1,
+        paddingBottom: 90,
+        // flex: 1,
         backgroundColor: '#F5F5F5',
     },
     tituloPrincipal: {

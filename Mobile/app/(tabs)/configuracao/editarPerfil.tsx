@@ -3,15 +3,21 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { Calendar, IdCard, Mail, Phone, User } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
+// falta o input data
+// falta a foto de perfil
+
 export default function EditarPerfil() {
     return (
         <ScrollView style={TabsStyles.container}>
             {/* Logo */}
 
-            <View style={styles.header}>
+            <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
-                <Text style={TabsStyles.tituloPrincipal}>Editar Perfil</Text>
-                <Text style={TabsStyles.subtituloPrincipal}>Atualize suas informações</Text>
+
+                <View style={TabsStyles.conjHeaderPrincipal}>
+                    <Text style={TabsStyles.tituloPrincipal}>Editar Perfil</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>Atualize suas informações</Text>
+                </View>
             </View>
 
             <View style={styles.cardFoto}>
@@ -25,31 +31,31 @@ export default function EditarPerfil() {
                 <View style={styles.formEditar}>
 
                     <View style={styles.opcaoForm}>
-                        <User/>
+                        <User />
                         <Text style={styles.label}>Nome completo</Text>
-                        <TextInput style={styles.input}/>
+                        <TextInput style={styles.input} />
                     </View>
 
                     <View style={styles.opcaoForm}>
-                        <Mail/>
+                        <Mail />
                         <Text style={styles.label}>E-mail</Text>
-                        <TextInput style={styles.input}/>
+                        <TextInput style={styles.input} />
                     </View>
 
                     <View style={styles.opcaoForm}>
-                        <Phone/>
+                        <Phone />
                         <Text style={styles.label}>Telefone</Text>
-                        <TextInput style={styles.input}/>
+                        <TextInput style={styles.input} />
                     </View>
 
                     <View style={styles.opcaoForm}>
-                        <IdCard/>
+                        <IdCard />
                         <Text style={styles.label}>CPF</Text>
-                        <TextInput style={styles.input}/>
+                        <TextInput style={styles.input} />
                     </View>
 
                     <View style={styles.opcaoForm}>
-                        <Calendar/>
+                        <Calendar />
                         <Text style={styles.label}>Data de nascimento</Text>
                         {/* input data */}
                     </View>
@@ -84,7 +90,9 @@ const styles = StyleSheet.create({
 
     },
     input: {
-
+        backgroundColor: '#E6E6E6',
+        padding: 10,
+        borderRadius: 10
     },
     label: {
 

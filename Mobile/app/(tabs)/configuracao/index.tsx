@@ -7,6 +7,9 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
 // tirei a opção Perfil do usuário (estava repetido)
+// ao clicar no texto o link não funciona, só no fundo -> o do perfil funciona
+// o scroll da página não vai até o final
+// add um subtitulo
 
 export default function Configuracao() {
     return (
@@ -18,6 +21,7 @@ export default function Configuracao() {
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>Configuração</Text>
                 </View>
             </View>
 
