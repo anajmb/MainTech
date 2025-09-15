@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Link } from "expo-router";
 
-// icon plus desalinhado
+// fazer uma tarefa de referencia
 
 export default function Tarefas() {
 
@@ -38,19 +38,27 @@ export default function Tarefas() {
                     <Text style={TabsStyles.subtituloPrincipal}>Minhas tarefas</Text>
                 </View>
 
-                <Link href={'/tarefas/novaTarefa'} style={{ backgroundColor: "#D10B03", borderRadius: 25, padding: 8, height: 50, width: 50, alignItems: 'center' }} >
-                    <Plus color={"#fff"} strokeWidth={1.8} size={30} style={{alignItems: 'center', justifyContent: 'center'}}/>
+                <Link href={'/tarefas/novaTarefa'}>
+                    <View style={{
+                        backgroundColor: "#D10B03",
+                        borderRadius: 25, padding: 8, height: 50, width: 50,
+                        alignItems: 'center', justifyContent: 'center'
+                    }} >
+                        <Plus color={"#fff"} strokeWidth={1.8} size={30}/>
+                    </View>
                 </Link>
             </View>
-        
+
             <View style={styles.filtro}>
                 <TouchableOpacity onPress={() => setFiltro("todas")}>
                     <Text
                         style={[
                             styles.filtroTitulo,
-                            filtro === "todas" && { color: "#fff", backgroundColor: '#CF0000' }
-                        ]}
-                    >
+                            filtro === "todas" && {
+                                color: "#fff",
+                                backgroundColor: '#CF0000'
+                            }
+                        ]}>
                         Todas
                     </Text>
                 </TouchableOpacity>
@@ -58,9 +66,11 @@ export default function Tarefas() {
                     <Text
                         style={[
                             styles.filtroTitulo,
-                            filtro === "pendente" && { color: "#fff", backgroundColor: '#CF0000' }
-                        ]}
-                    >
+                            filtro === "pendente" && {
+                                color: "#fff",
+                                backgroundColor: '#CF0000'
+                            }
+                        ]}>
                         Pendentes
                     </Text>
                 </TouchableOpacity>
@@ -68,16 +78,18 @@ export default function Tarefas() {
                     <Text
                         style={[
                             styles.filtroTitulo,
-                            filtro === "concluida" && { color: "#fff", backgroundColor: '#CF0000' }
-                        ]}
-                    >
+                            filtro === "concluida" && {
+                                color: "#fff",
+                                backgroundColor: '#CF0000'
+                            }
+                        ]}>
                         Concluídas
                     </Text>
                 </TouchableOpacity>
             </View>
 
             <ScrollView>
-                
+
             </ScrollView>
 
         </View>
@@ -85,23 +97,15 @@ export default function Tarefas() {
 }
 
 const styles = StyleSheet.create({
-    titulo: {
-
-    },
-    subtitulo: {
-
-    },
     filtro: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginBottom: 32,
-        marginTop: 40,
         backgroundColor: '#eeeeee',
-        paddingVertical: 30,
+        paddingVertical: 25,
         borderRadius: 12,
         paddingHorizontal: 5,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
-
     },
     filtroTitulo: {
         padding: 10,

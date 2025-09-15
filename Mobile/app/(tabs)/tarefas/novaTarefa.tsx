@@ -4,6 +4,7 @@ import { Calendar, User } from "lucide-react-native";
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 // editar o subtituloPrincipal
+// colocar os inputs data e hora
 
 export default function NovaTarefa() {
     return (
@@ -19,8 +20,10 @@ export default function NovaTarefa() {
                 </View>
             </View>
 
-            <KeyboardAvoidingView behavior="padding" style={styles.todosCard}>
-                {/* Titulo e descrição */}
+            {/* <KeyboardAvoidingView behavior="padding" style={styles.todosCard}> */}
+
+            {/* Titulo e descrição */}
+            <View style={styles.todosCard}>
                 <View style={styles.card}>
 
                     <View style={{ marginBottom: 20 }}>
@@ -73,11 +76,12 @@ export default function NovaTarefa() {
                         placeholderTextColor={'#8B8686'}
                     />
                 </View>
-            </KeyboardAvoidingView>
+                {/* </KeyboardAvoidingView> */}
 
-            <View style={{alignItems: 'center', marginTop: 30}}>
-                <View style={styles.botao} >
-                    <Text style={{ padding: 8, textAlign: 'center', color: '#fff' }}>Salvar</Text>
+                <View style={{ alignItems: 'center'}}>
+                    <View style={TabsStyles.viewBotaoPrincipal} >
+                        <Text style={TabsStyles.botaoText}>Salvar</Text>
+                    </View>
                 </View>
             </View>
         </ScrollView>
@@ -86,14 +90,15 @@ export default function NovaTarefa() {
 
 const styles = StyleSheet.create({
     todosCard: {
-        gap: 25,
-        marginTop: 40
+        gap: 30,
+        paddingBottom: 90,
+        // marginTop: 40
     },
     card: {
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
         backgroundColor: '#eeeeee',
         padding: 20,
-        // borderRadius: 10,
+        borderRadius: 10,
     },
     label: {
         fontSize: 12,
@@ -126,12 +131,5 @@ const styles = StyleSheet.create({
     },
     subtituloData: {
         flexDirection: 'row'
-    },
-    botao: {
-        backgroundColor: '#CE221E',
-        borderRadius: 10,
-        width: '50%',
-        justifyContent: 'center',
-        alignItems: 'center'
     },
 })

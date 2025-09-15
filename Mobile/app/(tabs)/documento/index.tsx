@@ -142,15 +142,9 @@ export default function Documento() {
 }
 
 const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
     searchContainer: {
         paddingHorizontal: 10,
-        marginTop: 20,
         marginBottom: 10
-
     },
     searchCard: {
         flexDirection: 'row',
@@ -159,7 +153,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         marginVertical: 8,
-        marginTop: 20,
         marginBottom: 20,
     },
     searchIcon: {
@@ -179,7 +172,7 @@ const styles = StyleSheet.create({
         marginBottom: 32,
         marginTop: 5,
         backgroundColor: '#eeeeee',
-        paddingVertical: 30,
+        paddingVertical: 25,
         borderRadius: 12,
         paddingHorizontal: 5,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'

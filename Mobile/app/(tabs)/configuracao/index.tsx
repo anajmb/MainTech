@@ -144,7 +144,7 @@ export default function Configuracao() {
 
 const styles = StyleSheet.create({
     cardContainer: {
-        marginTop: 40,
+        paddingBottom: 90
     },
     card: {
         backgroundColor: "#eeeeee69",
