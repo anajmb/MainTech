@@ -3,14 +3,14 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { Calendar, Clock, MapPin } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
+// colocar o input de data
+
 export default function Agenda() {
     return (
 
         <ScrollView style={TabsStyles.container}>
 
-            <Text>Agenda</Text>
-
-            {/* <View style={TabsStyles.headerPrincipal}>
+            <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -21,10 +21,10 @@ export default function Agenda() {
 
             {/* input data */}
 
-            {/* <View style={style.cardCalen}>
+            <View style={style.cardCalen}>
                 <View style={style.groupCalen}>
-                    <Calendar />
-                    <Text>Calendário</Text>
+                <Calendar color={'#6797F0'} />
+                <Text tyle={style.tituloCardCalen}>Calendário</Text>
                 </View>
             </View>
 
@@ -35,7 +35,7 @@ export default function Agenda() {
                     <Clock /> <Text style={style.infoCard}>09:00 / 09:30</Text>
                     <MapPin /> <Text style={style.infoCard}>Sala 9 - Laboratório</Text>
                 </View>
-            </View> */}
+            </View>
 
 
         </ScrollView>
@@ -44,9 +44,16 @@ export default function Agenda() {
 
 const style = StyleSheet.create({
     cardCalen: {
-
+        backgroundColor: "#eeeeee69",
+        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        padding: 20
     },
     groupCalen: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10
+    },
+    tituloCardCalen: {
 
     },
     groupEvent: {
