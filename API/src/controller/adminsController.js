@@ -108,11 +108,16 @@ const adminsController = {
                 });
             }
 
+            const hashedPassword = await bcrypt.hash(password, 10);
+
             await prisma.admins.update({
                 where: { id: Number(id) },
-                data: { name, cpf, email, phone, birthDate: new Date(birthDate), password, teamId: 1 }
+                data: { name, cpf, email, phone, birthDate: new Date(birthDate), password: hashedPassword, teamId: 1 }
             });
 
+            return res.status(200).json({
+                msg: "Admin updated successfully"
+            });
             
         } catch (error) {
 
@@ -154,8 +159,55 @@ const adminsController = {
             });
         }
 
+    },
+
+    getAll: async (req, res) => {
+        try {
+            const admins = await prisma.admins.findMany();
+            return res.status(200).json(admins);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error"
+            });
+        }
+    },
+
+    getUnique: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const admin = await prisma.admins.findUnique({
+                where: { id: Number(id) }
+            });
+
+            if (!admin) {
+                return res.status(404).json({
+                    msg: "Admin not found"
+                });
+            }
+
+            return res.status(200).json(admin);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error"
+            });
+        }
     }
 }
 
 
 module.exports = adminsController;
+
+
+
+/*
+{
+"name": "Marcos",
+"cpf": "11122233345",
+"email": "marcos@example.com",
+"password": "senhaSegura123",
+"phone": "11 91234-5678",
+"birthDate": "2000-05-10",
+} 
+*/

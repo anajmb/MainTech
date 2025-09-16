@@ -207,3 +207,16 @@ const employeesController = {
 }
 
 module.exports = employeesController;
+
+
+/*
+{
+  "name": "Maria Souza",
+  "cpf": "98765432100",
+  "email": "maria.souza@example.com",
+  "phone": "21 98888-7777",
+  "birthDate": "1995-03-25",
+  "password": "senhaForte456",
+  "role": "MAINTAINER"
+}
+*/ 

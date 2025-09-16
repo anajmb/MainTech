@@ -5,14 +5,14 @@ export default function TabsLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: "#BF201C",
+                tabBarActiveTintColor: '#BF201C',
                 headerShown: false,
                 tabBarStyle: {
                     paddingBottom: 5,
                     paddingTop: 5,
                     borderRadius: 20,
                     alignItems: 'center'
-                }
+                },
             }} >
             <Tabs.Screen name="home"
                 options={{
@@ -32,7 +32,7 @@ export default function TabsLayout() {
                 options={{
                     title: "QRCode",
                     tabBarLabel: "",
-                    tabBarIcon: () => <Focus size={35} color="#BF201C" strokeWidth={1.8} />
+                    tabBarIcon: () => <Focus size={35} color="#bf201c" strokeWidth={1.8} />
                 }}
             />
             <Tabs.Screen name="documento"
