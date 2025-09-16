@@ -11,8 +11,8 @@ export default function Home() {
     <ScrollView style={TabsStyles.container}>
       {/* Logo */}
 
-      <Link href={'/(tabs)/configuracao/editarPerfil'} style={{alignItems: 'center', justifyContent: 'center'}}>
-        <TouchableOpacity style={styles.header}>
+      <TouchableOpacity style={styles.header}>
+        <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center' }}>
 
           <View style={{ flexDirection: 'row', gap: 10 }}>
 
@@ -27,8 +27,8 @@ export default function Home() {
           </View>
 
           <Bell color={"#D6231C"} fill={"#D6231C"} size={20} />
-        </TouchableOpacity>
-      </Link>
+        </Link>
+      </TouchableOpacity>
 
       {/* Ações rápidas */}
       <View>
@@ -37,10 +37,10 @@ export default function Home() {
         <View style={styles.cardsAcoes} >
 
           {/* <Link href="/(tabs)/tarefas/novaTarefa" asChild> */}
-            <TouchableOpacity style={styles.acaoCard}>
-              <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Máquinas</Text>
-            </TouchableOpacity>
+          <TouchableOpacity style={styles.acaoCard}>
+            <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
+            <Text style={styles.tituloAcao}>Máquinas</Text>
+          </TouchableOpacity>
           {/* </Link>  */}
 
           <Link href="/(tabs)/home/agenda" asChild>
@@ -72,7 +72,7 @@ export default function Home() {
           <View style={styles.ativRecenteCard}>
 
             <View style={styles.iconAtivRecente}>
-            <CheckCircle color={'#51C385'} size={22} />
+              <CheckCircle color={'#51C385'} size={22} />
             </View>
 
             <View style={styles.ativInfo}>

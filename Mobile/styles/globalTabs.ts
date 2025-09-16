@@ -24,7 +24,7 @@ export const TabsStyles = StyleSheet.create({
     headerPrincipal: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 0
+        marginBottom: 30
     },
     userFotoIcon: {
         backgroundColor: '#D10B03',

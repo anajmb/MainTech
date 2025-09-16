@@ -29,7 +29,6 @@ export default function Configuracao() {
 
                 <TouchableOpacity style={styles.card}>
                     {/* imagem de perfil */}
-
                     <Link href={'/(tabs)/configuracao/editarPerfil'}>
                         <View style={styles.opcao}>
 
@@ -62,16 +61,17 @@ export default function Configuracao() {
                             </TouchableOpacity>
                         </Link> */}
 
-                        <Link href={'/(tabs)/configuracao/privacidade'}>
-                            <TouchableOpacity style={styles.opcao}>
-                                <Shield />
-
-                                <View style={styles.infoCard}>
-                                    <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
-                                    <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
+                        <TouchableOpacity style={styles.opcao}>
+                            <Link href={'/(tabs)/configuracao/privacidade'}>
+                                <View>
+                                    <Shield />
+                                    <View style={styles.infoCard}>
+                                        <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
+                                        <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
+                                    </View>
                                 </View>
-                            </TouchableOpacity>
-                        </Link>
+                            </Link>
+                        </TouchableOpacity>
 
                     </View>
                 </View>
@@ -123,16 +123,19 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
 
-                        <Link href={'/auth/login'}>
-                            <TouchableOpacity style={styles.opcao}>
-                                <LogOut color={'#F24040'} />
+                        <TouchableOpacity style={styles.opcao}>
+                            <Link href={'/auth/login'}>
 
-                                <View style={styles.infoCard}>
-                                    <Text style={styles.tituloOpcaoSair}>Sair</Text>
-                                    <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                                <View>
+                                    <LogOut color={'#F24040'} />
+
+                                    <View style={styles.infoCard}>
+                                        <Text style={styles.tituloOpcaoSair}>Sair</Text>
+                                        <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                                    </View>
                                 </View>
-                            </TouchableOpacity>
-                        </Link>
+                            </Link>
+                        </TouchableOpacity>
 
                     </View>
                 </View>
