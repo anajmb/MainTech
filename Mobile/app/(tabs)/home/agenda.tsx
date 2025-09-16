@@ -24,7 +24,7 @@ export default function Agenda() {
             <View style={style.cardCalen}>
                 <View style={style.groupCalen}>
                 <Calendar color={'#6797F0'} />
-                <Text tyle={style.tituloCardCalen}>Calendário</Text>
+                <Text style={style.tituloCardCalen}>Calendário</Text>
                 </View>
             </View>
 
