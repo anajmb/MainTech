@@ -24,6 +24,24 @@ const employeesController = {
                 }
             });
 
+            if (employeeCreated.role == "INSPECTOR") {
+                const inspectorCreates = await prisma.inspector.create({
+                    data: {
+                        id: employeeCreated.id // O campo correto é 'id', não 'employeeId'
+                    }
+                }); 
+            } else if (employeeCreated.role == "MAINTAINER") {
+                const maintainerCreates = await prisma.maintainer.create({
+                    data: {
+                        id: employeeCreated.id // O campo correto é 'id', não 'employeeId'
+                    }
+                });
+            } else {
+                return res.status(400).json({
+                    msg: "Role must be either INSPECTOR or MAINTAINER"
+                });
+            }
+
             return res.status(201).json({
                 msg: "Employee created successfully",
                 id: employeeCreated.id

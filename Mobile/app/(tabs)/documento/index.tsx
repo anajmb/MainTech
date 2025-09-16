@@ -4,6 +4,8 @@ import { Download, FileText, Search } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+// está com margem 
+
 export default function Documento() {
     const [filtro, setFiltro] = useState("todas");
 
@@ -26,7 +28,7 @@ export default function Documento() {
         <View style={TabsStyles.container}>
             {/* Logo */}
 
-            <View style={styles.header}>
+            <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -140,15 +142,9 @@ export default function Documento() {
 }
 
 const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
     searchContainer: {
         paddingHorizontal: 10,
-        marginTop: 20,
         marginBottom: 10
-
     },
     searchCard: {
         flexDirection: 'row',
@@ -157,7 +153,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         marginVertical: 8,
-        marginTop: 20,
         marginBottom: 20,
     },
     searchIcon: {
@@ -177,7 +172,7 @@ const styles = StyleSheet.create({
         marginBottom: 32,
         marginTop: 5,
         backgroundColor: '#eeeeee',
-        paddingVertical: 30,
+        paddingVertical: 25,
         borderRadius: 12,
         paddingHorizontal: 5,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
@@ -212,6 +207,5 @@ const styles = StyleSheet.create({
     downloadIcon: {
         color: '#333',
         marginLeft: 'auto',
-
     }
 })

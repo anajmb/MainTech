@@ -28,7 +28,7 @@ export default function Equipes() {
                     </View>
 
                     <Text style={style.quantMembro}>8 membros</Text>
-                    <Link href={'#'} style={style.verEquipe}>Ver equipe</Link>
+                    {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
                 </View>
             </View>
 

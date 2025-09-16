@@ -5,7 +5,8 @@ export const TabsStyles = StyleSheet.create({
         paddingTop: 60,
         paddingLeft: 20,
         paddingRight: 20,
-        flex: 1,
+        paddingBottom: 90,
+        // flex: 1,
         backgroundColor: '#F5F5F5',
     },
     tituloPrincipal: {
@@ -22,7 +23,8 @@ export const TabsStyles = StyleSheet.create({
     },
     headerPrincipal: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 0
     },
     userFotoIcon: {
         backgroundColor: '#D10B03',
@@ -30,4 +32,16 @@ export const TabsStyles = StyleSheet.create({
         borderRadius: '50%',
         right: 2,
     },
+    viewBotaoPrincipal: {
+        backgroundColor: '#CE221E',
+        borderRadius: 10,
+        width: '50%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    botaoText: {
+        padding: 8,
+        textAlign: 'center',
+        color: '#fff'
+    }
 })

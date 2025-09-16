@@ -1,6 +1,6 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { Calendar, Clock, LocationEdit, MapPin } from "lucide-react-native";
+import { Calendar, Clock, MapPin } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function Agenda() {
@@ -8,18 +8,20 @@ export default function Agenda() {
 
         <ScrollView style={TabsStyles.container}>
 
-            <View style={TabsStyles.headerPrincipal}>
+            <Text>Agenda</Text>
+
+            {/* <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
-                    <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
+                    <Text style={TabsStyles.tituloPrincipal}>Agenda</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>Sexta-feira, 15 de agosto</Text>
                 </View>
             </View>
 
             {/* input data */}
 
-            <View style={style.cardCalen}>
+            {/* <View style={style.cardCalen}>
                 <View style={style.groupCalen}>
                     <Calendar />
                     <Text>Calendário</Text>
@@ -33,7 +35,7 @@ export default function Agenda() {
                     <Clock /> <Text style={style.infoCard}>09:00 / 09:30</Text>
                     <MapPin /> <Text style={style.infoCard}>Sala 9 - Laboratório</Text>
                 </View>
-            </View>
+            </View> */}
 
 
         </ScrollView>

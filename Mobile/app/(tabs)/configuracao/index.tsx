@@ -1,7 +1,15 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
+import { Link } from "expo-router";
 import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, UserRound } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+// add switch buttons na notificação e na acessibilidade
+// vamos ter uma página Ajuda e Suporte?
+// tirei a opção Perfil do usuário (estava repetido)
+// ao clicar no texto o link não funciona, só no fundo -> o do perfil funciona
+// o scroll da página não vai até o final
+// add um subtitulo
 
 export default function Configuracao() {
     return (
@@ -13,6 +21,7 @@ export default function Configuracao() {
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>Configuração</Text>
                 </View>
             </View>
 
@@ -20,17 +29,20 @@ export default function Configuracao() {
 
                 <TouchableOpacity style={styles.card}>
                     {/* imagem de perfil */}
-                    <View style={styles.opcao}>
 
-                        <View style={TabsStyles.userFotoIcon}>
-                            <User size={22} color={'#fff'} />
-                        </View>
+                    <Link href={'/(tabs)/configuracao/editarPerfil'}>
+                        <View style={styles.opcao}>
 
-                        <View style={styles.infoCard}>
-                            <Text style={styles.nomePerfil}>João Silva</Text>
-                            <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
+                            <View style={TabsStyles.userFotoIcon}>
+                                <User size={22} color={'#fff'} />
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <Text style={styles.nomePerfil}>João Silva</Text>
+                                <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
+                            </View>
                         </View>
-                    </View>
+                    </Link>
                 </TouchableOpacity>
 
                 {/* Conta */}
@@ -38,23 +50,29 @@ export default function Configuracao() {
                     <Text style={styles.tituloCard}>Conta</Text>
 
                     <View style={styles.card}>
-                        <View style={styles.opcao}>
-                            <UserRound />
 
-                            <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcao}>Perfil do Usuário</Text>
-                                <Text style={styles.subtitulo}>Editar informações pessoais</Text>
-                            </View>
-                        </View>
+                        {/* <Link href={'./pages/editarPerfil'}>
+                            <TouchableOpacity style={styles.opcao}>
+                                <UserRound />
 
-                        <View style={styles.opcao}>
-                            <Shield />
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcao}>Perfil do Usuário</Text>
+                                    <Text style={styles.subtitulo}>Editar informações pessoais</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </Link> */}
 
-                            <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
-                                <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
-                            </View>
-                        </View>
+                        <Link href={'/(tabs)/configuracao/privacidade'}>
+                            <TouchableOpacity style={styles.opcao}>
+                                <Shield />
+
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
+                                    <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </Link>
+
                     </View>
                 </View>
 
@@ -63,22 +81,23 @@ export default function Configuracao() {
                     <Text style={styles.tituloCard}>Preferências</Text>
 
                     <View style={styles.card}>
-                        <View style={styles.opcao}>
+                        <TouchableOpacity style={styles.opcao}>
                             <BellRing />
 
                             <View style={styles.infoCard}>
                                 <Text style={styles.tituloOpcao}>Notificações</Text>
                                 <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
                             </View>
-                        </View>
+                        </TouchableOpacity>
 
-                        <View style={styles.opcao}>
+                        <TouchableOpacity style={styles.opcao}>
                             <PersonStanding />
 
                             <View style={styles.infoCard}>
                                 <Text style={styles.tituloOpcao}>Acessibilidade</Text>
                             </View>
-                        </View>
+                        </TouchableOpacity>
+
                     </View>
                 </View>
 
@@ -87,14 +106,14 @@ export default function Configuracao() {
                     <Text style={styles.tituloCard}>Suporte</Text>
 
                     <View style={styles.card}>
-                        <View style={styles.opcao}>
+                        <TouchableOpacity style={styles.opcao}>
                             <CircleQuestionMark />
 
                             <View style={styles.infoCard}>
                                 <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
                                 <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
 
@@ -103,14 +122,18 @@ export default function Configuracao() {
                     <Text style={styles.tituloCard}>Outros</Text>
 
                     <View style={styles.card}>
-                        <View style={styles.opcao}>
-                            <LogOut color={'#F24040'} />
 
-                            <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcao}>Sair</Text>
-                                <Text style={styles.subtitulo}>Desconectar da conta</Text>
-                            </View>
-                        </View>
+                        <Link href={'/auth/login'}>
+                            <TouchableOpacity style={styles.opcao}>
+                                <LogOut color={'#F24040'} />
+
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcaoSair}>Sair</Text>
+                                    <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </Link>
+
                     </View>
                 </View>
 
@@ -120,17 +143,8 @@ export default function Configuracao() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-
-    },
-    header: {
-
-    },
-    titulo: {
-
-    },
     cardContainer: {
-        marginTop: 40,
+        paddingBottom: 90
     },
     card: {
         backgroundColor: "#eeeeee69",
@@ -169,6 +183,11 @@ const styles = StyleSheet.create({
     tituloOpcao: {
         fontSize: 14,
         fontWeight: 'medium'
+    },
+    tituloOpcaoSair: {
+        fontSize: 14,
+        fontWeight: 'medium',
+        color: '#F24040'
     },
     subtitulo: {
         fontSize: 12,
