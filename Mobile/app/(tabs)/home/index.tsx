@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { TabsStyles } from "../../../styles/globalTabs";
 
 // achar um icone de máquina para por no lugar de Nova Tarefa
+// colocar função para que ao clicar no icone ativo, recarregue a página
 
 export default function Home() {
 

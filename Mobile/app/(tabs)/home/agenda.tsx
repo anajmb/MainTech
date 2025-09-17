@@ -23,8 +23,8 @@ export default function Agenda() {
 
             <View style={style.cardCalen}>
                 <View style={style.groupCalen}>
-                <Calendar color={'#6797F0'} />
-                <Text style={style.tituloCardCalen}>Calendário</Text>
+                    <Calendar color={'#6797F0'} />
+                    <Text style={style.tituloCardCalen}>Calendário</Text>
                 </View>
             </View>
 
@@ -32,8 +32,13 @@ export default function Agenda() {
                 <Text style={style.tituloEvent}>Evento de hoje</Text>
                 <View style={style.cardEvent}>
                     <Text style={style.tituloCard}>Verificar máquinas</Text>
-                    <Clock /> <Text style={style.infoCard}>09:00 / 09:30</Text>
-                    <MapPin /> <Text style={style.infoCard}>Sala 9 - Laboratório</Text>
+
+                    <View style={style.infoCardGroup}>
+                        <Clock strokeWidth={1.5} size={22} /> <Text style={style.infoCard}>09:00 / 09:30</Text>
+                    </View>
+                    <View style={style.infoCardGroup}>
+                        <MapPin strokeWidth={1.5} size={22} /> <Text style={style.infoCard}>Sala 9 - Laboratório</Text>
+                    </View>
                 </View>
             </View>
 
@@ -44,14 +49,18 @@ export default function Agenda() {
 
 const style = StyleSheet.create({
     cardCalen: {
-        backgroundColor: "#eeeeee69",
-        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
-        padding: 20
+        alignItems: 'center',
+
     },
     groupCalen: {
+        width: '85%',
+        backgroundColor: "#eeeeee69",
+        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        padding: 18,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10
+        gap: 12
     },
     tituloCardCalen: {
 
@@ -60,13 +69,24 @@ const style = StyleSheet.create({
 
     },
     tituloEvent: {
-
+        fontSize: 23,
+        fontWeight: 600,
+        textAlign: "left",
+        marginTop: 40,
+        marginBottom: 40
     },
     cardEvent: {
-
+        backgroundColor: "#eeeeee69",
+        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        borderRadius: 10,
+        padding: 18
+    },
+    infoCardGroup: {
+        flexDirection: 'row'
     },
     tituloCard: {
-
+        fontSize: 16,
+        marginBottom: 10
     },
     infoCard: {
 
