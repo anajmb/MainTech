@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { getAll, getUnique } = require("./employeesController");
 const prisma = new PrismaClient();
 
 const machinesController = {
@@ -8,7 +7,7 @@ const machinesController = {
         try {
             const { name, description, location, sets, tasks } = req.body;
 
-            if (!nmae || !description || !location || !sets) {
+            if (!name || !description || !location || !sets) {
                 return res.status(400).json({
                     msg: "Name, description, location and sets are required"
                 });
@@ -147,4 +146,4 @@ const machinesController = {
     }
 }
 
-exports.machinesController = machinesController;
+module.exports = machinesController;

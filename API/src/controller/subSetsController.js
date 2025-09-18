@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { create, update, getAll } = require("./employeesController");
 const prisma = new PrismaClient();
 
 const subSetsController = {
@@ -108,4 +107,4 @@ const subSetsController = {
 
 }
 
-exports.subSetsController = subSetsController;
+module.exports = subSetsController;

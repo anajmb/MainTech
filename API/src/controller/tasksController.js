@@ -12,7 +12,7 @@ const tasksController = {
                 });
             }
 
-            const task = await prisma.tasks.create({
+            const task = await prisma.task.create({
                 data: { title, inspectorId, machineId: machineId || null }
             });
 
@@ -116,4 +116,4 @@ const tasksController = {
     }
 }
 
-exports.tasksController = tasksController;
+module.exports = tasksController;

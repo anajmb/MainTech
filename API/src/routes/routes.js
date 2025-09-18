@@ -20,4 +20,17 @@ router.use("/team", teamRouter);
 const teamMemberRouter = require("./teamMemberRouter");
 router.use("/teamMember", teamMemberRouter);
 
+const machinesRouter = require("./machinesRouter");
+router.use("/machines", machinesRouter);
+
+const setsRouter = require("./setsRouter");
+router.use("/sets", setsRouter);
+
+const subSetsRouter = require("./subSetsRouter");
+router.use("/subsets", subSetsRouter);
+
+const tasksRouter = require("./tasksRouter");
+router.use("/tasks", tasksRouter);
+
+
 module.exports = router;

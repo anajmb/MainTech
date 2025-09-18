@@ -1,6 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { get } = require("../routes/adminTeamRouter");
-const { getAll } = require("./employeesController");
 const prisma = new PrismaClient();
 
 const stesController = {
@@ -126,4 +124,5 @@ const stesController = {
         }
     }
 };
-exports.stesController = stesController;
+
+module.exports = stesController;
