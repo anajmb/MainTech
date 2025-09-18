@@ -23,7 +23,7 @@ export default function Login() {
 
             <View>
               <TextInput style={styles.inputLogin} secureTextEntry={true} />
-              <EyeOff style={styles.eyeFechado} size={20}/>
+              <EyeOff style={styles.eyeFechado} size={20} />
 
               {/* <Eye style={styles.eyeAberto} /> */}
             </View>
@@ -34,7 +34,9 @@ export default function Login() {
 
           <View style={{ alignItems: "center" }}>
             <TouchableOpacity style={styles.botaoLogin}>
-              <Text onPress={() => { "../(tabs)/index.tsx" }} style={{ color: "#fff" }}> Entrar </Text>
+              <Link href={'/(tabs)/home'}>
+                <Text style={{ color: "#fff" }}> Entrar </Text>
+              </Link>
             </TouchableOpacity>
           </View>
 
@@ -78,8 +80,8 @@ const styles = StyleSheet.create({
   },
   cardLogin: {
     flex: 1,
-/*     top: "40%",
-    position: "absolute", */
+    /*     top: "40%",
+        position: "absolute", */
     backgroundColor: "#fff",
     width: "100%",
     height: "100%",
@@ -135,5 +137,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     fontSize: 12,
     justifyContent: "space-between"
-    },
+  },
 });

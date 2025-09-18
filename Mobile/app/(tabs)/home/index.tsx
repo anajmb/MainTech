@@ -13,22 +13,22 @@ export default function Home() {
       {/* Logo */}
 
       <TouchableOpacity style={styles.header}>
-        <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center' }}>
+        {/* <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center', }}> */}
 
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
 
-            <View style={TabsStyles.userFotoIcon}>
-              <User color={'#fff'} size={22} />
-            </View>
-
-            <View>
-              <Text style={styles.tituloHeader}>Olá, Usuário</Text>
-              <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
-            </View>
+          <View style={TabsStyles.userFotoIcon}>
+            <User color={'#fff'} size={22} />
           </View>
 
-          <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{right: 2}} />
-        </Link>
+          <View>
+            <Text style={styles.tituloHeader}>Olá, Usuário</Text>
+            <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
+          </View>
+        </View>
+
+          <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{ right: 2 }} />
+        {/* </Link> */}
       </TouchableOpacity>
 
       {/* Ações rápidas */}
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    width: '100%',
+    width: '95%',
     justifyContent: 'space-between',
   },
   tituloHeader: {

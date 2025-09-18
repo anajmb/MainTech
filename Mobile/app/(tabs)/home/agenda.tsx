@@ -33,11 +33,13 @@ export default function Agenda() {
                 <View style={style.cardEvent}>
                     <Text style={style.tituloCard}>Verificar máquinas</Text>
 
-                    <View style={style.infoCardGroup}>
-                        <Clock strokeWidth={1.5} size={22} /> <Text style={style.infoCard}>09:00 / 09:30</Text>
-                    </View>
-                    <View style={style.infoCardGroup}>
-                        <MapPin strokeWidth={1.5} size={22} /> <Text style={style.infoCard}>Sala 9 - Laboratório</Text>
+                    <View style={{gap: 10}}>
+                        <View style={style.infoCardGroup}>
+                            <Clock strokeWidth={1.5} size={22} /> <Text style={style.infoCard}>09:00 / 09:30</Text>
+                        </View>
+                        <View style={style.infoCardGroup}>
+                            <MapPin strokeWidth={1.5} size={22} /> <Text style={style.infoCard}>Sala 9 - Laboratório</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -82,11 +84,12 @@ const style = StyleSheet.create({
         padding: 18
     },
     infoCardGroup: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        gap: 12
     },
     tituloCard: {
-        fontSize: 16,
-        marginBottom: 10
+        fontSize: 17,
+        marginBottom: 15
     },
     infoCard: {
 

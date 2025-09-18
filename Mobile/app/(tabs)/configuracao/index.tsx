@@ -1,7 +1,7 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
-import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, UserRound } from "lucide-react-native";
+import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // add switch buttons na notificação e na acessibilidade
@@ -50,20 +50,9 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
 
-                        {/* <Link href={'./pages/editarPerfil'}>
-                            <TouchableOpacity style={styles.opcao}>
-                                <UserRound />
-
-                                <View style={styles.infoCard}>
-                                    <Text style={styles.tituloOpcao}>Perfil do Usuário</Text>
-                                    <Text style={styles.subtitulo}>Editar informações pessoais</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </Link> */}
-
                         <TouchableOpacity style={styles.opcao}>
                             <Link href={'/(tabs)/configuracao/privacidade'}>
-                                <View>
+                                <View style={{ flexDirection: 'row' }}>
                                     <Shield />
                                     <View style={styles.infoCard}>
                                         <Text style={styles.tituloOpcao}>Privacidade e Segurança</Text>
@@ -82,19 +71,23 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
                         <TouchableOpacity style={styles.opcao}>
-                            <BellRing />
+                            <View style={{ flexDirection: 'row' }}>
+                                <BellRing />
 
-                            <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcao}>Notificações</Text>
-                                <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcao}>Notificações</Text>
+                                    <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
+                                </View>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.opcao}>
-                            <PersonStanding />
+                            <View style={{ flexDirection: 'row' }}>
+                                <PersonStanding />
 
-                            <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcao}>Acessibilidade</Text>
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcao}>Acessibilidade</Text>
+                                </View>
                             </View>
                         </TouchableOpacity>
 
@@ -107,11 +100,14 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
                         <TouchableOpacity style={styles.opcao}>
-                            <CircleQuestionMark />
+                            <View style={{ flexDirection: 'row' }}>
 
-                            <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
-                                <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
+                                <CircleQuestionMark />
+
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
+                                    <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
+                                </View>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -124,9 +120,8 @@ export default function Configuracao() {
                     <View style={styles.card}>
 
                         <TouchableOpacity style={styles.opcao}>
-                            <Link href={'/auth/login'}>
-
-                                <View>
+                            <Link href="/">
+                                <View style={{ flexDirection: 'row' }}>
                                     <LogOut color={'#F24040'} />
 
                                     <View style={styles.infoCard}>
@@ -161,9 +156,7 @@ const styles = StyleSheet.create({
         marginLeft: 16,
     },
     opcao: {
-        flexDirection: 'row',
         padding: 20,
-        alignItems: 'center'
     },
     nomePerfil: {
         fontSize: 16,
