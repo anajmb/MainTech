@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");     
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 
@@ -10,7 +10,7 @@ const employeesController = {
         try {
             const { name, cpf, email, phone, birthDate, password, role } = req.body;
 
-            if (!name || !cpf || !email || !phone || !birthDate || !password || !role)  {
+            if (!name || !cpf || !email || !phone || !birthDate || !password || !role) {
                 return res.status(400).json({
                     msg: "All the fields are necessary"
                 });
@@ -29,7 +29,7 @@ const employeesController = {
                     data: {
                         id: employeeCreated.id // O campo correto é 'id', não 'employeeId'
                     }
-                }); 
+                });
             } else if (employeeCreated.role == "MAINTAINER") {
                 const maintainerCreates = await prisma.maintainer.create({
                     data: {
@@ -112,24 +112,30 @@ const employeesController = {
         try {
             const { id } = req.params;
 
-            const employeeDelete = await prisma.employees.delete({
+            // Remove registros relacionados
+            await prisma.inspector.deleteMany({
                 where: { id: Number(id) }
-            })
+            });
 
-            if (!id) {
-                return res.status(400).json({
-                    msg: "ID necessário",
-                    employeeDelete
-                })
-            }
+            await prisma.maintainer.deleteMany({
+                where: { id: Number(id) }
+            });
+
+            await prisma.teamMember.deleteMany({
+                where: { personId: Number(id) }
+            });
+
+
+            // Agora pode deletar o funcionário
+            await prisma.employees.delete({
+                where: { id: Number(id) }
+            });
 
             return res.status(200).json({
                 msg: "Employee deleted successfully",
-            })
+            });
         } catch (error) {
-
             console.log(error)
-
             return res.status(500).json({
                 msg: "Internal server error"
             })
@@ -200,7 +206,7 @@ const employeesController = {
 
             return res.status(200).json(employee)
         } catch (error) {
-            
+
             console.log("Error searching for employee:", error)
         }
     }
@@ -219,4 +225,4 @@ module.exports = employeesController;
   "password": "senhaForte456",
   "role": "MAINTAINER"
 }
-*/ 
+*/

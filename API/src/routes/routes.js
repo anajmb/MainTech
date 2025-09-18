@@ -17,4 +17,7 @@ router.use("/adminTeam", adiminTeamRouter);
 const teamRouter = require("./teamRouter");
 router.use("/team", teamRouter);
 
+const teamMemberRouter = require("./teamMemberRouter");
+router.use("/teamMember", teamMemberRouter);
+
 module.exports = router;

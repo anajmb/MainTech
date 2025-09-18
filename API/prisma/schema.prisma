@@ -98,8 +98,8 @@ model Task {
   inspector   Inspector @relation(fields: [inspectorId], references: [id])
   inspectorId Int
 
-  machine     Machine   @relation(fields: [machineId], references: [id])
-  machineId   Int
+  machine     Machine?   @relation(fields: [machineId], references: [id])
+  machineId   Int?
 
   createDate  DateTime  @default(now())
   updateDate  DateTime  @updatedAt

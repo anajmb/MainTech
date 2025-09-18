@@ -1,46 +1,36 @@
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("@prisma/client");
+const { get } = require("../routes/adminTeamRouter");
+const { getAll } = require("./employeesController");
 const prisma = new PrismaClient();
 
-const teamController = {
+const stesController = {
 
     create: async (req, res) => {
         try {
-            const { name, description } = req.body;
 
-            if (!name || !description) {
+            const { name, machineId, subsets } = req.body;
+
+            if (!name || !machineId) {
                 return res.status(400).json({
-                    msg: "Name and description are required"
+                    msg: "Name and machineId are required"
                 });
             }
 
-            const team = await prisma.team.create({
-                data: { name, description }
-            });
-
-            return res.status(201).json({
-                msg: "Team created succesfully",
-                id: team.id
-            });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: "Internal server error"
-            })
-        }
-    },
-
-    getAll: async (req, res) => {
-        try {
-            const teams = await prisma.team.findMany({
-                include: {
-                    members: {
-                        include: {
-                            person: true 
-                        }
+            const set = await prisma.sets.create({
+                data: {
+                    name,
+                    machineId,
+                    subsets: {
+                        connect: subsets?.map(id => ({ id })) || []
                     }
                 }
             });
-            return res.status(200).json(teams);
+
+            return res.status(201).json({
+                msg: "Set created successfully",
+                id: set.id
+            });
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -48,68 +38,87 @@ const teamController = {
             });
         }
     },
-
+    getAll: async (req, res) => {
+        try {
+            const sets = await prisma.sets.findMany({
+                include: {
+                    machine: true,
+                    subsets: true
+                }
+            });
+            return res.status(200).json(sets);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error"
+            });
+        }
+    },
     getUnique: async (req, res) => {
         try {
             const { id } = req.params;
-            const team = await prisma.team.findUnique({
-                where: { id: Number(id) }
+
+            const set = await prisma.sets.findUnique({
+                where: { id: parseInt(id) },
+                include: {
+                    machine: true,
+                    subsets: true
+                }
             });
 
-            if (!team) {
-                return res.status(404).json({
-                    msg: "Team not found"
-                });
-            }
-
-            return res.status(200).json(team);
+            return res.status(200).json(set);
         } catch (error) {
+
             console.log(error);
             return res.status(500).json({
                 msg: "Internal server error"
             });
+
         }
     },
-
     update: async (req, res) => {
         try {
             const { id } = req.params;
-            const { name, description } = req.body;
+            const { name, machineId, subsets } = req.body;
 
-            if (!name || !description) {
+            if (!name || !machineId || !subsets) {
                 return res.status(400).json({
-                    msg: "Name and description are required"
+                    msg: "Name and machineId are required"
                 });
             }
 
-            const team = await prisma.team.update({
-                where: { id: Number(id) },
-                data: { name, description }
+            const set = await prisma.sets.update({
+                where: { id: parseInt(id) },
+                data: { name, machineId, subsets: { set: subsets?.map(id => ({ id })) || [] } }
             });
 
             return res.status(200).json({
-                msg: "Team updated successfully",
-                team
+                msg: "Set updated successfully",
+                id: set.id
             });
+
         } catch (error) {
+
             console.log(error);
             return res.status(500).json({
                 msg: "Internal server error"
             });
         }
     },
-
     delete: async (req, res) => {
         try {
             const { id } = req.params;
-            await prisma.team.delete({
+
+            await prisma.sets.delete({
                 where: { id: Number(id) }
             });
 
             return res.status(200).json({
-                msg: "Team deleted successfully"
+                msg: "Set deleted successfully"
             });
+
         } catch (error) {
+
             console.log(error);
             return res.status(500).json({
                 msg: "Internal server error"
@@ -117,5 +126,4 @@ const teamController = {
         }
     }
 };
-
-module.exports = teamController;
+exports.stesController = stesController;
