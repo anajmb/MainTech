@@ -1,4 +1,4 @@
- // This is your Prisma schema file,
+// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
@@ -28,11 +28,11 @@ model Admins {
 }
 
 model AdiminTeam {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String
-  createDate  DateTime  @default(now())
-  updateDate  DateTime  @updatedAt
+  createDate  DateTime @default(now())
+  updateDate  DateTime @updatedAt
   Adimins     Admins[]
 }
 
@@ -98,11 +98,11 @@ model Task {
   inspector   Inspector @relation(fields: [inspectorId], references: [id])
   inspectorId Int
 
-  machine   Machine @relation(fields: [machineId], references: [id])
-  machineId Int // Relacionamento com Machine
+  machine     Machine   @relation(fields: [machineId], references: [id])
+  machineId   Int
 
-  createDate DateTime @default(now())
-  updateDate DateTime @updatedAt
+  createDate  DateTime  @default(now())
+  updateDate  DateTime  @updatedAt
 }
 
 model Machine {
@@ -110,15 +110,64 @@ model Machine {
   name        String
   description String
   location    String
-  Task        Task[]
+  sets        Sets[]   // Uma máquina tem vários sets
+  tasks       Task[]
   createDate  DateTime @default(now())
   updateDate  DateTime @updatedAt
 }
 
-model Routes {
-  id        Int    @id @default(autoincrement())
-  name      String
-  questions String
+model Sets {
+  id         Int       @id @default(autoincrement())
+  name       String
+  machine    Machine   @relation(fields: [machineId], references: [id])
+  machineId  Int
+  subsets    Subsets[] @relation("SetToSubsets")
+  createDate DateTime  @default(now())
+  updateDate DateTime  @updatedAt
+}
+
+model Subsets {
+  id      Int     @id @default(autoincrement())
+  name    String
+
+  sets    Sets[]  @relation("SetToSubsets") 
+
+  changes ChangeSubsets[]
+  repairs RepairSubsets[]
+}
+
+model Change {
+  id Int @id @default(autoincrement())
+
+  subsets ChangeSubsets[]
+}
+
+model Repair {
+  id Int @id @default(autoincrement())
+
+  subsets RepairSubsets[]
+}
+
+// Relação muitos-para-muitos entre Change e Subsets
+model ChangeSubsets {
+  changeId Int
+  subsetId Int
+
+  change Change  @relation(fields: [changeId], references: [id])
+  subset Subsets @relation(fields: [subsetId], references: [id])
+
+  @@id([changeId, subsetId])
+}
+
+// Relação muitos-para-muitos entre Repair e Subsets
+model RepairSubsets {
+  repairId Int
+  subsetId Int
+
+  repair Repair  @relation(fields: [repairId], references: [id])
+  subset Subsets @relation(fields: [subsetId], references: [id])
+
+  @@id([repairId, subsetId])
 }
 
 enum Role {
