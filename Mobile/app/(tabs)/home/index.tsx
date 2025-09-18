@@ -27,7 +27,7 @@ export default function Home() {
             </View>
           </View>
 
-          <Bell color={"#D6231C"} fill={"#D6231C"} size={20} />
+          <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{right: 2}} />
         </Link>
       </TouchableOpacity>
 
