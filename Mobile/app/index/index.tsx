@@ -22,7 +22,7 @@ export default function Login() {
             <Text style={styles.labelLogin}>Senha:</Text>
 
             <View>
-              <TextInput style={styles.inputLogin} secureTextEntry={true} />
+              <TextInput style={styles.inputLogin} placeholder="___.___.___-__" secureTextEntry={true} />
               <EyeOff style={styles.eyeFechado} size={20} />
 
               {/* <Eye style={styles.eyeAberto} /> */}
@@ -69,14 +69,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   backgroundImage: {
     position: "relative",
     objectFit: "cover",
     width: "100%",
     height: "100%",
-    flex: 1,
+    flex: 0.85,
   },
   cardLogin: {
     flex: 1,
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
     alignSelf: "center",
     marginBottom: 20,
+    fontFamily: "poppins"
   },
   labelLogin: {
     fontSize: 13,
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
   inputLogin: {
     backgroundColor: "#E6E6E6",
     borderRadius: 12,
-    height: 40,
+    height: 45,
     position: "relative"
   },
   // eyeAberto: {
@@ -126,8 +127,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#A50702",
     color: "#fff",
     borderRadius: 10,
-    paddingVertical: 8,
-    width: "60%",
+    paddingVertical: 12,
+    width: "62%",
     marginTop: 30,
     marginBottom: 30,
     alignItems: "center",

@@ -33,7 +33,7 @@ export default function Configuracao() {
                         <View style={styles.opcao}>
 
                             <View style={TabsStyles.userFotoIcon}>
-                                <User size={22} color={'#fff'} />
+                                <User size={22} color={'#fff'}/>
                             </View>
 
                             <View style={styles.infoCard}>
@@ -154,13 +154,16 @@ const styles = StyleSheet.create({
     infoCard: {
         flexDirection: 'column',
         marginLeft: 16,
+        justifyContent: 'center'
     },
     opcao: {
         padding: 20,
+        flexDirection: 'row',
     },
     nomePerfil: {
         fontSize: 16,
         fontWeight: 700,
+
     },
     emailPerfil: {
         fontSize: 12,
