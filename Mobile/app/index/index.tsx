@@ -12,12 +12,16 @@ export default function Login() {
   const toggleSwitch = () => setIsAgree(previousState => !previousState)
 
   return (
+    
     <KeyboardAvoidingView style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={-2}>
-      <View style={styles.container}>
-        <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} />
-
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    keyboardVerticalOffset={-2}>
+    <View style={styles.container}>
+      <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} />
+        <View style={styles.infosLogo}>
+        <Image style={styles.logoImage} source={require("../../assets/images/LogoBranca.png")} />
+        <Text style={styles.logoNome}>Gestão de maquinas</Text>
+        </View>
         <View style={styles.cardLogin}>
 
 
@@ -95,12 +99,26 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end", // cardLogin vai para baixo
     alignItems: "center",
   },
+  infosLogo: {
+    position: "absolute",
+    top: 50
+  },
   backgroundImage: {
     position: "absolute",
     objectFit: "cover",
     width: "100%",
     height: "100%",
     zIndex: -1,
+  },
+  logoImage: {
+    height: 250,
+    width: 300
+  },
+  logoNome: {
+    color: "#fff",
+    alignItems: "center",
+    left: 100,
+    top: -100
   },
   cardLogin: {
     backgroundColor: "#fff",
