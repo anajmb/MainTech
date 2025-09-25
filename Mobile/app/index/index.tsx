@@ -1,8 +1,13 @@
 import { Link } from "expo-router";
 import { EyeOff } from "lucide-react-native";
-import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Image, KeyboardAvoidingView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
+
+  const [isAgree, setIsAgree] = useState(false);
+
+  const toggleSwitch = () => setIsAgree(previousState => !previousState)
 
   return (
     <View style={styles.container}>
@@ -29,8 +34,17 @@ export default function Login() {
             </View>
           </View>
 
-
-          <Text style={{ textAlign: "right", fontSize: 12 }}>Mantenha-me conectado</Text>
+          <View style={styles.mantenhaConectado}>
+            <Switch style={styles.botaoConectado}
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={isAgree ? "#f5dd4b" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isAgree}
+            style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }} // aumenta o tamanho
+            />
+            <Text style={{fontSize: 12 }}>Mantenha-me conectado</Text>
+          </View>
 
           <View style={{ alignItems: "center" }}>
             <TouchableOpacity style={styles.botaoLogin}>
@@ -122,6 +136,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 15,
     top: 10
+  },
+  mantenhaConectado: {
+    alignItems: "flex-end",
+    marginLeft: 150,
+  },
+  botaoConectado: {
+    alignItems: "flex-end"
   },
   botaoLogin: {
     backgroundColor: "#A50702",
