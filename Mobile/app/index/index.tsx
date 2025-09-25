@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     height: "100%",
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    padding: 30,
+    padding: 30
   },
   formLogin: {
     gap: 18,

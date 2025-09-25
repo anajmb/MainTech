@@ -6,7 +6,6 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
-// tirei a opção Perfil do usuário (estava repetido)
 // ao clicar no texto o link não funciona, só no fundo -> o do perfil funciona
 // o scroll da página não vai até o final
 // add um subtitulo
@@ -30,10 +29,10 @@ export default function Configuracao() {
                 <TouchableOpacity style={styles.card}>
                     {/* imagem de perfil */}
                     <Link href={'/(tabs)/configuracao/editarPerfil'}>
-                        <View style={styles.opcao}>
+                        <View style={styles.opcao}  >
 
                             <View style={TabsStyles.userFotoIcon}>
-                                <User size={22} color={'#fff'}/>
+                                <User size={22} color={'#fff'} />
                             </View>
 
                             <View style={styles.infoCard}>
