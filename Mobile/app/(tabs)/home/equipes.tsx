@@ -1,8 +1,10 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
-import { Wrench } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, View, TextInput } from "react-native";
+import { Wrench, UserPlus, Users } from "lucide-react-native";
+import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+
+// arrumar icone de add membro e equipe
 
 export default function Equipes() {
     return (
@@ -15,9 +17,27 @@ export default function Equipes() {
                     <Text style={TabsStyles.tituloPrincipal}>Equipes</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>Gerencie suas equipes e membros</Text>
                 </View>
+
             </View>
 
-            {/* input data */}
+            <View style={{ flexDirection: "row", gap: 12, right: 16,}}>
+
+                <TouchableOpacity style={style.iconeAcao}>
+                <Link href={'/home/cadastrarUsuario'}>
+                    <View> 
+                    <UserPlus color="#fff" size={17} />
+                    </View >
+                </Link>
+                </TouchableOpacity>
+
+                <Link href={'/(tabs)/home/cadastrarEquipe'}>
+                    <TouchableOpacity style={style.iconeAcao}>
+                        <Users color="#fff" size={17} />
+                    </TouchableOpacity>
+                </Link>
+            </View>
+
+            {/* input data */ }
 
             <View style={style.card}>
                 <View style={style.groupEqui}>
@@ -59,11 +79,13 @@ export default function Equipes() {
                         keyboardType="email-address"
                     />
                 </View>
-                <View style={{ alignItems: "center", marginTop: 18 }}>
-                    <View style={style.botaoAdicionar}>
-                        <Text style={style.textoBotaoAdicionar}>Adicionar membro</Text>
+                <TouchableOpacity>
+                    <View style={{ alignItems: "center", marginTop: 18 }}>
+                        <View style={style.botaoAdicionar}>
+                            <Text style={style.textoBotaoAdicionar}>Adicionar membro</Text>
+                        </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             </View>
 
         </ScrollView >
@@ -192,5 +214,12 @@ const style = StyleSheet.create({
         fontSize: 15,
         fontWeight: "500",
     },
-
+    iconeAcao: {
+        backgroundColor: "#CE221E",
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center",
+    },
 })
