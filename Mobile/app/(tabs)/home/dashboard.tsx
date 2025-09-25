@@ -1,129 +1,165 @@
 import { StyleSheet, ScrollView, Text, View } from "react-native";
 import { CheckCircle, ListTodo, Clock, ClipboardList } from "lucide-react-native";
-
+ 
 export default function Dashboard() {
-  return (
-    <ScrollView style={styles.container}>
-      {/* Logo e título */}
-      <View style={styles.logoContainer}>
-        {/* Aqui pode colocar a logo */}
-        <Text style={styles.logo}>MAINTECH</Text>
-      </View>
-
-      {/* Título do dashboard */}
-      <View style={styles.header}>
-        <Text style={styles.titulo}>Dashboard</Text>
-        <Text style={styles.subtitulo}>e estatísticas</Text>
-      </View>
-
-      {/* Métricas principais */}
-      <Text style={styles.sectionTitle}>Métricas principais</Text>
-      <View style={styles.metricsRow}>
-        <View style={styles.metricCard}>
-          <CheckCircle color="#11C463" size={28} />
-          <Text style={styles.metricTitle}>Tarefas concluídas</Text>
-          <Text style={styles.metricValue}>85%</Text>
-        </View>
-        <View style={styles.metricCard}>
-          <ListTodo color="#AC53F3" size={28} />
-          <Text style={styles.metricTitle}>Total de tarefas</Text>
-          <Text style={styles.metricValue}>15</Text>
-          <Text style={styles.metricSub}>Neste mês</Text>
-        </View>
-      </View>
-      <View style={styles.metricsRow}>
-        <View style={styles.metricCard}>
-          <Clock color="#438BE9" size={28} />
-          <Text style={styles.metricTitle}>Tempo médio</Text>
-          <Text style={styles.metricValue}>5 min</Text>
-          <Text style={styles.metricSub}>check list</Text>
-        </View>
-        <View style={styles.metricCard}>
-          <ClipboardList color="#D6231C" size={28} />
-          <Text style={styles.metricTitle}>Ordens de serviço</Text>
-          <Text style={styles.metricValue}>8</Text>
-          <Text style={styles.metricSub}>Neste mês</Text>
-        </View>
-      </View>
-
-      {/* Gráficos */}
-      <Text style={styles.sectionTitle}>Gráficos</Text>
-      {/* Aqui vão os gráficos depois */}
-
-    </ScrollView>
-  );
+    return (
+        <ScrollView style={styles.page}>
+            <View style={styles.logoBox}>
+                <Text style={styles.logoText}>
+                    <Text style={{ fontSize: 32 }}>⚙️</Text> MAINTECH
+                </Text>
+            </View>
+            <View style={styles.headerBox}>
+                <Text style={styles.headerTitle}>Dashboard</Text>
+                <Text style={styles.headerSubtitle}>e estatísticas</Text>
+            </View>
+            {/* Métricas principais */}
+            <Text style={styles.sectionTitle}>Métricas principais</Text>
+            <View style={styles.metricsRow}>
+                <View style={styles.metricBox}>
+                    <View style={styles.metricHeader}>
+                        <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
+                        <Text style={styles.metricLabel}>Tarefas concluídas</Text>
+                    </View>
+                    <View style={styles.metricValueArea}>
+                        <Text style={styles.metricValue}>85%</Text>
+                        <Text style={styles.metricSub}>{""}</Text>
+                    </View>
+                </View>
+                <View style={styles.metricBox}>
+                    <View style={styles.metricHeader}>
+                        <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
+                        <Text style={styles.metricLabel}>Total de tarefas</Text>
+                    </View>
+                    <View style={styles.metricValueArea}>
+                        <Text style={styles.metricValue}>15</Text>
+                        <Text style={styles.metricSub}>Neste mês</Text>
+                    </View>
+                </View>
+            </View>
+            <View style={styles.metricsRow}>
+                <View style={styles.metricBox}>
+                    <View style={styles.metricHeader}>
+                        <Clock color="#438BE9" size={20} style={styles.metricIcon} />
+                        <Text style={styles.metricLabel}>Tempo médio</Text>
+                    </View>
+                    <View style={styles.metricValueArea}>
+                        <Text style={styles.metricValue}>5 min</Text>
+                        <Text style={styles.metricSub}>Check list</Text>
+                    </View>
+                </View>
+                <View style={styles.metricBox}>
+                    <View style={styles.metricHeader}>
+                        <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
+                        <Text style={styles.metricLabel}>Ordens de serviço</Text>
+                    </View>
+                    <View style={styles.metricValueArea}>
+                        <Text style={styles.metricValue}>8</Text>
+                        <Text style={styles.metricSub}>Neste mês</Text>
+                    </View>
+                </View>
+            </View>
+ 
+            <Text style={styles.sectionTitle}>Gráficos</Text>
+ 
+        </ScrollView>
+    );
 }
-
+ 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
-    flex: 1,
-    paddingHorizontal: 10,
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  logo: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#D6231C",
-    letterSpacing: 2,
-  },
-  header: {
-    marginLeft: 10,
-    marginBottom: 10,
-  },
-  titulo: {
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-  subtitulo: {
-    color: "#848484",
-    fontSize: 14,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 25,
-    marginBottom: 10,
-    marginLeft: 10,
-  },
-  metricsRow: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginBottom: 10,
-  },
-  metricCard: {
-    backgroundColor: "#F8F8F8",
-    borderRadius: 12,
-    padding: 18,
-    alignItems: "center",
-    width: "45%",
-    elevation: 2, // sombra leve para Android
-    shadowColor: "#000", // sombra para iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    marginBottom: 10,
-  },
-  metricTitle: {
-    fontSize: 14,
-    color: "#444",
-    marginTop: 8,
-    marginBottom: 2,
-    textAlign: "center",
-  },
-  metricValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#222",
-    marginBottom: 2,
-  },
-  metricSub: {
-    fontSize: 12,
-    color: "#848484",
-    textAlign: "center",
-  },
+    page: {
+        backgroundColor: "#fff",
+        flex: 1,
+        paddingHorizontal: 10,
+    },
+    logoBox: {
+        alignItems: "center",
+        marginTop: 24,
+        marginBottom: 10,
+    },
+    logoText: {
+        fontSize: 26,
+        fontWeight: "bold",
+        color: "#D6231C",
+        letterSpacing: 1,
+        textAlign: "center",
+    },
+    headerBox: {
+        marginLeft: 10,
+        marginBottom: 10,
+    },
+    headerTitle: {
+        fontSize: 22,
+        fontWeight: "bold",
+    },
+    headerSubtitle: {
+        color: "#848484",
+        fontSize: 14,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginTop: 25,
+        marginBottom: 10,
+        marginLeft: 10,
+    },
+    metricsRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 10,
+        gap: 0,
+    },
+    metricBox: {
+        backgroundColor: "#eeeeee69",
+        borderRadius: 10,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        width: "47%",
+        minHeight: 100,
+        justifyContent: "center",
+        alignItems: "center",
+        elevation: 2,
+        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        marginBottom: 10,
+   
+    },
+    metricHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 8,
+        marginLeft: 2,
+        marginRight: 2,
+        width: "100%",
+    },
+    metricIcon: {
+        marginRight: 8,
+        marginLeft: 2,
+    },
+    metricLabel: {
+        fontSize: 14,
+        color: "#444",
+        textAlign: "left",
+        fontWeight: "500",
+        flexShrink: 1,
+    },
+    metricValueArea: {
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: 48,
+    },
+    metricValue: {
+        fontSize: 22,
+        fontWeight: "bold",
+        color: "#222",
+        textAlign: "center",
+        marginBottom: 2,
+    },
+    metricSub: {
+        fontSize: 12,
+        color: "#8f8787ff",
+        textAlign: "center",
+        marginTop: 2,
+        minHeight: 16,
+    },
 });
