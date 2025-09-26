@@ -1,6 +1,7 @@
 import { Text, View, Button, Modal, StyleSheet, Alert} from "react-native";
 import {CameraView, useCameraPermissions} from "expo-camera"
 import { useState, useRef } from "react";
+import { useRouter } from "expo-router";
 
 export default function QRCode() {
 
@@ -8,6 +9,7 @@ export default function QRCode() {
     const [permission, requestPermission] = useCameraPermissions()
 
     const qrCodeLock = useRef(false)
+    const router = useRouter();
 
      async function handleOpenCamera() {
       try {
@@ -24,11 +26,17 @@ export default function QRCode() {
       }
     }
 
+    // function handdleQRCodeRead(data: string) {
+    //   setModalIsVisible(false)
+    //   Alert.alert("QRCode", `O código lido foi: ${data}`)
+    // }
     function handdleQRCodeRead(data: string) {
-      setModalIsVisible(false)
-      Alert.alert("QRCode", `O código lido foi: ${data}`)
-    }
-    
+  setModalIsVisible(false);
+  router.push({
+    pathname: "/QRCode/infoMaq",
+    params: { codigo: data }
+  });
+}
     
     return (
         <View style={styles.container}>
