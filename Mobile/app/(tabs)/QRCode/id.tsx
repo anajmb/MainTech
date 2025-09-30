@@ -1,47 +1,110 @@
-import { Button } from "@react-navigation/elements";
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import SetaVoltar from "@/components/setaVoltar";
+import { TabsStyles } from "@/styles/globalTabs";
+import { Calendar, User } from "lucide-react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function IdCode() {
+// editar o subtituloPrincipal
+// colocar os inputs data e hora
 
+export default function NovaTarefa() {
     return (
-       <View style={styles.container}>
-        
-         <View style={styles.card}>
-        <Text style={styles.digiteId}>Id da Máquina</Text>
-        <TextInput placeholder="Digite o id da máquina:" placeholderTextColor={"#6c6c6c"} style={styles.inputId}/>
-        <Button color={"#fff"} style={styles.buttonOk}>Ok</Button>
-         </View>
-       </View> 
+        <ScrollView style={TabsStyles.container}>
+            {/* Logo */}
+
+            <View style={TabsStyles.headerPrincipal}>
+                <SetaVoltar />
+
+                <View style={TabsStyles.conjHeaderPrincipal}>
+                    <Text style={TabsStyles.tituloPrincipal}>Indentificação</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>de Máquinas</Text>
+                </View>
+            </View>
+
+            {/* <KeyboardAvoidingView behavior="padding" style={styles.todosCard}> */}
+
+            {/* Titulo e descrição */}
+            <View style={styles.containerCard}>
+                <View style={styles.card}>
+                    <Text style={styles.titleCard}>Indentifique a máquina que deseja ter mais informações</Text>
+                    <View style={{ marginBottom: 20 }}>
+                        <Text style={styles.label}>ID</Text>
+                        <TextInput placeholder="Digite o id da máquina"
+                            placeholderTextColor={'#8B8686'}
+                            style={styles.input} />
+                    </View>
+                </View>
+                {/* </KeyboardAvoidingView> */}
+
+                <View style={{ alignItems: 'center'}}>
+                    <View style={TabsStyles.viewBotaoPrincipal} >
+                        <Text style={TabsStyles.botaoText}>Confirmar</Text>
+                    </View>
+                </View>
+
+                 <View style={styles.card}>
+                    <View>
+                        <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
+                        <View style={styles.subCard}>
+                            <Text>QRCode</Text>
+                        </View>
+
+                         <View>
+                        <View style={styles.subCard}>
+                            <Text>QRCode</Text>
+                        </View>
+                    </View>
+                </View>
+                </View>
+            </View>
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-      alignItems: "center",
-      justifyContent: "center" 
+    containerCard: {
+        gap: 30,
+        // marginTop: 40
+    },
+    titleCard: {
+         fontSize: 21,
+        fontWeight: "500",
+        color: "gray",
+        marginBottom: 30,
+        textAlign: "center",
+    },
+     qrCodeCard: {
+         fontSize: 19,
+        fontWeight: "500",
+        color: "gray",
+        marginBottom: 40,
+        textAlign: "center",
     },
     card: {
-        backgroundColor: "#eee",
-        padding: 100,
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+        backgroundColor: '#eeeeee',
+        padding: 20,
         borderRadius: 10,
-        alignItems: "center",
-        boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)"
     },
-    digiteId: {
-      top: -80,
-      fontSize: 20,
-      color: "#6C6C6C",
+    label: {
+        fontSize: 12,
+        textAlign: 'left',
+        marginBottom: 8
     },
-    inputId: {
-        backgroundColor: "#000",
+    tituloCard: {
+        fontSize: 15,
+        fontWeight: 600
+    },
+    input: {
+        borderRadius: 10,
+        backgroundColor: '#e6e6e6',
         padding: 10,
-        borderRadius: 10,
-        bottom: 20
+        textAlign: 'left'
     },
-    buttonOk: {
-        backgroundColor: "#d10b03",
-        borderRadius: 10,
 
-    }
+    subCard: {
+        backgroundColor: "#fff",
+        padding: 40,
+        borderRadius: 10,
+        marginBottom: 15
+    },
 })
