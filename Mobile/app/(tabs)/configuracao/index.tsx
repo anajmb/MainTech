@@ -2,16 +2,24 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
-// tirei a opção Perfil do usuário (estava repetido)
 // ao clicar no texto o link não funciona, só no fundo -> o do perfil funciona
 // o scroll da página não vai até o final
 // add um subtitulo
 
 export default function Configuracao() {
+
+    const [isNotification, setIsNotification] = useState(false);
+    const [isAcessibilidade, setIsAcessibilidade] = useState(false);
+
+    const toggleSwitch = () => setIsNotification(previousState => !previousState)
+
+     const toggleSwitch2 = () => setIsAcessibilidade(previousState => !previousState)
+
     return (
 
         <ScrollView style={TabsStyles.container}>
@@ -30,10 +38,10 @@ export default function Configuracao() {
                 <TouchableOpacity style={styles.card}>
                     {/* imagem de perfil */}
                     <Link href={'/(tabs)/configuracao/editarPerfil'}>
-                        <View style={styles.opcao}>
+                        <View style={styles.opcao}  >
 
                             <View style={TabsStyles.userFotoIcon}>
-                                <User size={22} color={'#fff'}/>
+                                <User size={22} color={'#fff'} />
                             </View>
 
                             <View style={styles.infoCard}>
@@ -50,8 +58,8 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
 
-                        <TouchableOpacity style={styles.opcao}>
-                            <Link href={'/(tabs)/configuracao/privacidade'}>
+                        <Link href={'/(tabs)/configuracao/privacidade'} asChild>
+                            <TouchableOpacity style={styles.opcao}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <Shield />
                                     <View style={styles.infoCard}>
@@ -59,8 +67,8 @@ export default function Configuracao() {
                                         <Text style={styles.subtitulo}>Gerenciar senha e autenticação</Text>
                                     </View>
                                 </View>
-                            </Link>
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                        </Link>
 
                     </View>
                 </View>
@@ -71,23 +79,38 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
                         <TouchableOpacity style={styles.opcao}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <BellRing />
-
-                                <View style={styles.infoCard}>
+                            <View style={styles.infoCardButton}>
+                                <BellRing style={{ marginRight: 12 }} />
+                                <View style={styles.infoCard1}>
                                     <Text style={styles.tituloOpcao}>Notificações</Text>
                                     <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
                                 </View>
+                                <Switch
+                                    trackColor={{ false: "#767577", true: "#D10B03" }}
+                                    thumbColor={isNotification ? "#f4f4f4" : "#f4f3f4"}
+                                    ios_backgroundColor="#3e3e3e"
+                                    onValueChange={toggleSwitch}
+                                    value={isNotification}
+                                    style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                                />
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.opcao}>
-                            <View style={{ flexDirection: 'row' }}>
+                           <View style={styles.infoCardButton}>
                                 <PersonStanding />
 
-                                <View style={styles.infoCard}>
+                                <View style={styles.infoCard1}>
                                     <Text style={styles.tituloOpcao}>Acessibilidade</Text>
                                 </View>
+                                  <Switch
+                                    trackColor={{ false: "#767577", true: "#D10B03" }}
+                                    thumbColor={isAcessibilidade ? "#f4f4f4" : "#f4f3f4"}
+                                    ios_backgroundColor="#3e3e3e"
+                                    onValueChange={toggleSwitch2}
+                                    value={isAcessibilidade}
+                                    style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                                />
                             </View>
                         </TouchableOpacity>
 
@@ -108,6 +131,7 @@ export default function Configuracao() {
                                     <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
                                     <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
                                 </View>
+                                
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -119,8 +143,8 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
 
-                        <TouchableOpacity style={styles.opcao}>
-                            <Link href="/">
+                        <Link href="/">
+                            <TouchableOpacity style={styles.opcao}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <LogOut color={'#F24040'} />
 
@@ -129,8 +153,8 @@ export default function Configuracao() {
                                         <Text style={styles.subtitulo}>Desconectar da conta</Text>
                                     </View>
                                 </View>
-                            </Link>
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                        </Link>
 
                     </View>
                 </View>
@@ -155,6 +179,17 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginLeft: 16,
         justifyContent: 'center'
+    },
+    infoCard1: {
+        flexDirection: 'column',
+        marginLeft: 16,
+        justifyContent: 'center',
+        flex: 1
+    },
+    infoCardButton: {
+        flexDirection: 'row',
+        justifyContent: "space-between",
+        flex: 1
     },
     opcao: {
         padding: 20,
