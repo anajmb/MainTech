@@ -56,7 +56,10 @@ export default function Equipes() {
                 </View>
                 <View style={style.footerCard}>
                     <Text style={style.quantMembro}>8 membros</Text>
+
+                    <Link href={'/home/verEquipe'}>
                     <Text style={style.verEquipe}>Ver equipe</Text>
+                </Link>
                 </View>
             </View>
 

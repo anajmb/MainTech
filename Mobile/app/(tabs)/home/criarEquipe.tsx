@@ -70,9 +70,11 @@ export default function CriarEquipe() {
 
                     {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
                 </View>
-                <View style={style.footerCard}>
                     
-                    <Text style={style.verEquipe}>Ver equipe</Text>
+                <View style={style.footerCard}>
+                    <Link href={'/home/verEquipe'}>
+                        <Text style={style.verEquipe}>Ver equipe</Text>
+                    </Link>
                 </View>
             </View>
 </View>
@@ -224,11 +226,11 @@ const style = StyleSheet.create({
     },
     verEquipe: {
         fontSize: 13,
-        marginTop: 1,
+        marginTop: 15,
         color: "#CE221E",
-        marginRight: 5,
+        marginRight: 50,
         fontWeight: "500",
-        marginLeft: 219,
+        marginLeft: 12,
 
     },
     quantMembro: {
