@@ -30,11 +30,11 @@ export default function Equipes() {
                 </Link>
                 </TouchableOpacity>
 
-                <Link href={'/(tabs)/home/cadastrarEquipe'}>
                     <TouchableOpacity style={style.iconeAcao}>
+                <Link href={'/home/criarEquipe'}>
                         <Users color="#fff" size={17} />
-                    </TouchableOpacity>
                 </Link>
+                    </TouchableOpacity>
             </View>
 
             {/* input data */ }
@@ -59,6 +59,11 @@ export default function Equipes() {
                     <Text style={style.verEquipe}>Ver equipe</Text>
                 </View>
             </View>
+
+
+
+
+            {/* card adicionar membro */ }
 
             <View style={style.cardAdicionar}>
                 <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
@@ -165,6 +170,9 @@ const style = StyleSheet.create({
         marginBottom: 15,
 
     },
+
+
+    // card adicionar membro
     cardAdicionar: {
         backgroundColor: "#fff",
         borderRadius: 16,
