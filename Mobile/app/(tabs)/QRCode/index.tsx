@@ -27,21 +27,17 @@ export default function QRCode() {
     }
   }
 
-  function handdleId() {
-    setIdModalVisible(true);
-  }
-
-function handleIdSubmit() {
-  setIdModalVisible(false);
-  router.push({
-    pathname: "../QRCode/infoMaq",
-    params: { codigo: idInput }
-  });
-  setIdInput("");
-}
-
   function handdleQRCodeRead(data: string) {
     setModalIsVisible(false);
+
+    let jsonData = {};
+    try {
+      jsonData = JSON.parse(data);
+    } catch {
+      // Se não for JSON, envie como string mesmo
+      jsonData = { value: data };
+    }
+
     router.push({
       pathname: "../QRCode/infoMaq",
       params: { codigo: data }
@@ -56,21 +52,21 @@ function handleIdSubmit() {
 
   return (
     <View style={styles.container}>
-      <Modal visible={modalIsVisible} style={{ flex: 1 }}animationType="slide">
-          <CameraView style={{ flex: 1 }} facing="back"
-            onBarcodeScanned={({ data }) => {
-              if (data && !qrCodeLock.current) {
-                qrCodeLock.current = true
-                setTimeout(() => handdleQRCodeRead(data), 100)
-              }
-            }} />
-          <View style={styles.footer}>
-            <View style={styles.containerQrcode}>
-              <View style={styles.buttonCancelar}>
-                <Button color={'#fff'} onPress={() => { setModalIsVisible(false); router.replace("/home") }} title="Cancelar" />
-              </View>
-              <View style={styles.idCode}>
-              <ScanBarcode size={35} color={"#d10b03"} onPress={() => { setModalIsVisible(false); router.replace("/(tabs)/QRCode/id")}} />
+      <Modal visible={modalIsVisible} style={{ flex: 1 }} animationType="slide">
+        <CameraView style={{ flex: 1 }} facing="back"
+          onBarcodeScanned={({ data }) => {
+            if (data && !qrCodeLock.current) {
+              qrCodeLock.current = true
+              setTimeout(() => handdleQRCodeRead(data), 100)
+            }
+          }} />
+        <View style={styles.footer}>
+          <View style={styles.containerQrcode}>
+            <View style={styles.buttonCancelar}>
+              <Button color={'#fff'} onPress={() => { setModalIsVisible(false); router.replace("/home") }} title="Cancelar" />
+            </View>
+            <View style={styles.idCode}>
+              <ScanBarcode size={35} color={"#d10b03"} onPress={() => { setModalIsVisible(false); router.replace("/(tabs)/QRCode/id") }} />
             </View>
           </View>
         </View>

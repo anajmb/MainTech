@@ -6,9 +6,12 @@ export default function CadastrarUsuario() {
     return (
         <ScrollView style={TabsStyles.container}>
             
-            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 24, marginBottom: 12 }}>
+            <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
-                <Text style={style.tituloHeader}>Cadastrar Usuário</Text>
+                <View style={TabsStyles.conjHeaderPrincipal}>
+                <Text style={TabsStyles.tituloPrincipal}>Cadastrar Usuário</Text>
+                <Text style={TabsStyles.subtituloPrincipal}>Cadastre</Text>
+            </View>
             </View>
 
             /* Card de cadastro */
@@ -37,7 +40,7 @@ export default function CadastrarUsuario() {
                         <Text style={style.label}>Equipe</Text>
                         <View style={style.input}>
                             <Text style={style.inputText}>Selecione</Text>
-                        </View>
+                        </View> 
                     </View>
                 </View>
                 <TouchableOpacity style={style.botaoCadastro}>
