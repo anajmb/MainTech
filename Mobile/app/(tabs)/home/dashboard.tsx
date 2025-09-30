@@ -13,7 +13,6 @@ export default function Dashboard() {
                 <Text style={styles.headerTitle}>Dashboard</Text>
                 <Text style={styles.headerSubtitle}>e estatísticas</Text>
             </View>
-            {/* Métricas principais */}
             <Text style={styles.sectionTitle}>Métricas principais</Text>
             <View style={styles.metricsRow}>
                 <View style={styles.metricBox}>
@@ -59,7 +58,7 @@ export default function Dashboard() {
                     </View>
                 </View>
             </View>
-
+ 
             <Text style={styles.sectionTitle}>Gráficos</Text>
         </ScrollView>
     );
@@ -67,51 +66,50 @@ export default function Dashboard() {
  
 const styles = StyleSheet.create({
     page: {
-        backgroundColor: "#fff",
         flex: 1,
-        paddingHorizontal: 10,
+        paddingHorizontal: 18,
+        padding: 20
     },
     logoBox: {
         alignItems: "center",
         marginTop: 24,
-        marginBottom: 10,
+        marginBottom: 10
     },
     logoText: {
         fontSize: 26,
         fontWeight: "bold",
         color: "#D6231C",
-        letterSpacing: 1,
-        textAlign: "center",
+        textAlign: "center"
     },
     headerBox: {
         marginLeft: 10,
-        marginBottom: 10,
+        marginBottom: 10
     },
     headerTitle: {
         fontSize: 22,
-        fontWeight: "bold",
+        fontWeight: "bold"
     },
     headerSubtitle: {
         color: "#848484",
-        fontSize: 14,
+        fontSize: 15
     },
     sectionTitle: {
-        fontSize: 18,
+        fontSize: 19,
         fontWeight: "bold",
         marginTop: 25,
         marginBottom: 10,
-        marginLeft: 10,
+        marginLeft: 10
     },
     metricsRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         marginBottom: 10,
-        gap: 0,
+        gap: 0
     },
     metricBox: {
         backgroundColor: "#eeeeee69",
         borderRadius: 10,
-        paddingVertical: 16,
+        paddingVertical: 27,
         paddingHorizontal: 16,
         width: "47%",
         minHeight: 100,
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         elevation: 2,
         boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
-        marginBottom: 10,
+        marginBottom: 10
     },
     metricHeader: {
         flexDirection: "row",
@@ -127,37 +125,37 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         marginLeft: 2,
         marginRight: 2,
-        width: "100%",
+        width: "100%"
     },
     metricIcon: {
         marginRight: 8,
-        marginLeft: 2,
+        marginLeft: 2
     },
     metricLabel: {
         fontSize: 14,
         color: "#444",
-        textAlign: "left",
-        fontWeight: "500",
-        flexShrink: 1,
+        textAlign: "center",
+        fontWeight: "500"
     },
     metricValueArea: {
         width: "100%",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: 48,
+        minHeight: 48
     },
     metricValue: {
         fontSize: 22,
         fontWeight: "bold",
         color: "#222",
-        textAlign: "center",
-        marginBottom: 2,
+        marginTop: 9,
+        paddingVertical: 6,
+        textAlign: "center"
     },
     metricSub: {
         fontSize: 12,
         color: "#8f8787ff",
         textAlign: "center",
-        marginTop: 2,
-        minHeight: 16,
+        marginTop: 10,
+        minHeight: 16
     },
 });
