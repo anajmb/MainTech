@@ -71,7 +71,7 @@ export default function CriarEquipe() {
                     {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
                 </View>
                 <View style={style.footerCard}>
-                    <Text style={style.quantMembro}>8 membros</Text>
+                    
                     <Text style={style.verEquipe}>Ver equipe</Text>
                 </View>
             </View>
@@ -166,7 +166,7 @@ const style = StyleSheet.create({
     },
     cardEquipesCadastradas: {
         backgroundColor: "#fff",
-        borderRadius: 16,
+        borderRadius: 12,
         paddingTop: 18,
         margin: 12,
         shadowColor: "#000",
@@ -174,6 +174,7 @@ const style = StyleSheet.create({
         shadowOpacity: 0.10,
         shadowRadius: 4,
         // elevation: 3,
+        
     },
     tituloCadastradas: {
         fontSize: 17 ,
@@ -181,10 +182,12 @@ const style = StyleSheet.create({
         fontWeight: "500",
         marginBottom: 12,
         textAlign: "center",
+        marginTop: -5,
+        
     },
      card: {
         backgroundColor: "#fff",
-        borderRadius: 16,
+        borderRadius: 20,
         padding: 16,
         marginVertical: 8,
         marginHorizontal: 8,
@@ -221,10 +224,11 @@ const style = StyleSheet.create({
     },
     verEquipe: {
         fontSize: 13,
-        marginTop: 4,
+        marginTop: 1,
         color: "#CE221E",
-        marginRight: 12,
+        marginRight: 5,
         fontWeight: "500",
+        marginLeft: 219,
 
     },
     quantMembro: {
@@ -236,13 +240,14 @@ const style = StyleSheet.create({
         color: "#444",
         alignSelf: "flex-start",
         marginRight: 12,
+        marginTop: 0,
 
     },
     footerCard: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginTop: 12,
+        marginTop: 2,
     },
     iconeEquipe: {
         width: 50,
