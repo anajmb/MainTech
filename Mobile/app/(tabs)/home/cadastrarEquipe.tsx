@@ -1,9 +1,9 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-export default function CriarEquipe() {
+export default function CadastrarEquipe() {
     return (
         <ScrollView>
-            <Text>Criar Equipe</Text>
+            <Text>Cadastrar Equipe</Text>
         </ScrollView>
     )
 }

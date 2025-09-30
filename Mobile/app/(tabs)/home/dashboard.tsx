@@ -1,6 +1,6 @@
 import { StyleSheet, ScrollView, Text, View } from "react-native";
 import { CheckCircle, ListTodo, Clock, ClipboardList } from "lucide-react-native";
-
+ 
 export default function Dashboard() {
     return (
         <ScrollView style={styles.page}>
@@ -61,11 +61,10 @@ export default function Dashboard() {
             </View>
 
             <Text style={styles.sectionTitle}>Gráficos</Text>
-
         </ScrollView>
     );
 }
-
+ 
 const styles = StyleSheet.create({
     page: {
         backgroundColor: "#fff",
@@ -121,7 +120,6 @@ const styles = StyleSheet.create({
         elevation: 2,
         boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
         marginBottom: 10,
-    
     },
     metricHeader: {
         flexDirection: "row",
