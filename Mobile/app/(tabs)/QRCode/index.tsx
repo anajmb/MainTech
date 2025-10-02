@@ -2,7 +2,7 @@ import { Text, View, Button, Modal, StyleSheet, Alert, TextInput } from "react-n
 import { CameraView, useCameraPermissions } from "expo-camera"
 import React, { useState, useRef, useEffect } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
-import { IdCard, ScanBarcode } from "lucide-react-native";
+import { IdCard, Scan, ScanBarcode } from "lucide-react-native";
 
 export default function QRCode() {
 
@@ -53,7 +53,7 @@ export default function QRCode() {
   return (
     <View style={styles.container}>
       <Modal visible={modalIsVisible} style={{ flex: 1 }} animationType="slide">
-        <CameraView style={{ flex: 1 }} facing="back"
+        <CameraView   style={{ flex: 1 }} facing="back"
           onBarcodeScanned={({ data }) => {
             if (data && !qrCodeLock.current) {
               qrCodeLock.current = true
@@ -66,7 +66,7 @@ export default function QRCode() {
               <Button color={'#fff'} onPress={() => { setModalIsVisible(false); router.replace("/home") }} title="Cancelar" />
             </View>
             <View style={styles.idCode}>
-              <ScanBarcode size={35} color={"#d10b03"} onPress={() => { setModalIsVisible(false); router.replace("/(tabs)/QRCode/id") }} />
+              <ScanBarcode strokeWidth={1.7} size={35} color={"#d10b03"} onPress={() => { setModalIsVisible(false); router.push("/(tabs)/QRCode/id") }} />
             </View>
           </View>
         </View>
