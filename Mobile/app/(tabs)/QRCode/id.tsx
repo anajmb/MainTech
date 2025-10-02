@@ -1,12 +1,19 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
+import { useRouter } from "expo-router";
 import { Calendar, User } from "lucide-react-native";
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useState } from "react";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 // editar o subtituloPrincipal
 // colocar os inputs data e hora
 
 export default function NovaTarefa() {
+
+
+    const [idInput, setIdInput] = useState("");
+    const router = useRouter();
+
     return (
         <ScrollView style={TabsStyles.container}>
             {/* Logo */}
@@ -30,30 +37,41 @@ export default function NovaTarefa() {
                         <Text style={styles.label}>ID</Text>
                         <TextInput placeholder="Digite o id da máquina"
                             placeholderTextColor={'#8B8686'}
-                            style={styles.input} />
+                            style={styles.input}
+                            value={idInput}
+                            onChangeText={setIdInput} />
+                    </View>
+                    <View style={{ alignItems: 'center', marginTop: 10 }}>
+                        <TouchableOpacity style={TabsStyles.viewBotaoPrincipal}
+                            onPress={() => {
+                                if (idInput.trim()) {
+                                    router.push({
+                                        pathname: "/QRCode/infoMaq",
+                                        params: { codigo: idInput }
+                                    })
+                                }
+                            }}
+                        >
+                            <Text style={TabsStyles.botaoText}>Confirmar</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 {/* </KeyboardAvoidingView> */}
 
-                <View style={{ alignItems: 'center'}}>
-                    <View style={TabsStyles.viewBotaoPrincipal} >
-                        <Text style={TabsStyles.botaoText}>Confirmar</Text>
-                    </View>
-                </View>
 
-                 <View style={styles.card}>
+                <View style={styles.card}>
                     <View>
                         <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
                         <View style={styles.subCard}>
                             <Text>QRCode</Text>
                         </View>
 
-                         <View>
-                        <View style={styles.subCard}>
-                            <Text>QRCode</Text>
+                        <View>
+                            <View style={styles.subCard}>
+                                <Text>QRCode</Text>
+                            </View>
                         </View>
                     </View>
-                </View>
                 </View>
             </View>
         </ScrollView>
@@ -66,14 +84,14 @@ const styles = StyleSheet.create({
         // marginTop: 40
     },
     titleCard: {
-         fontSize: 21,
+        fontSize: 21,
         fontWeight: "500",
         color: "gray",
         marginBottom: 30,
         textAlign: "center",
     },
-     qrCodeCard: {
-         fontSize: 19,
+    qrCodeCard: {
+        fontSize: 19,
         fontWeight: "500",
         color: "gray",
         marginBottom: 40,
@@ -82,7 +100,7 @@ const styles = StyleSheet.create({
     card: {
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
         backgroundColor: '#eeeeee',
-        padding: 20,
+        padding: 25,
         borderRadius: 10,
     },
     label: {
