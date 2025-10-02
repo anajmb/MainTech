@@ -1,6 +1,6 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
@@ -8,9 +8,10 @@ import { Pencil, Trash2, Wrench } from "lucide-react-native";
 
 
 export default function Maquinas() {
+
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
     const [open, setOpen] = useState(false);
-
+    const [modalVisible, setModalVisible] = useState(false);
     const [oficinas, setOficinas] = useState([
         { label: 'Selecione', value: '', disabled: true },
         { label: 'Oficina de Manutenção', value: 'oficina1' },
@@ -91,9 +92,12 @@ export default function Maquinas() {
                         <Text style={styles.maqId}>ID: 122345</Text>
                          </View>
 
-                         <View style={styles.editIcons}>
-                         <Pencil size={18} style={{marginRight: 10}}/> <Trash2 size={18} color={'#e00000ff'}/>
-                         </View>
+                                                 <View style={styles.editIcons}>
+                                                     <Pencil size={18} style={{marginRight: 10}}/>
+                                                     <TouchableOpacity onPress={() => setModalVisible(true)}>
+                                                         <Trash2 size={18} color={'#e00000ff'}/>
+                                                     </TouchableOpacity>
+                                                 </View>
                     </View>
 
                     {/* crimpagem */}
@@ -111,18 +115,36 @@ export default function Maquinas() {
                          </View>
 
                          <View style={styles.editIcons}>
-                         <Pencil size={18} style={{marginRight: 10}}/> <Trash2 size={18} color={'#e00000ff'}/>
+                         <Pencil size={18} style={{marginRight: 10}}/>
                          </View>
+
+                                                 <View style={styles.editIcons}> 
+                                                     <TouchableOpacity onPress={() => setModalVisible(true)}>
+                                                         <Trash2 size={18} color={'#e00000ff'}/>
+                                                     </TouchableOpacity>
+                                                 </View>
                     </View>
                 </View>
-
-                
-
             </View>
+                {/* Modal de confirmação de deleção */}
+                <Modal visible={modalVisible} transparent animationType="fade">
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                        <View style={{ backgroundColor: '#fff', padding: 24, borderRadius: 10, alignItems: 'center' }}>
+                            <Text>Deseja realmente deletar?</Text>
+                            <View style={{ flexDirection: 'row', marginTop: 16 }}>
+                                <TouchableOpacity onPress={() => { /* ação de deletar */ setModalVisible(false); }}>
+                                    <Text style={{ color: 'red', marginRight: 16 }}>Deletar</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                    <Text>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+                </ScrollView>
 
-        </ScrollView>
-
-    )
+        )
 }
 
 const styles = StyleSheet.create({
