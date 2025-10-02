@@ -2,12 +2,31 @@ import { Link } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from "react-native-confirmation-code-field";
 
-export default function RecuperarSenha() {
+
+
+export default function RecuperarCodigo() {
 
   const [isAgree, setIsAgree] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // novo estado
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+   const [value, setValue] = useState("");
+  const CELL_COUNT = 4;
+
+  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
+
+
+  const toggleSwitch = () => setIsAgree(previousState => !previousState)
+
   return (
 
     <KeyboardAvoidingView style={{ flex: 1 }}
@@ -23,42 +42,51 @@ export default function RecuperarSenha() {
 
 
           <View style={styles.formLogin}>
-            <Text style={styles.tituloLogin}>Redefinir Senha</Text>
+            <Text style={styles.tituloLogin}>Recuperar Senha</Text>
+            <Text style={styles.subTitleRec}>Digite o código de verificação enviado para o seu e-mail.</Text>
 
-            <View style={{ gap: 8 }}>
-              <Text style={styles.labelLogin}>Nova Senha:</Text>
+            {/* <View style={{ gap: 8 }}>
+              <Text style={styles.labelLogin}>E-mail:</Text>
+              <TextInput style={styles.inputLogin} placeholder="Ex:ana@gmail.com" placeholderTextColor="#B9B9B9" />
+            </View> */}
 
-              <View>
-                <TextInput style={styles.inputLogin} placeholder="*************" placeholderTextColor="#B9B9B9" secureTextEntry={!showPassword} />
-                {/* <EyeOff style={styles.eyeFechado} size={20} /> */}
-                <TouchableOpacity style={styles.eyeFechado} onPress={() => setShowPassword((prev) => !prev)}>
-                  {showPassword ? (
-                    <Eye size={20} />
-                  ) : (<EyeOff size={20} />
-                  )}
-                </TouchableOpacity>
-              </View>
-            </View>
-
-                 <View style={{ gap: 8 }}>
-              <Text style={styles.labelLogin}>Confirmar senha:</Text>
-             <View>
-                <TextInput style={styles.inputLogin} placeholder="*************" placeholderTextColor="#B9B9B9" secureTextEntry={!showPassword} />
-                {/* <EyeOff style={styles.eyeFechado} size={20} /> */}
-                <TouchableOpacity style={styles.eyeFechado} onPress={() => setShowConfirmPassword((prev) => !prev)}>
-                  {showConfirmPassword ? (
-                    <Eye size={20} />
-                  ) : (<EyeOff size={20} />
-                  )}
-                </TouchableOpacity>
-              </View>
-            </View>
-
+            
+<CodeField
+  ref={ref}
+  {...props}
+  value={value}
+  onChangeText={setValue}
+  cellCount={CELL_COUNT}
+  rootStyle={{ marginVertical: 20 }}
+  keyboardType="number-pad"
+  textContentType="oneTimeCode"
+  renderCell={({ index, symbol, isFocused }) => (
+    <View
+      key={index}
+      style={{
+        width: 50,
+        height: 50,
+        borderRadius: 8,
+        backgroundColor: "#E6E6E6",
+        justifyContent: "center",
+        alignItems: "center",
+        marginHorizontal: 5,
+        borderWidth: isFocused ? 2 : 0,
+        borderColor: "#A50702"
+      }}
+      onLayout={getCellOnLayoutHandler(index)}
+    >
+      <Text style={{ fontSize: 24, color: "#222" }}>
+        {symbol || (isFocused ? <Cursor /> : null)}
+      </Text>
+    </View>
+  )}
+/>
 
             <View style={{ alignItems: "center" }}>
-              <Link href={'/recuperarCodigo'} asChild>
+              <Link href={'/redefinirsenha'} asChild>
                 <TouchableOpacity style={styles.botaoLogin}>
-                  <Text style={{ color: "#fff" }}> Enviar </Text>
+                  <Text style={{ color: "#fff" }}> Recuperar </Text>
                 </TouchableOpacity>
               </Link>
             </View>
@@ -123,6 +151,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: "poppins"
   },
+  subTitleRec: {
+    color: "8E8E8E",
+    fontSize: 15,
+    justifyContent: "center",
+    textAlign: "center"
+
+  },
   labelLogin: {
     fontSize: 13,
     color: "#222222ff"
@@ -133,11 +168,6 @@ const styles = StyleSheet.create({
     height: 45,
     position: "relative",
     padding: 15
-  },
-   eyeFechado: {
-    position: "absolute",
-    right: 15,
-    top: 10
   },
   botaoLogin: {
     backgroundColor: "#A50702",

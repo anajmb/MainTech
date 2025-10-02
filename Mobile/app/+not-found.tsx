@@ -5,7 +5,7 @@ export default function NotFoundScreen() {
     return (
         <View style={{justifyContent: 'center', alignItems: 'center', margin: 100}}>
             <Text>NÃO ENCONTRADO</Text>
-            <Link href={'/_sitemap'}>Go to Home</Link>
+            <Link href={'/_sitemap'}>Voltar</Link>
         </View >
     )
 }

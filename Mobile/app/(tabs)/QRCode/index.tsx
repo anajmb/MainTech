@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
   },
   buttonCancelar: {
     alignItems: "center",
-    left: 135
+    left: 135,
+    backgroundColor: "transparent"
   },
   idCode: {
     top: -20,

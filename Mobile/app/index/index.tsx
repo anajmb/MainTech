@@ -10,6 +10,7 @@ export default function Login() {
 
 
   const toggleSwitch = () => setIsAgree(previousState => !previousState)
+  
 
   return (
     
@@ -17,9 +18,9 @@ export default function Login() {
     behavior={Platform.OS === "ios" ? "padding" : "height"}
     keyboardVerticalOffset={-2}>
     <View style={styles.container}>
-      <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} />
+      <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} resizeMode="cover" />
         <View style={styles.infosLogo}>
-        <Image style={styles.logoImage} source={require("../../assets/images/LogoBranca.png")} />
+        <Image style={styles.logoImage} source={require("../../assets/images/LogoBranca.png")} resizeMode="cover" />
         <Text style={styles.logoNome}>Gestão de maquinas</Text>
         </View>
         <View style={styles.cardLogin}>
@@ -69,14 +70,16 @@ export default function Login() {
             </View>
 
             <View style={styles.hrefLogin}>
+                <Link href={'/recuperarSenha'} style={{ color: "#D40303" }}>
               <Text>
-                <Link href="../auth/recuperarSenha" style={{ color: "#D40303" }}>Esqueci minha senha</Link>
+                Esqueci minha senha
               </Text>
+                </Link>
 
-              <Text>
                 {/* <Text>Seu primeiro acesso?  */}
-                <Link href="../auth/cadastro" style={{ color: "#D40303" }}>Cadastre-se</Link>
-              </Text>
+                <Link href={'./cadastro'} style={{ color: "#D40303" }}>
+                <Text>Cadastre-se</Text>
+                </Link>
             </View>
 
           </View>
@@ -105,7 +108,6 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     position: "absolute",
-    objectFit: "cover",
     width: "100%",
     height: "100%",
     zIndex: -1,
