@@ -74,7 +74,9 @@ export default function CriarEquipe() {
                     
                 <View style={style.footerCard}>
                     <Link href={'/home/verEquipe'}>
+                    <View>
                         <Text style={style.verEquipe}>Ver equipe</Text>
+                    </View>
                     </Link>
                 </View>
             </View>
@@ -96,29 +98,29 @@ const style = StyleSheet.create({
         left: 10,           
     },
     cardCriarEquipe: {
-        backgroundColor: "#fff",
-        borderRadius: 8,
-        padding: 18,
-        margin: 12,
+       backgroundColor: "#fff",
+        borderRadius: 16,
+        padding: 16,
+        marginVertical: 8,
+        marginHorizontal: 8,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.10,
+        shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
     },
     tituloCardCriarEquipe: {
-        fontSize: 21,
+        fontSize: 18,
         fontWeight: "500",
-        color: "gray",
-        marginBottom: 12,
-        textAlign: "center",
+        color: "#222",
+        marginBottom: 25,
+        textAlign: "center"
     },
     label: {
-        fontSize: 18,
-        color: "#000000",
+       fontSize: 15,
+        color: "#222",
         marginBottom: 4,
-        marginTop: 8,
-        fontWeight: "500",
+        fontWeight: "400",
     },
      input: {
         backgroundColor: "#F5F5F5",
@@ -129,11 +131,10 @@ const style = StyleSheet.create({
         fontSize: 14,
     },
     labelDescrição: {
-        fontSize: 18,
-        color: "#000000",
+        fontSize: 15,
+        color: "#222",
         marginBottom: 4,
-        marginTop: 8,
-        fontWeight: "500",
+        fontWeight: "400",
     },
  inputDescrição: {
     backgroundColor: "#F5F5F5",
@@ -223,12 +224,13 @@ const style = StyleSheet.create({
 
     },
     verEquipe: {
-        fontSize: 13,
-        marginTop: 15,
+       fontSize: 13,
+        marginTop: 4,
         color: "#CE221E",
-        marginRight: 50,
+        marginRight: 120,
         fontWeight: "500",
-        marginLeft: 12,
+        // marginLeft: 45,
+        textAlign: "right",
 
     },
     quantMembro: {
@@ -244,10 +246,10 @@ const style = StyleSheet.create({
 
     },
     footerCard: {
-        flexDirection: "row",
+         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginTop: 2,
+        marginTop: 12,
     },
     iconeEquipe: {
         width: 50,

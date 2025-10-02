@@ -56,7 +56,7 @@ const style = StyleSheet.create({
         marginRight: 4,
     },
     fraseEquipe: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#858585',
         marginTop: 0,
         marginLeft: 15,
@@ -111,7 +111,7 @@ const style = StyleSheet.create({
         paddingVertical: 3,
         marginLeft: 8,
         color: "#000000",
-        marginTop: 20,
+        marginTop: 18,
     },
     tagCargoText: {
         color: "#000000",

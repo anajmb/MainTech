@@ -20,24 +20,24 @@ export default function Equipes() {
 
             </View>
 
-            <View style={{ flexDirection: "row", gap: 12, right: 16,}}>
+            <View style={{ flexDirection: "row", gap: 12, left: 250, marginTop: 1 }}>
 
                 <TouchableOpacity style={style.iconeAcao}>
-                <Link href={'/home/cadastrarUsuario'}>
-                    <View> 
-                    <UserPlus color="#fff" size={17} />
-                    </View >
-                </Link>
+                    <Link href={'/home/cadastrarUsuario'}>
+                        <View>
+                            <UserPlus color="#fff" size={17} />
+                        </View >
+                    </Link>
                 </TouchableOpacity>
 
-                    <TouchableOpacity style={style.iconeAcao}>
-                <Link href={'/home/criarEquipe'}>
+                <TouchableOpacity style={style.iconeAcao}>
+                    <Link href={'/home/criarEquipe'}>
                         <Users color="#fff" size={17} />
-                </Link>
-                    </TouchableOpacity>
+                    </Link>
+                </TouchableOpacity>
             </View>
 
-            {/* input data */ }
+            {/* input data */}
 
             <View style={style.card}>
                 <View style={style.groupEqui}>
@@ -57,16 +57,21 @@ export default function Equipes() {
                 <View style={style.footerCard}>
                     <Text style={style.quantMembro}>8 membros</Text>
 
-                    <Link href={'/home/verEquipe'}>
-                    <Text style={style.verEquipe}>Ver equipe</Text>
-                </Link>
+                    < TouchableOpacity>
+                        <Link href={'/home/verEquipe'}>
+                        <View>
+                            <Text style={style.verEquipe}>Ver equipe</Text>
+
+                        </View>
+                        </Link>
+                    </TouchableOpacity>
                 </View>
             </View>
 
 
 
 
-            {/* card adicionar membro */ }
+            {/* card adicionar membro */}
 
             <View style={style.cardAdicionar}>
                 <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
@@ -74,7 +79,7 @@ export default function Equipes() {
                     <Text style={style.labelAdicionar}>Nome da equipe:</Text>
                     <TextInput
                         style={style.inputAdicionar}
-                        placeholder="Selecionar"
+                        placeholder="ex: Manutenção"
                         placeholderTextColor="#8B8686"
                     />
                 </View>
