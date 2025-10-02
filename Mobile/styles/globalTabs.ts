@@ -19,7 +19,7 @@ export const TabsStyles = StyleSheet.create({
     },
     conjHeaderPrincipal: {
         marginLeft: 30,
-        flex: 1
+        flex: 1,
     },
     headerPrincipal: {
         flexDirection: 'row',
