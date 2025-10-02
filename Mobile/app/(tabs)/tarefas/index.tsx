@@ -1,30 +1,46 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Link } from "expo-router";
+import TasksCards from "./tasksCard";
 
-// fazer uma tarefa de referencia
+
+interface Tasks {
+    id: number;
+    title: string;
+    inspectorId: number;
+    machineId: number;
+}
 
 export default function Tarefas() {
 
-    const [filtro, setFiltro] = useState("todas");
+    const [tasks, setTasks] = useState<Tasks[]>([]);
+    const [filtro, setFiltro] = useState<"todas" | "pendente" | "concluida">("todas");
 
-    // Exemplo de dados
-    const documentos = [
-        { id: 1, nome: "Documento A", status: "Pendente" },
-        { id: 2, nome: "Documento B", status: "concluida" },
-        { id: 3, nome: "Documento C", status: "Pendente" },
-    ];
+    useEffect(() => {
+        async function fetchTasks() {
+            try {
+                const response = await fetch('https://maintech-backend-r6yk.onrender.com/tasks/getAll');
+                const data = await response.json();
 
-    // Filtra os documentos conforme o filtro selecionado
-    const tarefasFiltrados = documentos.filter(doc => {
-        if (filtro === "todas") return true;
-        if (filtro === "pendente") return doc.status === "Pendente";
-        if (filtro === "concluida") return doc.status === "concluida";
-        return true;
-    });
+                const mappedTasks = data.map((task: any) => ({
+                    id: task.id,
+                    title: task.title,
+                    inspectorId: task.inspectorId,
+                    machineId: task.machineId,
+                    status: task.status,
+                }));
+
+                setTasks(mappedTasks);
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            }
+        }
+
+        fetchTasks();
+    }, []);
 
     return (
         <View style={TabsStyles.container}>
@@ -44,7 +60,7 @@ export default function Tarefas() {
                         borderRadius: 25, padding: 8, height: 50, width: 50,
                         alignItems: 'center', justifyContent: 'center'
                     }} >
-                        <Plus color={"#fff"} strokeWidth={1.8} size={30}/>
+                        <Plus color={"#fff"} strokeWidth={1.8} size={30} />
                     </View>
                 </Link>
             </View>
@@ -88,9 +104,18 @@ export default function Tarefas() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView>
-
-            </ScrollView>
+                    <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}>
+                        {tasks
+                            .map(task => (
+                                <TasksCards
+                                    key={task.id}
+                                    id={task.id}
+                                    title={task.title}
+                                    inspectorId={task.inspectorId}
+                                    machineId={task.machineId}
+                                />
+                            ))}
+                    </ScrollView>
 
         </View>
     )
