@@ -12,6 +12,7 @@ interface Tasks {
     title: string;
     inspectorId: number;
     machineId: number;
+    updateDate: string;
 }
 
 export default function Tarefas() {
@@ -22,7 +23,7 @@ export default function Tarefas() {
     useEffect(() => {
         async function fetchTasks() {
             try {
-                const response = await fetch('https://maintech-backend-r6yk.onrender.com/tasks/getAll');
+                const response = await fetch('https://maintech-backend-r6yk.onrender.com/tasks/get');
                 const data = await response.json();
 
                 const mappedTasks = data.map((task: any) => ({
@@ -31,6 +32,7 @@ export default function Tarefas() {
                     inspectorId: task.inspectorId,
                     machineId: task.machineId,
                     status: task.status,
+                    updateDate: task.updateDate,
                 }));
 
                 setTasks(mappedTasks);
@@ -104,18 +106,18 @@ export default function Tarefas() {
                 </TouchableOpacity>
             </View>
 
-                    <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}>
-                        {tasks
-                            .map(task => (
-                                <TasksCards
-                                    key={task.id}
-                                    id={task.id}
-                                    title={task.title}
-                                    inspectorId={task.inspectorId}
-                                    machineId={task.machineId}
-                                />
-                            ))}
-                    </ScrollView>
+            <ScrollView>
+                {tasks.map(task => (
+                    <TasksCards
+                        key={task.id}
+                        id={task.id}
+                        title={task.title}
+                        updateDate={task.updateDate}
+                    />
+
+                ))}
+            </ScrollView>
+
 
         </View>
     )

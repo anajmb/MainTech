@@ -1,21 +1,29 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Link } from "expo-router";
+import { Clock } from "lucide-react-native";
 
 interface TasksCards {
     id: number;
     title: string;
     inspectorId: number;
     machineId: number;
+    updateDate: string;
 }
 
-export const TasksCards: React.FC<TasksCards> = ({ id, title, inspectorId, machineId }) => {
+export const TasksCards: React.FC<TasksCards> = ({ id, title, inspectorId, machineId, updateDate }) => {
+
+    const formattedDate = new Date(updateDate).toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
     return (
         <>
             <View style={styles.card}>
                 <Text style={styles.title}>{title}</Text>
-                <Text style={styles.description}>{id}</Text>
-                <Text style={styles.description}>{inspectorId}</Text>
-                <Text style={styles.description}>{machineId}</Text>
+                <Text style={styles.date}><Clock size={15} /> {formattedDate}</Text>
             </View>
         </>
     )
@@ -24,25 +32,24 @@ export const TasksCards: React.FC<TasksCards> = ({ id, title, inspectorId, machi
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: '#eeeeee',
         padding: 16,
         borderRadius: 8,
         marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#ccc',
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 4,
+        marginBottom: 30,
     },
-    description: {
+    id: {
         fontSize: 14,
+    },
+    date: {
+        fontSize: 16,
         marginBottom: 8,
-    },
-    status: {
-        fontSize: 14,
-        color: '#555',
+        marginLeft: 200,
     },
 });
 
