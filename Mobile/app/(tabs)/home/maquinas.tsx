@@ -33,8 +33,10 @@ export default function Maquinas() {
                 </View>
             </View>
 
-            {/* Card Cadastro */}
+            {/* Cadastro */}
             <View style={styles.todosCard}>
+
+                {/* Card Cadastro */}
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Informe os dados para cadastrar</Text>
 
@@ -126,22 +128,6 @@ export default function Maquinas() {
                     </View>
                 </View>
             </View>
-                {/* Modal de confirmação de deleção */}
-                <Modal visible={modalVisible} transparent animationType="fade">
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-                        <View style={{ backgroundColor: '#fff', padding: 24, borderRadius: 10, alignItems: 'center' }}>
-                            <Text>Deseja realmente deletar?</Text>
-                            <View style={{ flexDirection: 'row', marginTop: 16 }}>
-                                <TouchableOpacity onPress={() => { /* ação de deletar */ setModalVisible(false); }}>
-                                    <Text style={{ color: 'red', marginRight: 16 }}>Deletar</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                    <Text>Cancelar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
                 </ScrollView>
 
         )
