@@ -1,6 +1,7 @@
 import { StyleSheet, ScrollView, Text, View } from "react-native";
-import { CheckCircle, ListTodo, Clock, ClipboardList } from "lucide-react-native";
- 
+import { CheckCircle, ListTodo, Clock, ClipboardList, BarChartBig } from "lucide-react-native";
+
+
 export default function Dashboard() {
     return (
         <ScrollView style={styles.page}>
@@ -11,8 +12,8 @@ export default function Dashboard() {
             </View>
             <View style={styles.headerBox}>
                 <Text style={styles.headerTitle}>Dashboard</Text>
-                <Text style={styles.headerSubtitle}>e estatísticas</Text>
             </View>
+            <Text style={styles.headerSubtitle}>e estatísticas</Text>
             <Text style={styles.sectionTitle}>Métricas principais</Text>
             <View style={styles.metricsRow}>
                 <View style={styles.metricBox}>
@@ -58,12 +59,23 @@ export default function Dashboard() {
                     </View>
                 </View>
             </View>
- 
-            <Text style={styles.sectionTitle}>Gráficos</Text>
+
+            <View style={styles.metricHeader}>
+                <BarChartBig color="#D6231C" size={20} style={styles.graphicIcon} />
+                <Text style={styles.sectionTitleGraphic}>Gráficos</Text>
+            </View>
+
+
+            <Text style={styles.sectionsubTitle}>Atividade semanal</Text>
+            <View style={styles.graphCardsColumn}>
+                <View style={styles.graphCard}></View>
+                <View style={styles.graphCard}></View>
+            </View>
+
         </ScrollView>
     );
 }
- 
+
 const styles = StyleSheet.create({
     page: {
         flex: 1,
@@ -72,7 +84,7 @@ const styles = StyleSheet.create({
     },
     logoBox: {
         alignItems: "center",
-        marginTop: 24,
+        marginTop: 45,
         marginBottom: 10
     },
     logoText: {
@@ -83,23 +95,31 @@ const styles = StyleSheet.create({
     },
     headerBox: {
         marginLeft: 10,
-        marginBottom: 10
+        marginBottom: 9
     },
     headerTitle: {
-        fontSize: 22,
-        fontWeight: "bold"
+        fontSize: 24,
+        fontWeight: "bold",
+        marginTop: 18
     },
     headerSubtitle: {
         color: "#848484",
-        fontSize: 15
+        fontSize: 17,
+        marginLeft: 10,
     },
     sectionTitle: {
-        fontSize: 19,
+        fontSize: 20,
         fontWeight: "bold",
-        marginTop: 25,
-        marginBottom: 10,
+        marginTop: 30,
+        marginBottom: 29,
         marginLeft: 10
     },
+    sectionsubTitle: {
+        fontSize: 18,
+        fontWeight: "600",
+        marginLeft: 10
+    },
+
     metricsRow: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -116,7 +136,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         elevation: 2,
-        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        boxShadow: '1px 5px 10px rgba(93, 63, 63, 0.25)',
         marginBottom: 10
     },
     metricHeader: {
@@ -158,4 +178,34 @@ const styles = StyleSheet.create({
         marginTop: 10,
         minHeight: 16
     },
+    sectionTitleGraphic: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginTop: 19,
+        marginBottom: 15,
+        marginLeft: 2,
+
+    },
+    graphicIcon: {
+        marginRight: 8,
+        marginLeft: 10
+    },
+    graphCardsColumn: {
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 20,
+        marginTop: 20,
+        marginBottom: 30
+    },
+    graphCard: {
+        backgroundColor: "#f2f2f2",
+        borderRadius: 12,
+        width: "95%",
+        padding: 50,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4
+    }
 });
