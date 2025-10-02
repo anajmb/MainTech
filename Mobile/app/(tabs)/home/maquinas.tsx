@@ -2,12 +2,18 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { Pencil, Trash2, Wrench } from "lucide-react-native";
 
+interface Machines {
+    id: number;
+    name: string;
+    location: string;
+}
 
 export default function Maquinas() {
+    const [machines, setMachines] = useState<Machines[]>([]);
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
     const [open, setOpen] = useState(false);
 
@@ -20,6 +26,20 @@ export default function Maquinas() {
         { label: 'Oficina Mecânica', value: 'oficina5' },
         { label: 'Oficina Automotiva', value: 'oficina6' },
     ]);
+
+    useEffect(() => {
+        async function fetchMachines() {
+            try {
+                const response = await fetch('https://maintech-backend-r6yk.onrender.com/machines/get');
+                const data = await response.json();
+                setMachines(data);
+            } catch (error) {
+                console.error('Error fetching machines:', error);
+            }
+        }
+        fetchMachines();
+    }, []);
+
     return (
         <ScrollView style={TabsStyles.container}>
 
@@ -72,58 +92,41 @@ export default function Maquinas() {
                     </TouchableOpacity>
 
                 </View>
-                  
-                  {/* Máquinas cadastradas */}
+
+                {/* Máquinas cadastradas */}
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Máquinas Cadastradas</Text>
 
-                    {/* quinadora */}
-                    <View style={styles.cardMaq}>
+                    {machines.map((machine) => (
+                        <View key={machine.id} style={styles.cardMaq}>
+                            <View style={{ justifyContent: "center" }}>
+                                <Wrench color="#1E9FCE" size={28} />
+                            </View>
 
-                        <View style={{justifyContent: "center"}}>
-                            <Wrench color="#1E9FCE" size={28}/>
+                            <View style={{ marginLeft: 15 }}>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                    <Text style={styles.maqTitle}>{machine.name}</Text>
+                                    <Text style={styles.maqSubTitle}>{machine.location}</Text>
+                                </View>
+                                <Text style={styles.maqId}>ID: {machine.id}</Text>
+                            </View>
+
+                            <View style={styles.editIcons}>
+                                <Pencil size={18} style={{ marginRight: 10 }} />
+                                <Trash2 size={18} color={'#e00000ff'} />
+                            </View>
                         </View>
-                          
-                         <View style={{marginLeft: 15}}> 
-                        <View style={{flexDirection: 'row'}}>
-                            <Text style={styles.maqTitle}>Quinadora</Text> <Text style={styles.maqSubTitle}>Oficina Mecânica</Text>
-                        </View>
-                        <Text style={styles.maqId}>ID: 122345</Text>
-                         </View>
+                    ))}
 
-                         <View style={styles.editIcons}>
-                         <Pencil size={18} style={{marginRight: 10}}/> <Trash2 size={18} color={'#e00000ff'}/>
-                         </View>
-                    </View>
-
-                    {/* crimpagem */}
-                    <View style={styles.cardMaq}>
-
-                        <View style={{justifyContent: "center"}}>
-                            <Wrench color="#B13FD7" size={28}/>
-                        </View>
-                          
-                         <View style={{marginLeft: 15}}> 
-                        <View style={{flexDirection: 'row'}}>
-                            <Text style={styles.maqTitle}>Crimpagem</Text> <Text style={styles.maqSubTitle}>Oficina Elétrica</Text>
-                        </View>
-                        <Text style={styles.maqId}>ID: 123345</Text>
-                         </View>
-
-                         <View style={styles.editIcons}>
-                         <Pencil size={18} style={{marginRight: 10}}/> <Trash2 size={18} color={'#e00000ff'}/>
-                         </View>
-                    </View>
                 </View>
-
-                
-
             </View>
 
         </ScrollView>
 
     )
 }
+
+
 
 const styles = StyleSheet.create({
     todosCard: {
@@ -174,15 +177,15 @@ const styles = StyleSheet.create({
 
     },
     maqTitle: {
-     fontSize: 18,
-     color: "#000000",
+        fontSize: 18,
+        color: "#000000",
     },
     maqSubTitle: {
         marginLeft: 6,
         marginTop: 4,
         fontSize: 13,
         color: "#5e5e5eff",
-        
+
     },
     maqId: {
         marginTop: 3,
