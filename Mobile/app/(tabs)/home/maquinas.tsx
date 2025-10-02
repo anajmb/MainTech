@@ -123,8 +123,6 @@ export default function Maquinas() {
           ))}
         </View>
       </View>
-
-<<<<<<< HEAD
             {/* Cadastro */}
             <View style={styles.todosCard}>
 
@@ -222,11 +220,8 @@ export default function Maquinas() {
             </View>
                 </ScrollView>
 
-        )
-=======
-    </ScrollView>
-  );
->>>>>>> 50400e32b4cce05b63c56d563ef3a7fd063c1b1a
+        );
+
 }
 
 const styles = StyleSheet.create({
