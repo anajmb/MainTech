@@ -72,7 +72,8 @@ export default function RecuperarCodigo() {
         alignItems: "center",
         marginHorizontal: 5,
         borderWidth: isFocused ? 2 : 0,
-        borderColor: "#A50702"
+        borderColor: "#A50702",
+        position: "relative"
       }}
       onLayout={getCellOnLayoutHandler(index)}
     >

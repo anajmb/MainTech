@@ -70,15 +70,15 @@ export default function Login() {
             </View>
 
             <View style={styles.hrefLogin}>
-                <Link href={'/recuperarSenha'} style={{ color: "#D40303" }}>
-              <Text>
+                <Link href={'./recuperarSenha'} >
+              <Text style={{ color: "#D40303" }}>
                 Esqueci minha senha
               </Text>
                 </Link>
 
                 {/* <Text>Seu primeiro acesso?  */}
-                <Link href={'./cadastro'} style={{ color: "#D40303" }}>
-                <Text>Cadastre-se</Text>
+                <Link href={'./cadastro'} >
+                <Text style={{ color: "#D40303" }}>Cadastre-se</Text>
                 </Link>
             </View>
 
