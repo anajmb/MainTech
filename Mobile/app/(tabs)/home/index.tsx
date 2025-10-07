@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users } from "lucide-react-native";
+import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
 
@@ -12,7 +12,8 @@ export default function Home() {
     <ScrollView style={TabsStyles.container}>
       {/* Logo */}
 
-      <TouchableOpacity style={styles.header}>
+  <View>
+  <TouchableOpacity style={styles.header}>
         {/* <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center', }}> */}
 
         <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -27,9 +28,12 @@ export default function Home() {
           </View>
         </View>
 
-          <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{ right: 2 }} />
+          <TouchableOpacity>
+            <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{ right: 2 }} />
+          </TouchableOpacity>
         {/* </Link> */}
       </TouchableOpacity>
+      </View>
 
       {/* Ações rápidas */}
       <View>
@@ -90,6 +94,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+  
   header: {
     backgroundColor: "#eeeeee69",
     boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',

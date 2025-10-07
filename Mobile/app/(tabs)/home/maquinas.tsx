@@ -130,14 +130,14 @@ export default function Maquinas() {
             {/* Modal de confirmação de deleção */}
             <Modal visible={modalVisible} transparent animationType="fade">
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-                    <View style={{ backgroundColor: '#fff', padding: 30, borderRadius: 10, alignItems: 'center' }}>
-                        <Text>Deseja realmente deletar?</Text>
-                        <View style={{ flexDirection: 'row', marginTop: 16 }}>
+                    <View style={{ backgroundColor: '#fff', padding: 40, borderRadius: 20, alignItems: 'center' }}>
+                        <Text style={{fontSize: 22}}>Deseja realmente deletar?</Text>
+                        <View style={{ flexDirection: 'row', marginTop: 24 }}>
                             <TouchableOpacity onPress={() => { /* ação de deletar */ setModalVisible(true); }}>
-                                <Text style={{ color: 'red', marginRight: 16 }}>Deletar</Text>
+                                <Text style={{ color: 'red', marginRight: 16, fontSize: 18 }}>Deletar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text>Cancelar</Text>
+                                <Text style={{fontSize: 18}}>Cancelar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         marginLeft: 10,
         gap: 5,
+        
 
     },
     image: {
