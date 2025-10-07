@@ -1,211 +1,271 @@
 import { StyleSheet, ScrollView, Text, View } from "react-native";
 import { CheckCircle, ListTodo, Clock, ClipboardList, BarChartBig } from "lucide-react-native";
+import { TabsStyles } from "@/styles/globalTabs";
+import SetaVoltar from "@/components/setaVoltar";
 
+// 1. Importe o componente que acabamos de criar
+import ChartWebView from "../../../components/chartWebView";
+import type { ChartConfiguration } from 'chart.js';
+
+// 2. REMOVA o código `ChartJS.register(...)` daqui.
 
 export default function Dashboard() {
+    // 3. Defina as configurações para cada gráfico
+    const weeklyActivityConfig: ChartConfiguration = {
+        type: 'bar',
+        data: {
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+            datasets: [{
+                label: 'Tarefas Concluídas',
+                data: [8, 12, 5, 9, 7, 4],
+                backgroundColor: 'rgba(67, 139, 233, 0.6)', // Azul do ícone Clock
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    };
+
+    const serviceOrdersConfig: ChartConfiguration = {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+            datasets: [{
+                label: 'Ordens de Serviço',
+                data: [5, 8, 12, 10, 15],
+                borderColor: 'rgba(214, 35, 28, 0.8)', // Vermelho do ícone ClipboardList
+                backgroundColor: 'rgba(214, 35, 28, 0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    };
+
     return (
-        <ScrollView style={styles.page}>
-            <View style={styles.logoBox}>
-                <Text style={styles.logoText}>
-                    <Text style={{ fontSize: 32 }}>⚙️</Text> MAINTECH
-                </Text>
-            </View>
-            <View style={styles.headerBox}>
-                <Text style={styles.headerTitle}>Dashboard</Text>
-            </View>
-            <Text style={styles.headerSubtitle}>e estatísticas</Text>
-            <Text style={styles.sectionTitle}>Métricas principais</Text>
-            <View style={styles.metricsRow}>
-                <View style={styles.metricBox}>
-                    <View style={styles.metricHeader}>
-                        <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
-                        <Text style={styles.metricLabel}>Tarefas concluídas</Text>
-                    </View>
-                    <View style={styles.metricValueArea}>
-                        <Text style={styles.metricValue}>85%</Text>
-                        <Text style={styles.metricSub}>{""}</Text>
-                    </View>
-                </View>
-                <View style={styles.metricBox}>
-                    <View style={styles.metricHeader}>
-                        <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
-                        <Text style={styles.metricLabel}>Total de tarefas</Text>
-                    </View>
-                    <View style={styles.metricValueArea}>
-                        <Text style={styles.metricValue}>15</Text>
-                        <Text style={styles.metricSub}>Neste mês</Text>
-                    </View>
-                </View>
-            </View>
-            <View style={styles.metricsRow}>
-                <View style={styles.metricBox}>
-                    <View style={styles.metricHeader}>
-                        <Clock color="#438BE9" size={20} style={styles.metricIcon} />
-                        <Text style={styles.metricLabel}>Tempo médio</Text>
-                    </View>
-                    <View style={styles.metricValueArea}>
-                        <Text style={styles.metricValue}>5 min</Text>
-                        <Text style={styles.metricSub}>Check list</Text>
-                    </View>
-                </View>
-                <View style={styles.metricBox}>
-                    <View style={styles.metricHeader}>
-                        <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
-                        <Text style={styles.metricLabel}>Ordens de serviço</Text>
-                    </View>
-                    <View style={styles.metricValueArea}>
-                        <Text style={styles.metricValue}>8</Text>
-                        <Text style={styles.metricSub}>Neste mês</Text>
-                    </View>
+        <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 30 }}>
+
+            <View style={TabsStyles.headerPrincipal}>
+                <SetaVoltar />
+                <View style={TabsStyles.conjHeaderPrincipal}>
+                    <Text style={TabsStyles.tituloPrincipal}>Dashboards</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>e estatísticas</Text>
                 </View>
             </View>
 
-            <View style={styles.metricHeader}>
-                <BarChartBig color="#D6231C" size={20} style={styles.graphicIcon} />
+            <Text style={styles.sectionTitle}>Métricas principais</Text>
+
+            <View style={styles.metricsRow}>
+
+                <View style={styles.metricBox}>
+
+                    <View style={styles.metricHeader}>
+
+                        <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
+
+                        <Text style={styles.metricLabel}>Tarefas concluídas</Text>
+
+                    </View>
+
+                    <View style={styles.metricValueArea}>
+
+
+
+                        <Text style={styles.metricValue}>85%</Text>
+
+                        <Text style={styles.metricSub}>{""}</Text>
+
+                    </View>
+
+                </View>
+
+                <View style={styles.metricBox}>
+
+                    <View style={styles.metricHeader}>
+
+                        <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
+
+                        <Text style={styles.metricLabel}>Total de tarefas</Text>
+
+                    </View>
+
+                    <View style={styles.metricValueArea}>
+
+                        <Text style={styles.metricValue}>15</Text>
+
+                        <Text style={styles.metricSub}>Neste mês</Text>
+
+                    </View>
+
+                </View>
+
+            </View>
+
+            <View style={styles.metricsRow}>
+
+                <View style={styles.metricBox}>
+
+                    <View style={styles.metricHeader}>
+
+                        <Clock color="#438BE9" size={20} style={styles.metricIcon} />
+
+                        <Text style={styles.metricLabel}>Tempo médio</Text>
+
+                    </View>
+
+                    <View style={styles.metricValueArea}>
+
+                        <Text style={styles.metricValue}>5 min</Text>
+
+                        <Text style={styles.metricSub}>Check list</Text>
+
+                    </View>
+
+                </View>
+
+                <View style={styles.metricBox}>
+
+                    <View style={styles.metricHeader}>
+
+                        <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
+
+                        <Text style={styles.metricLabel}>Ordens de serviço</Text>
+
+                    </View>
+
+                    <View style={styles.metricValueArea}>
+
+                        <Text style={styles.metricValue}>8</Text>
+
+                        <Text style={styles.metricSub}>Neste mês</Text>
+
+                    </View>
+
+                </View>
+
+            </View>
+
+
+            <View style={styles.graphicTitleArea}>
+                <BarChartBig color="#333" size={20} style={styles.graphicIcon} />
                 <Text style={styles.sectionTitleGraphic}>Gráficos</Text>
             </View>
 
-
-            <Text style={styles.sectionsubTitle}>Atividade semanal</Text>
+            {/* 4. Implementação dos gráficos nos cards */}
             <View style={styles.graphCardsColumn}>
-                <View style={styles.graphCard}></View>
-                <View style={styles.graphCard}></View>
+                <View style={styles.graphCard}>
+                    <Text style={styles.sectionsubTitle}>Atividade semanal</Text>
+                    <ChartWebView config={weeklyActivityConfig} />
+                </View>
+                <View style={styles.graphCard}>
+                    <Text style={styles.sectionsubTitle}>Ordens de Serviço (Últimos Meses)</Text>
+                    <ChartWebView config={serviceOrdersConfig} />
+                </View>
             </View>
 
         </ScrollView>
     );
 }
 
+// 5. Estilos atualizados para os gráficos
 const styles = StyleSheet.create({
-    page: {
-        flex: 1,
-        paddingHorizontal: 18,
-        padding: 20
-    },
-    logoBox: {
-        alignItems: "center",
-        marginTop: 45,
-        marginBottom: 10
-    },
-    logoText: {
-        fontSize: 26,
-        fontWeight: "bold",
-        color: "#D6231C",
-        textAlign: "center"
-    },
-    headerBox: {
-        marginLeft: 10,
-        marginBottom: 9
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginTop: 18
-    },
-    headerSubtitle: {
-        color: "#848484",
-        fontSize: 17,
-        marginLeft: 10,
-    },
     sectionTitle: {
         fontSize: 20,
         fontWeight: "bold",
-        marginTop: 30,
-        marginBottom: 29,
-        marginLeft: 10
+        marginTop: 15,
+        marginBottom: 20,
+        marginLeft: 20
     },
     sectionsubTitle: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "600",
-        marginLeft: 10
+        marginBottom: 10,
+        color: '#444'
     },
-
     metricsRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginBottom: 10,
-        gap: 0
+        marginBottom: 15,
+        paddingHorizontal: 15
     },
     metricBox: {
-        backgroundColor: "#eeeeee69",
-        borderRadius: 10,
-        paddingVertical: 27,
-        paddingHorizontal: 16,
-        width: "47%",
-        minHeight: 100,
-        justifyContent: "center",
-        alignItems: "center",
-        elevation: 2,
-        boxShadow: '1px 5px 10px rgba(93, 63, 63, 0.25)',
-        marginBottom: 10
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        padding: 15,
+        width: "48%",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 3,
     },
     metricHeader: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 8,
-        marginLeft: 2,
-        marginRight: 2,
-        width: "100%"
+        marginBottom: 12,
     },
-    metricIcon: {
-        marginRight: 8,
-        marginLeft: 2
-    },
+    metricIcon: { marginRight: 8 },
     metricLabel: {
         fontSize: 14,
-        color: "#444",
-        textAlign: "center",
-        fontWeight: "500"
+        color: "#555",
+        fontWeight: "500",
+        flexShrink: 1,
     },
-    metricValueArea: {
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: 48
-    },
+    metricValueArea: {},
     metricValue: {
-        fontSize: 22,
+        fontSize: 28,
         fontWeight: "bold",
         color: "#222",
-        marginTop: 9,
-        paddingVertical: 6,
-        textAlign: "center"
     },
     metricSub: {
         fontSize: 12,
-        color: "#8f8787ff",
-        textAlign: "center",
-        marginTop: 10,
-        minHeight: 16
+        color: "#888",
+        marginTop: 2,
+    },
+    graphicTitleArea: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        marginBottom: 15,
+        marginLeft: 20,
     },
     sectionTitleGraphic: {
         fontSize: 20,
         fontWeight: "bold",
-        marginTop: 19,
-        marginBottom: 15,
-        marginLeft: 2,
-
     },
     graphicIcon: {
         marginRight: 8,
-        marginLeft: 10
     },
     graphCardsColumn: {
-        flexDirection: "column",
-        justifyContent: "center",
         alignItems: "center",
         gap: 20,
-        marginTop: 20,
-        marginBottom: 30
     },
     graphCard: {
-        backgroundColor: "#f2f2f2",
+        backgroundColor: "#fff",
         borderRadius: 12,
-        width: "95%",
-        padding: 10,
+        width: "90%",
+        height: 250, // Essencial para o WebView ter onde desenhar
+        padding: 15,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 3,
+        overflow: 'hidden',
     }
 });
