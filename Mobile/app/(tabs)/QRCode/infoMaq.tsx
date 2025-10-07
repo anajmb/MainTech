@@ -9,12 +9,13 @@ export default function InfosMaquina() {
 
   const [machineData, setMachineData] = useState<any>(null);
 
-  useEffect(() => {
+  useEffect(() => { 
     async function loadMachineById() {
       if (!info.id) return;
       try {
         const res = await api.get(`/machines/getUnique/${info.id}`);
         setMachineData(res.data);
+
       } catch (error) {
         console.log(error);
       }
