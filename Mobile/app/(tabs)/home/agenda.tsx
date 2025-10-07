@@ -1,5 +1,6 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
+import { Link } from "expo-router";
 import { Calendar, Clock, MapPin } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -21,12 +22,14 @@ export default function Agenda() {
 
             {/* input data */}
 
+            <Link href={"/(tabs)/home/calendario"}>
             <View style={style.cardCalen}>
                 <View style={style.groupCalen}>
                     <Calendar color={'#6797F0'} />
                     <Text style={style.tituloCardCalen}>Calendário</Text>
                 </View>
             </View>
+            </Link>
 
             <View style={style.groupEvent}>
                 <Text style={style.tituloEvent}>Evento de hoje</Text>
