@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
     color: '#848484',
     fontSize: 11
   },
+
   // modal styles
   modalOverlay: {
     flex: 1,
@@ -223,8 +224,8 @@ const styles = StyleSheet.create({
   },
   dropdownContainer:{
     position: 'absolute',
-    top: 135,     
-    right: 53,    
+    top: 125,     
+    right: 35,    
     width: 300,
     backgroundColor: '#f5f5f5',
     borderRadius: 16,
