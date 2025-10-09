@@ -1,15 +1,19 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../../lib/axios";
+
 
 export default function InfosMaquina() {
   const { codigo } = useLocalSearchParams();
   const info = codigo ? JSON.parse(codigo as string) : {};
 
+  const [selectedSet, setSelectedSet] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [machineData, setMachineData] = useState<any>(null);
 
-  useEffect(() => { 
+  useEffect(() => {
     async function loadMachineById() {
       if (!info.id) return;
       try {
@@ -26,26 +30,96 @@ export default function InfosMaquina() {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontWeight: "bold", fontSize: 18 }}>Informações da máquina:</Text>
+      <Text style={{ fontWeight: "bold", fontSize: 18, alignSelf: "center" }}>Informações da máquina</Text>
       {machineData ? (
         <>
-          <Text>Nome: {machineData.name}</Text>
-          <Text>Descrição: {machineData.description}</Text>
-          <Text>Localização: {machineData.location}</Text>
+          <View style={styles.dataContainer}>
+            <Text style={styles.fieldsTitle}>Nome da máquina</Text>
+            <Text style={styles.fieldsContent}>{machineData.name}</Text>
 
-          <Text style={{ marginTop: 10, fontWeight: "bold" }}>Sets:</Text>
-          {machineData.sets.map((set: any) => (
-            <Text key={set.id}>{set.name}</Text>
-          ))}
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 1, padding: 5 }}>
 
-          <Text style={{ marginTop: 10, fontWeight: "bold" }}>Tasks:</Text>
-          {machineData.tasks.map((task: any) => (
-            <Text key={task.id}>{task.title}</Text>
-          ))}
+              <View style={{ alignItems: "center", width: "50%" }}>
+                <Text style={styles.fieldsTitle} >Ultima atualização</Text>
+                <Text style={styles.fieldsContent}>
+                  {new Date(machineData.updateDate).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })}
+
+                </Text>
+              </View>
+
+              <View style={{ alignItems: "center", width: "50%" }}>
+                <Text style={styles.fieldsTitle}>Conjuntos</Text> 
+                <TouchableOpacity
+                  style={styles.fieldsContent}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <Text style={{ textAlign: "center", color: "rgba(0,0,0,0.44)", }}>
+                    {selectedSet ? selectedSet.name : `Ver conjuntos` }
+                  </Text>
+                </TouchableOpacity>
+                <Modal
+                  visible={modalVisible}
+                  transparent
+                  animationType="fade"
+                  onRequestClose={() => setModalVisible(false)}
+                >
+                  <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0,0,0,0.3)"
+                  }}>
+                    <View style={{
+                      backgroundColor: "#e6e6e6",
+                      borderRadius: 10,
+                      padding: 20,
+                      minWidth: 250,
+                      maxHeight: 300
+                    }}>
+                      <Text style={{fontSize: 20, marginBottom: 10}}>Conjuntos desta máquina:</Text>
+
+                      <ScrollView>
+                        {machineData.sets.map((set: any) => (
+                          <View
+                            key={set.id}
+                            style={{
+                              padding: 10,
+                              borderWidth: 1,
+                              borderColor: "#e6e6e6ff",
+                            }}
+                          >
+                            <Text style={{fontSize: 15}}>{set.name}</Text>
+                          </View>
+                        ))}
+                      </ScrollView>
+                      <TouchableOpacity
+                        style={{ marginTop: 10, alignSelf: "center", backgroundColor: "#ce221e", padding: 5, borderRadius: 5, }}
+                        onPress={() => setModalVisible(false)}
+                      >
+                        <Text style={{ color: "#fff" }}>Fechar</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
+
+            </View>
+
+            <Text style={styles.fieldsTitle}>Descrição:</Text>
+            <Text style={styles.fieldsContent}>{machineData.description}</Text>
+
+            <Text style={styles.fieldsTitle}>Localização:</Text>
+            <Text style={styles.fieldsContent}>{machineData.location}</Text>
+
+          </View>
 
         </>
       ) : (
-        <Text>Carregando...</Text>
+        <Text style={{alignSelf: "center"}}>Carregando...</Text>
       )}
     </View>
   );
@@ -55,6 +129,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center"
+    padding: 22,
   },
+  dataContainer: {
+    justifyContent: "space-between",
+    backgroundColor: "#f1f1f1",
+    borderRadius: 9,
+    padding: 12,
+    marginVertical: 8,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  fieldsTitle: {
+    fontSize: 16,
+    alignSelf: "center",
+    marginBottom: 12,
+  },
+  fieldsContent: {
+    backgroundColor: "#e6e6e6",
+    color: "rgba(0,0,0,0.44)",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 12,
+    fontSize: 15,
+    alignSelf: "center",
+    textAlign: "center",
+    width: "80%",
+    flexDirection: "row",
+  }
 });
