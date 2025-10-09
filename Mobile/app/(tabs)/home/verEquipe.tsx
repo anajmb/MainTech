@@ -1,9 +1,49 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { Wrench, MoreVertical } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { MoreVertical, Wrench } from "lucide-react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { api } from "../../../lib/axios";
+
+
+
+
+export interface Team {
+    id: number;
+    name: string;
+    description: string;
+    members: {
+        id: number;
+        person: {
+            name: string;
+            email: string;
+            role: string;
+        };
+    }[];
+}
+
 
 export default function VerEquipe() {
+
+    const { teamId } = useLocalSearchParams();
+    const temaid = Number(teamId);
+
+    const [teamData, setTeamData] = useState<Team | null>(null);
+
+    useEffect(() => {
+        async function fetchTeamMembers() {
+            if (!temaid) return;
+            try {
+                const res = await api.get(`/team/getUnique/${temaid}`);
+                setTeamData(res.data);
+            } catch (error) {
+                // Trate o erro se necessário
+            }
+        }
+        fetchTeamMembers();
+    }, [temaid]);
+
     return (
         <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 200 }}>
             <View style={TabsStyles.headerPrincipal}>
@@ -22,25 +62,36 @@ export default function VerEquipe() {
             </View>
 
             <View>
-                <Text style={style.fraseEquipe}>Equipe responsável pela manutenção de máquinas e equipamentos</Text>
+                <Text style={style.fraseEquipe}>
+                    {teamData?.description || "Equipe responsável pela manutenção de máquinas e equipamentos"}
+                </Text>
             </View>
 
-            <View style={style.usuarioItem}>
-                <View style={style.avatar}>
-                    <Text style={style.avatarText}>JS</Text>
+            {teamData?.members?.map((member) => (
+                <View style={style.usuarioItem} key={member.id}>
+                    <View style={style.avatar}>
+                        <Text style={style.avatarText}>
+                            {member.person.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")
+                                .toUpperCase()}
+                        </Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text style={style.nomeUsuario}>{member.person.name}</Text>
+                        <Text style={style.emailUsuario}>{member.person.email}</Text>
+                    </View>
+                    <View style={style.tagCargo}>
+                        <Text style={style.tagCargoText}>{member.person.role}</Text>
+                    </View>
+                    <TouchableOpacity style={style.menuIcon} onPress={() => { }}>
+                        <MoreVertical color="#000" size={16} />
+                    </TouchableOpacity>
                 </View>
-                <View style={{ flex: 1 }}>
-                    <Text style={style.nomeUsuario}>João Silva</Text>
-                    <Text style={style.emailUsuario}>joaosilva@empresa.com</Text>
-                </View>
-                <View style={style.tagCargo}>
-                    <Text style={style.tagCargoText}>Líder técnico</Text>
-                </View>
-                {/* Ícone de três pontinhos dentro do usuárioItem */}
-                <TouchableOpacity style={style.menuIcon} onPress={() => {}}>
-                    <MoreVertical color="#000" size={16} />
-                </TouchableOpacity>
-            </View>
+            ))}
+
+
         </ScrollView>
     )
 }
@@ -76,7 +127,7 @@ const style = StyleSheet.create({
         marginTop: 30,
         marginLeft: 1,
         marginRight: 1,
-        marginBottom: 30,
+        marginBottom: 5,
         position: "relative",
     },
     avatar: {

@@ -1,12 +1,40 @@
 import SetaVoltar from "@/components/setaVoltar";
+import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { Wrench, UserPlus, Users } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 
 // arrumar icone de add membro e equipe
 
+
+export interface Team {
+    id: number;
+    name: string;
+    description: string;
+    members: any[];
+}
+
 export default function Equipes() {
+
+    const [TeamData, setTeamData] = useState<Team[]>([]);
+
+    useEffect(() => {
+        async function fetchTeams() {
+            try {
+                const res = await api.get('/team/get');
+                setTeamData(res.data);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+
+        fetchTeams();
+    }, [])
+
     return (
         <ScrollView style={TabsStyles.container} >
 
@@ -23,7 +51,7 @@ export default function Equipes() {
                             <TouchableOpacity style={style.iconeAcao}>
                                 <Link href={'/home/cadastrarUsuario'}>
                                     <View>
-                                        <UserPlus color="#fff" size={17} style={{alignItems: "center"}} />
+                                        <UserPlus color="#fff" size={17} style={{ alignItems: "center" }} />
                                     </View >
                                 </Link>
                             </TouchableOpacity>
@@ -44,32 +72,41 @@ export default function Equipes() {
             {/* input data */}
 
             <View style={style.card}>
-                <View style={style.groupEqui}>
-                    {/* icone grupo, cor random */}
+                <ScrollView>
 
-                    <View style={style.iconeEquipe}>
-                        <Wrench color="white" />
-                    </View>
-
-                    <View style={style.infoEqui}>
-                        <Text style={style.tituloEqui}>Equipe de Manutenção</Text>
-                        <Text style={style.descricaoEqui}>Equipe responsável pela manutenção de máquinas e equipamentos</Text>
-                    </View>
-
-                    {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
-                </View>
-                <View style={style.footerCard}>
-                    <Text style={style.quantMembro}>8 membros</Text>
-
-                    < TouchableOpacity>
-                        <Link href={'/home/verEquipe'}>
-                            <View>
-                                <Text style={style.verEquipe}>Ver equipe</Text>
-
+                    {TeamData.map((team) => (
+                        <View key={team.id} style={{ marginTop: 20 }}>
+                            <View style={style.groupEqui}>
+                                {/* icone grupo, cor random */}
+                                <View style={style.iconeEquipe}>
+                                    <Wrench color="white" />
+                                </View>
+                                <View style={style.infoEqui}>
+                                    <Text style={style.tituloEqui}>{team.name}</Text>
+                                    <Text style={style.descricaoEqui}>{team.description}</Text>
+                                    {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
+                                </View>
                             </View>
-                        </Link>
-                    </TouchableOpacity>
-                </View>
+
+                            <View style={style.footerCard}>
+                                <Text style={style.quantMembro}>
+                                    {team.members ? team.members.length : 0} membros
+                                </Text>
+
+                                < TouchableOpacity>
+                                    <Link href={`/home/verEquipe?teamId=${team.id}`}>
+                                        <View>
+                                            <Text style={style.verEquipe}>Ver equipe</Text>
+
+                                        </View>
+                                    </Link>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    ))}
+
+                </ScrollView>
+
             </View>
 
 
@@ -111,13 +148,13 @@ export default function Equipes() {
 
 const style = StyleSheet.create({
     EquipesHeader: {
-        flexDirection:  "row",
-        gap: 100 
+        flexDirection: "row",
+        gap: 100
     },
     buttonEquipes: {
         gap: 12,
         flexDirection: "row",
-        transform: [{ translateY: -5 }], 
+        transform: [{ translateY: -5 }],
 
 
     },
