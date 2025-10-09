@@ -8,10 +8,10 @@ export default function Historico() {
         <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>
-                <SetaVoltar/>
+                <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Histórico</Text>
-                   <Text style={TabsStyles.subtituloPrincipal}>Suas atividades recentes  </Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>Suas atividades recentes  </Text>
 
                 </View>
 
@@ -22,7 +22,7 @@ export default function Historico() {
                     <Text style={style.statsNum}>24</Text>
                     <Text style={style.statsTexto}>Hoje</Text>
 
-                </View> 
+                </View>
                 <View style={style.statsItem}>
                     <Text style={style.statsNum}>158</Text>
                     <Text style={style.statsTexto}>Esta semana</Text>
@@ -32,29 +32,36 @@ export default function Historico() {
                     <Text style={style.statsTexto}>Total</Text>
                 </View>
 
-               
-                </View>
+
+            </View>
 
 
                 /* card de historico informacoes */
 
-                <View style={style.cardHistorico}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                    <CheckCircle color="#6FCF97" size={28} />
+            <View style={style.cardHistorico}>
+                <View >
                     <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                        <View style={{ backgroundColor: "#E0F7EF", padding: 6, borderRadius: 50 }}>
+                            <CheckCircle color="#6FCF97" size={21} />
+                        </View>
                         <Text style={style.tituloHistorico}>Sangrador pneumático de freios</Text>
+                    </View>
                         <Text style={style.subtituloHistorico}>Tarefa concluída</Text>
                         <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6, gap: 8 }}>
                             <Text style={style.dataHistorico}>15/07/2025</Text>
-                            <Text style={style.dataHistorico}>15:30</Text>
+                        </View>
+                        <View>
+                            <Text style={style.horaHistorico}>15:30</Text>
+
                         </View>
                     </View>
-                    <View style={style.statusConcluido}>
-                        <Text style={style.statusConcluidoText}>Concluído</Text>
-                    </View>
+                </View>
+                <View style={style.botaoConcluido}>
+                    <Text style={style.botaoConcluidoText}>Concluído</Text>
                 </View>
             </View>
-            
+
 
         </ScrollView>
     )
@@ -62,7 +69,7 @@ export default function Historico() {
 }
 
 const style = StyleSheet.create({
-  cardStats: {
+    cardStats: {
         backgroundColor: "#fff",
         borderRadius: 16,
         flexDirection: "row",
@@ -90,8 +97,6 @@ const style = StyleSheet.create({
         marginBottom: 2,
     },
 
-
-    
     statsTexto: {
         fontSize: 14,
         color: "#888",
@@ -109,32 +114,44 @@ const style = StyleSheet.create({
         elevation: 3,
     },
     tituloHistorico: {
-        fontSize: 16,
-        fontWeight: "bold",
+        fontSize: 15,
+        fontWeight: 400,
         color: "#222",
+        marginTop: -10,
     },
     subtituloHistorico: {
-        fontSize: 14,
+        fontSize: 13,
         color: "#888",
-        marginTop: 2,
+        marginTop: -8,
+        marginLeft: 51,
     },
     dataHistorico: {
-        fontSize: 13,
+        fontSize: 12,
         color: "#888",
+        marginLeft: 51,
     },
-    statusConcluido: {
-        backgroundColor: "#CE221E",
-        borderRadius: 8,
-        paddingHorizontal: 14,
-        paddingVertical: 6,
-        alignItems: "center",
-        justifyContent: "center",
-        marginLeft: 8,
+    horaHistorico: {
+        fontSize: 12,
+        color: "#888",
+        marginLeft: 145,
+        marginTop: -18.6,
     },
-    statusConcluidoText: {
+    botaoConcluido: {
+    backgroundColor: "#CE221E",
+    borderRadius: 10,         
+    paddingHorizontal: 18,     
+    paddingVertical: 4,       
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: "auto",
+    marginRight: 0,
+    minHeight: 30,
+    marginTop: -13,
+},
+    botaoConcluidoText: {
         color: "#fff",
-        fontSize: 13,
-        fontWeight: "bold",
+        fontSize: 11,
+        fontWeight: 400,
     },
 });
 
