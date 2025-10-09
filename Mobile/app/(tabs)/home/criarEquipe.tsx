@@ -152,7 +152,7 @@ const style = StyleSheet.create({
     },
     botaoCriarEquipe: {
         backgroundColor: "#CE221E",
-        borderRadius: 8,
+        borderRadius: 8,    
         paddingVertical: 9,
         alignItems: "center",
         justifyContent: "center",

@@ -22,14 +22,14 @@ export default function Agenda() {
 
             {/* input data */}
 
-            <Link href={"/(tabs)/home/calendario"}>
             <View style={style.cardCalen}>
+            <Link href={"/(tabs)/home/calendario"}>
                 <View style={style.groupCalen}>
                     <Calendar color={'#6797F0'} />
                     <Text style={style.tituloCardCalen}>Calendário</Text>
                 </View>
-            </View>
             </Link>
+            </View>
 
             <View style={style.groupEvent}>
                 <Text style={style.tituloEvent}>Evento de hoje</Text>
@@ -55,6 +55,11 @@ export default function Agenda() {
 const style = StyleSheet.create({
     cardCalen: {
         alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        marginTop: 18,
+        marginBottom: 18,
+
 
     },
     groupCalen: {

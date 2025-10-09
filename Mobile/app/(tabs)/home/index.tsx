@@ -30,7 +30,7 @@ const NotificacoesModal: React.FC<NotificacoesModalProps> = ({ visible, onClose 
           {mockNotificacoes.map((notificacoes) => (
             <View key={notificacoes.id} style={styles.notificacaoItem}>
               <View style={styles.notificacaoIcon}>
-                <AlertTriangle color="#FFA500" size={20} />
+                <AlertTriangle color="#fde4b6ff" size={20} />
               </View>
               <View style={styles.notificacaoContent}>
                 <Text style={styles.itemTitle}>{notificacoes.title}</Text>
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#FFF3E0',
+    backgroundColor: '#c96d03ff',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,

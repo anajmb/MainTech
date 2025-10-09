@@ -2,15 +2,12 @@ import { StyleSheet, ScrollView, Text, View } from "react-native";
 import { CheckCircle, ListTodo, Clock, ClipboardList, BarChartBig } from "lucide-react-native";
 import { TabsStyles } from "@/styles/globalTabs";
 import SetaVoltar from "@/components/setaVoltar";
-
-// 1. Importe o componente que acabamos de criar
 import ChartWebView from "../../../components/chartWebView";
 import type { ChartConfiguration } from 'chart.js';
 
-// 2. REMOVA o código `ChartJS.register(...)` daqui.
 
 export default function Dashboard() {
-    // 3. Defina as configurações para cada gráfico
+    
     const weeklyActivityConfig: ChartConfiguration = {
         type: 'bar',
         data: {
@@ -18,7 +15,7 @@ export default function Dashboard() {
             datasets: [{
                 label: 'Tarefas Concluídas',
                 data: [8, 12, 5, 9, 7, 4],
-                backgroundColor: 'rgba(67, 139, 233, 0.6)', // Azul do ícone Clock
+                backgroundColor: 'rgba(67, 139, 233, 0.6)', 
                 borderRadius: 4,
             }]
         },
@@ -40,7 +37,7 @@ export default function Dashboard() {
             datasets: [{
                 label: 'Ordens de Serviço',
                 data: [5, 8, 12, 10, 15],
-                borderColor: 'rgba(214, 35, 28, 0.8)', // Vermelho do ícone ClipboardList
+                borderColor: 'rgba(214, 35, 28, 0.8)', 
                 backgroundColor: 'rgba(214, 35, 28, 0.1)',
                 fill: true,
                 tension: 0.3
@@ -182,7 +179,7 @@ export default function Dashboard() {
     );
 }
 
-// 5. Estilos atualizados para os gráficos
+
 const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
