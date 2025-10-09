@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 
+// interface AgendaCards {
+//     id: number;
+//     title: string;
+//     expirationDate: string 
+// }
 
 LocaleConfig.locales["pt-br"] = {
   monthNames: [
@@ -48,8 +53,9 @@ LocaleConfig.locales["pt-br"] = {
 
 // Define o idioma padrão
 LocaleConfig.defaultLocale = "pt-br";
-export default function AgendaScreen() {
 
+
+export default function AgendaScreen() {
 
   return (
     <View style={styles.container}>
