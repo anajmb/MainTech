@@ -88,7 +88,7 @@ export default function Home() {
             </TouchableOpacity>
           </Link>
 
-          <Link href="/(tabs)/home/agenda" asChild>
+          <Link href="/(tabs)/home/calendario" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Agenda</Text>

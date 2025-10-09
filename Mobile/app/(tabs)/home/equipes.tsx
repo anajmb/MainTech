@@ -14,28 +14,32 @@ export default function Equipes() {
                 <SetaVoltar />
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
-                    <Text style={TabsStyles.tituloPrincipal}>Equipes</Text>
+                    <View style={style.EquipesHeader}>
+
+                        <Text style={TabsStyles.tituloPrincipal}>Equipes</Text>
+
+                        <View style={style.buttonEquipes}>
+
+                            <TouchableOpacity style={style.iconeAcao}>
+                                <Link href={'/home/cadastrarUsuario'}>
+                                    <View>
+                                        <UserPlus color="#fff" size={17} style={{alignItems: "center"}} />
+                                    </View >
+                                </Link>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={style.iconeAcao}>
+                                <Link href={'/home/criarEquipe'}>
+                                    <Users color="#fff" size={17} />
+                                </Link>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                     <Text style={TabsStyles.subtituloPrincipal}>Gerencie suas equipes e membros</Text>
                 </View>
 
             </View>
 
-            <View style={{ flexDirection: "row", gap: 12, left: 250, marginTop: 1 }}>
-
-                <TouchableOpacity style={style.iconeAcao}>
-                    <Link href={'/home/cadastrarUsuario'}>
-                        <View>
-                            <UserPlus color="#fff" size={17} />
-                        </View >
-                    </Link>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={style.iconeAcao}>
-                    <Link href={'/home/criarEquipe'}>
-                        <Users color="#fff" size={17} />
-                    </Link>
-                </TouchableOpacity>
-            </View>
 
             {/* input data */}
 
@@ -59,10 +63,10 @@ export default function Equipes() {
 
                     < TouchableOpacity>
                         <Link href={'/home/verEquipe'}>
-                        <View>
-                            <Text style={style.verEquipe}>Ver equipe</Text>
+                            <View>
+                                <Text style={style.verEquipe}>Ver equipe</Text>
 
-                        </View>
+                            </View>
                         </Link>
                     </TouchableOpacity>
                 </View>
@@ -106,6 +110,17 @@ export default function Equipes() {
 }
 
 const style = StyleSheet.create({
+    EquipesHeader: {
+        flexDirection:  "row",
+        gap: 100 
+    },
+    buttonEquipes: {
+        gap: 12,
+        flexDirection: "row",
+        transform: [{ translateY: -5 }], 
+
+
+    },
     card: {
         backgroundColor: "#fff",
         borderRadius: 16,
@@ -237,5 +252,6 @@ const style = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
+
     },
 })
