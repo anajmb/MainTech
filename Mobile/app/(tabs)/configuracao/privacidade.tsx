@@ -5,10 +5,10 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 
 const dicasDeSeguranca = [
-  "Use senhas únicas e complexas",
-  "Mantenha o aplicativo sempre atualizado",
-  "Não compartilhe suas credenciais",
-  "Faça logout em dispositivos desconhecidos",
+  "Use senhas únicas e complexas;",
+  "Mantenha o aplicativo sempre atualizado;",
+  "Não compartilhe suas credenciais;",
+  "Faça logout em dispositivos desconhecidos;",
 ];
 
 export default function Privacidade() {
