@@ -14,7 +14,7 @@ export default function Agenda() {
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
 
-                <View style={TabsStyles.conjHeaderPrincipal}>
+                <       View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Agenda</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>Sexta-feira, 15 de agosto</Text>
                 </View>
