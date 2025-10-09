@@ -1,38 +1,78 @@
 import { Link } from "expo-router";
 import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
+import { useState } from "react";
 
 // achar um icone de máquina para por no lugar de Nova Tarefa
 // colocar função para que ao clicar no icone ativo, recarregue a página
 
+const mockNotificacoes = [
+  { id: '1', title: 'Análise de O.S.', description: 'uma nova O.S. precisa ser analisada', time: '2h' },
+  { id: '2', title: 'Manutenção Preventiva', description: 'uma manutenção preventiva foi concluída', time: '5h' },
+];
+
+interface NotificacoesModalProps {
+  visible: boolean;
+  onClose: () => void;
+}
+
+const NotificacoesModal: React.FC<NotificacoesModalProps> = ({ visible, onClose }) => {
+  return (
+    <Modal
+      transparent={true}
+      visible={visible}
+      // animationType="fade"
+      onRequestClose={onClose}>
+      <Pressable style={styles.modalOverlay} onPress={onClose}>
+        <View style={styles.dropdownContainer}>
+          <Text style={styles.dropdownTitle}>Notificações</Text>
+          {mockNotificacoes.map((notificacoes) => (
+            <View key={notificacoes.id} style={styles.notificacaoItem}>
+              <View style={styles.notificacaoIcon}>
+                <AlertTriangle color="#FFA500" size={20} />
+              </View>
+              <View style={styles.notificacaoContent}>
+                <Text style={styles.itemTitle}>{notificacoes.title}</Text>
+                <Text style={styles.itemDescription}>{notificacoes.description}</Text>
+              </View>
+              <Text style={styles.itemTime}>{notificacoes.time}</Text>
+            </View>
+          ))}
+        </View>
+      </Pressable>
+    </Modal>
+  )
+}
+
 export default function Home() {
+  const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);                            
 
   return (
     <ScrollView style={TabsStyles.container}>
       {/* Logo */}
 
-  <View>
-  <TouchableOpacity style={styles.header}>
-        {/* <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center', }}> */}
+      <View>
+        <TouchableOpacity style={styles.header}>
+          {/* <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center', }}> */}
 
-        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
 
-          <View style={TabsStyles.userFotoIcon}>
-            <User color={'#fff'} size={22} />
+            <View style={TabsStyles.userFotoIcon}>
+              <User color={'#fff'} size={22} />
+            </View>
+
+            <View>
+              <Text style={styles.tituloHeader}>Olá, Usuário</Text>
+              <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
+            </View>
           </View>
 
-          <View>
-            <Text style={styles.tituloHeader}>Olá, Usuário</Text>
-            <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
-          </View>
-        </View>
-
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
             <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{ right: 2 }} />
           </TouchableOpacity>
-        {/* </Link> */}
-      </TouchableOpacity>
+          {/* </Link> */}
+        </TouchableOpacity>
       </View>
 
       {/* Ações rápidas */}
@@ -41,12 +81,12 @@ export default function Home() {
 
         <View style={styles.cardsAcoes} >
 
-          <Link href="/(tabs)/home/maquinas" asChild> 
-          <TouchableOpacity style={styles.acaoCard}>
-            <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
-            <Text style={styles.tituloAcao}>Máquinas</Text>
-          </TouchableOpacity>
-          </Link> 
+          <Link href="/(tabs)/home/maquinas" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Máquinas</Text>
+            </TouchableOpacity>
+          </Link>
 
           <Link href="/(tabs)/home/agenda" asChild>
             <TouchableOpacity style={styles.acaoCard}>
@@ -89,12 +129,16 @@ export default function Home() {
 
       </View>
 
+      {/* Notificações Modal */}
+      <NotificacoesModal visible={isNotificacoesVisible} 
+      onClose={() => setNotificacoesVisible(false)}/>
+
     </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  
+
   header: {
     backgroundColor: "#eeeeee69",
     boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
@@ -171,5 +215,67 @@ const styles = StyleSheet.create({
   ativInfoSubtitulo: {
     color: '#848484',
     fontSize: 11
+  },
+  // modal styles
+  modalOverlay: {
+    flex: 1,
+    
+  },
+  dropdownContainer:{
+    position: 'absolute',
+    top: 135,     
+    right: 53,    
+    width: 300,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 16,
+    padding: 16,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  dropdownTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 12,
+    alignSelf: 'center'
+  },
+  notificacaoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0ff'
+  },
+  notificacaoIcon:{
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#FFF3E0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    margin: 4
+  },
+  notificacaoContent:{
+    flex: 1
+  },
+  itemTitle:{
+     fontSize: 14,
+    fontWeight: '600',
+    color: '#444',
+  },
+  itemDescription: {
+     fontSize: 13,
+    color: '#888',
+    marginTop: 2,
+  },
+  itemTime: {
+    fontSize: 12,
+    color: '#aaa',
+    margin: 4
   }
+
 })
