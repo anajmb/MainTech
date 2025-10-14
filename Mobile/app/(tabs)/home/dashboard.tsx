@@ -100,7 +100,6 @@ export default function Dashboard() {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
                 <ActivityIndicator size="large" color="#CE221E" />
-                <Text style={{ marginTop: 10, color: '#555' }}>Carregando dados...</Text>
             </View>
         );
     }

@@ -26,7 +26,7 @@ export default function Documento() {
     });
 
     return (
-        
+
         <ScrollView style={TabsStyles.container}>
             {/* Logo */}
 
@@ -35,15 +35,7 @@ export default function Documento() {
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Documentos</Text>
-                      <Text style={TabsStyles.subtituloPrincipal}>Veja as O.S.</Text>
-                </View>
-            </View>
-
-            <View style={styles.searchContainer}>
-                <View style={styles.searchCard}>
-                    
-                    <Search  size={20} style={styles.searchIcon} />
-                    <TextInput placeholderTextColor={'#9D9D9D'} placeholder="Buscar documentos" style={styles.input} />
+                    <Text style={TabsStyles.subtituloPrincipal}>Veja as O.S.</Text>
                 </View>
             </View>
 
@@ -80,86 +72,69 @@ export default function Documento() {
                 </TouchableOpacity>
             </View>
 
-                <View style={styles.documentosList}>
-                    <View style={styles.infosDocumentos}>
-                        <View style={{ flexDirection: 'row', gap: 15 }}>
-                            <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText color={'#fff'} />
-                            </View>
-                            <Text style={styles.documentosNome}>Ordem de serviço 100</Text>
+            <View style={styles.documentosList}>
+                <View style={styles.infosDocumentos}>
+                    <View style={{ flexDirection: 'row', gap: 15 }}>
+                        <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
+                            <FileText color={'#fff'} />
                         </View>
-                        <Text style={styles.documentosDescricao}>3,4 MB • 19/09/2025</Text>
-                        <Download style={styles.downloadIcon} />
+                        <Text style={styles.documentosNome}>Ordem de serviço 100</Text>
                     </View>
-
-                    <View style={styles.infosDocumentos}>
-                        <View style={{ flexDirection: 'row', gap: 15 }}>
-                            <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText color={'#fff'} />
-                            </View>
-                            <Text style={styles.documentosNome}>Ordem de serviço 99</Text>
-                        </View>
-                        <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-                        <Download style={styles.downloadIcon} />
-                    </View>
-
-                    <View style={styles.infosDocumentos}>
-                        <View style={{ flexDirection: 'row', gap: 15 }}>
-                            <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText color={'#fff'} />
-                            </View>
-                            <Text style={styles.documentosNome}>Ordem de serviço 98</Text>
-                        </View>
-                        <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-                        <Download style={styles.downloadIcon} />
-                    </View>
-
-                    <View style={styles.infosDocumentos}>
-                        <View style={{ flexDirection: 'row', gap: 15 }}>
-                            <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText color={'#fff'} />
-                            </View>
-                            <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
-                        </View>
-                        <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-                        <Download style={styles.downloadIcon} />
-                    </View>
-
-                     <View style={styles.infosDocumentos}>
-                        <View style={{ flexDirection: 'row', gap: 15 }}>
-                            <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                                <FileText color={'#fff'} />
-                            </View>
-                            <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
-                        </View>
-                        <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-                        <Download style={styles.downloadIcon} />
-                    </View>
-
+                    <Text style={styles.documentosDescricao}>3,4 MB • 19/09/2025</Text>
+                    <Download style={styles.downloadIcon} />
                 </View>
-            </ScrollView>
-        
+
+                <View style={styles.infosDocumentos}>
+                    <View style={{ flexDirection: 'row', gap: 15 }}>
+                        <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
+                            <FileText color={'#fff'} />
+                        </View>
+                        <Text style={styles.documentosNome}>Ordem de serviço 99</Text>
+                    </View>
+                    <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
+                    <Download style={styles.downloadIcon} />
+                </View>
+
+                <View style={styles.infosDocumentos}>
+                    <View style={{ flexDirection: 'row', gap: 15 }}>
+                        <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
+                            <FileText color={'#fff'} />
+                        </View>
+                        <Text style={styles.documentosNome}>Ordem de serviço 98</Text>
+                    </View>
+                    <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
+                    <Download style={styles.downloadIcon} />
+                </View>
+
+                <View style={styles.infosDocumentos}>
+                    <View style={{ flexDirection: 'row', gap: 15 }}>
+                        <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
+                            <FileText color={'#fff'} />
+                        </View>
+                        <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
+                    </View>
+                    <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
+                    <Download style={styles.downloadIcon} />
+                </View>
+
+                <View style={styles.infosDocumentos}>
+                    <View style={{ flexDirection: 'row', gap: 15 }}>
+                        <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
+                            <FileText color={'#fff'} />
+                        </View>
+                        <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
+                    </View>
+                    <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
+                    <Download style={styles.downloadIcon} />
+                </View>
+
+            </View>
+        </ScrollView>
+
     )
 }
 
 const styles = StyleSheet.create({
-    searchContainer: {
-        paddingHorizontal: 10,
-        marginBottom: 10
-    },
-    searchCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#E6E6E6',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        marginVertical: 8,
-        marginBottom: 20,
-    },
-    searchIcon: {
-        marginRight: 2,
-        color: '#9D9D9D',
-    },
     input: {
         backgroundColor: 'transparent',
         padding: 10,
@@ -186,6 +161,7 @@ const styles = StyleSheet.create({
     },
     documentosList: {
         gap: 20,
+        marginBottom: 40
     },
     infosDocumentos: {
         backgroundColor: '#eeeeee',

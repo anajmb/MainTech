@@ -2,15 +2,15 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import TasksCards from "./tasksCard";
+import { api } from "@/lib/axios";
 
-
-interface Tasks {
+interface Task {
     id: number;
     title: string;
-    description: string;    
+    description: string;
     inspectorId: number;
     machineId: number;
     status: string;
@@ -18,59 +18,47 @@ interface Tasks {
 }
 
 export default function Tarefas() {
-
-    const [tasks, setTasks] = useState<Tasks[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [filtro, setFiltro] = useState<"todas" | "pendente" | "concluida">("todas");
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchTasks() {
-        try {
-            // Define a URL de acordo com o filtro
-            let url = 'https://maintech-backend-r6yk.onrender.com/tasks/get';
-            if (filtro === "pendente") url += "?status=PENDING";
-            if (filtro === "concluida") url += "?status=COMPLETED";
+    useEffect(() => {
+        async function fetchTasks() {
+            setLoading(true);
+            try {
+                // 👇 AQUI ESTÁ A CORREÇÃO
+                const params: { status?: string } = {};
 
-            const response = await fetch(url);
-            const data = await response.json();
+                if (filtro === "pendente") {
+                    params.status = "PENDING";
+                }
+                if (filtro === "concluida") {
+                    params.status = "COMPLETED";
+                }
 
-            const mappedTasks = data.map((task: any) => ({
-                id: task.id,
-                title: task.title,
-                description: task.description,
-                inspectorId: task.inspectorId,
-                machineId: task.machineId,
-                status: task.status,
-                updateDate: task.updateDate,
-            }));
+                const response = await api.get('/tasks/get', { params });
+                setTasks(response.data);
 
-            setTasks(mappedTasks);
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            } finally {
+                setLoading(false);
+            }
         }
-    }
 
-    fetchTasks();
-}, [filtro]); // 🔁 Atualiza sempre que o filtro mudar
-
+        fetchTasks();
+    }, [filtro]);
 
     return (
         <ScrollView style={TabsStyles.container}>
-            {/* Logo */}
-
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
-
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Tarefas</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>Minhas tarefas</Text>
                 </View>
-
                 <Link href={'/tarefas/novaTarefa'}>
-                    <View style={{
-                        backgroundColor: "#D10B03",
-                        borderRadius: 25, padding: 8, height: 50, width: 50,
-                        alignItems: 'center', justifyContent: 'center'
-                    }} >
+                    <View style={styles.plusButton}>
                         <Plus color={"#fff"} strokeWidth={1.8} size={30} />
                     </View>
                 </Link>
@@ -78,61 +66,64 @@ export default function Tarefas() {
 
             <View style={styles.filtro}>
                 <TouchableOpacity onPress={() => setFiltro("todas")}>
-                    <Text
-                        style={[
-                            styles.filtroTitulo,
-                            filtro === "todas" && {
-                                color: "#fff",
-                                backgroundColor: '#CF0000'
-                            }
-                        ]}>
+                    <Text style={[styles.filtroTitulo, filtro === "todas" && styles.filtroAtivo]}>
                         Todas
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setFiltro("pendente")}>
-                    <Text
-                        style={[
-                            styles.filtroTitulo,
-                            filtro === "pendente" && {
-                                color: "#fff",
-                                backgroundColor: '#CF0000'
-                            }
-                        ]}>
+                    <Text style={[styles.filtroTitulo, filtro === "pendente" && styles.filtroAtivo]}>
                         Pendentes
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setFiltro("concluida")}>
-                    <Text
-                        style={[
-                            styles.filtroTitulo,
-                            filtro === "concluida" && {
-                                color: "#fff",
-                                backgroundColor: '#CF0000'
-                            }
-                        ]}>
+                    <Text style={[styles.filtroTitulo, filtro === "concluida" && styles.filtroAtivo]}>
                         Concluídas
                     </Text>
                 </TouchableOpacity>
             </View>
 
-                {tasks.map(task => (
+            <ScrollView>
+
+            {loading ? (
+                <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 50 }} />
+            ) : (
+                <FlatList
+                data={tasks}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
                     <TasksCards
-                        key={task.id}
-                        id={task.id}
-                        title={task.title}
-                        description={task.description}
-                        updateDate={task.updateDate}
+                    id={item.id}
+                    title={item.title}
+                    description={item.description}
+                    updateDate={item.updateDate}
+                    status={item.status}
                     />
-
-                ))}
-           
-
-
+                )}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                ListEmptyComponent={
+                    <View style={styles.emptyContainer}>
+                            <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
+                        </View>
+                    }
+                    />
+                )}
+                </ScrollView>
         </ScrollView>
-    )
+    );
 }
 
+
+// Seus estilos permanecem os mesmos
 const styles = StyleSheet.create({
+    plusButton: {
+        backgroundColor: "#D10B03",
+        borderRadius: 25,
+        padding: 8,
+        height: 50,
+        width: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     filtro: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -148,4 +139,18 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         paddingHorizontal: 20,
     },
-})
+    filtroAtivo: {
+        color: "#fff",
+        backgroundColor: '#CF0000'
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 50,
+    },
+    emptyText: {
+        fontSize: 16,
+        color: '#666',
+    }
+});

@@ -8,9 +8,17 @@ interface TasksCards {
     inspectorId: number;
     machineId: number;
     updateDate: string;
+    status: string;
 }
 
-export const TasksCards: React.FC<TasksCards> = ({ id, title, description, inspectorId, machineId, updateDate }) => {
+export const TasksCards: React.FC<TasksCards> = ({ id, title, description, inspectorId, machineId, updateDate, status }) => {
+
+    const statusInfo = {
+        text: status === 'PENDING' ? 'Pendente' : 'Concluído',
+        style: status === 'PENDING' ? styles.statusPendente : styles.statusConcluido,
+        iconColor: status === 'PENDING' ? '#ffd104' : '#5cb85c'
+    };
+
 
     const formattedDate = new Date(updateDate).toLocaleString('pt-BR', {
         day: '2-digit',
@@ -21,22 +29,25 @@ export const TasksCards: React.FC<TasksCards> = ({ id, title, description, inspe
     });
 
     return (
-            <View style={styles.card}>
-                <Text style={styles.title}>{title}</Text>
-                <Text style={styles.description}>{description}</Text>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                <Minus size={50} color="#ffd104ff" strokeWidth={4}/>
-                <Text style={styles.date}><Clock size={15} color="#00000077"/> {formattedDate}</Text>
-                </View>
-            </View>
+        <View style={styles.card}>
     
+                <Text style={styles.title}>{title}</Text>
+
+            <Text style={styles.description}>{description}</Text>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Minus size={50} color={statusInfo.iconColor}  strokeWidth={4} />
+                <Text style={styles.date}><Clock size={15} color="#00000077" /> {formattedDate}</Text>
+            </View>
+        </View>
+
     )
 
 }
 
 const styles = StyleSheet.create({
     card: {
-       backgroundColor: '#eeeeee',
+        backgroundColor: '#eeeeee',
         padding: 20,
         borderRadius: 10,
         shadowColor: "#000",
@@ -61,7 +72,7 @@ const styles = StyleSheet.create({
     },
     date: {
         fontSize: 13,
-        
+
     },
 });
 
