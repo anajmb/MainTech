@@ -120,16 +120,16 @@ export default function Equipes() {
                     <Text style={style.labelAdicionar}>Nome da equipe:</Text>
                     <TextInput
                         style={style.inputAdicionar}
-                        placeholder="ex: Manutenção"
-                        placeholderTextColor="#8B8686"
+                        placeholder="Ex: Manutenção"
+                        placeholderTextColor="#C4C4C4"
                     />
                 </View>
                 <View style={{ marginTop: 12 }}>
                     <Text style={style.labelAdicionar}>E-mail:</Text>
                     <TextInput
                         style={style.inputAdicionar}
-                        placeholder="ex: cida@email.com"
-                        placeholderTextColor="#8B8686"
+                        placeholder="Ex: cida@email.com"
+                        placeholderTextColor="#C4C4C4"
                         keyboardType="email-address"
                     />
                 </View>
@@ -270,12 +270,13 @@ const style = StyleSheet.create({
     },
     botaoAdicionar: {
         backgroundColor: "#CE221E",
-        borderRadius: 8,
-        paddingVertical: 10,
-        paddingHorizontal: 24,
+        borderRadius: 8,    
+        paddingVertical: 9,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 8,
+        marginTop: 20,
+        width: 230,
+        alignSelf: "center",     
     },
     textoBotaoAdicionar: {
         color: "#fff",
