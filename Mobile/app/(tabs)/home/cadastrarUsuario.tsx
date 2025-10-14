@@ -2,7 +2,7 @@ import SetaVoltar from "@/components/setaVoltar";
 import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export interface Employees {
     id: number;
@@ -20,10 +20,10 @@ const getInitials = (name: string): string => {
     if (!name) return '?';
     const names = name.split(' ').filter(Boolean);
     if (names.length === 0) return '?';
-    
+
     const firstInitial = names[0][0];
     const lastInitial = names.length > 1 ? names[names.length - 1][0] : '';
-    
+
     return `${firstInitial}${lastInitial}`.toUpperCase();
 };
 
@@ -35,7 +35,7 @@ const formatRole = (role: Employees['role']): string => {
     if (role === 'MAINTAINER') {
         return 'Manutenção';
     }
-    return role; // Retorna o original caso não encontre
+    return role;
 };
 
 
@@ -47,7 +47,7 @@ export default function CadastrarUsuario() {
     useEffect(() => {
         async function fetchEmployees() {
             try {
-                const res = await api.get('/employes/get');
+                const res = await api.get('/employees/get');
                 setEmployeesData(res.data);
 
             } catch (error) {
@@ -74,33 +74,25 @@ export default function CadastrarUsuario() {
             <View style={style.cardCadastro}>
                 <Text style={style.tituloCardCadastro}>Informe os dados para liberar o cadastro</Text>
                 <View>
-                <Text style={style.label}>Nome  Completo</Text>
-                <TextInput
-                    style={style.input}
-                    placeholder="Nome do Usuário"
-                    placeholderTextColor="#C4C4C4"
-                />
+                    <Text style={style.label}>Nome  Completo</Text>
+                    <TextInput
+                        style={style.input}
+                        placeholder="Nome do Usuário"
+                        placeholderTextColor="#C4C4C4"
+                    />
                 </View>
                 <View style={{ marginTop: 8 }}>
-                <Text style={style.label}>CPF</Text>
-                <TextInput
-                    style={style.input}
-                    placeholder="Digite o CPF"
-                    placeholderTextColor="#C4C4C4"
-                />
+                    <Text style={style.label}>CPF</Text>
+                    <TextInput
+                        style={style.input}
+                        placeholder="Digite o CPF"
+                        placeholderTextColor="#C4C4C4"
+                    />
                 </View>
-                <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
-                    <View style={{ flex: 1 }}>
-                        <Text style={style.label}>Cargo</Text>
-                        <View style={style.input}>
-                            <Text style={style.inputText}>Selecione</Text>
-                        </View>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <Text style={style.label}>Equipe</Text>
-                        <View style={style.input}>
-                            <Text style={style.inputText}>Selecione</Text>
-                        </View>
+                <View style={{ flex: 1 }}>
+                    <Text style={style.label}>Cargo</Text>
+                    <View style={style.input}>
+                        <Text style={style.inputText}>Selecione</Text>
                     </View>
                 </View>
                 <TouchableOpacity style={style.botaoCadastro}>
@@ -108,22 +100,24 @@ export default function CadastrarUsuario() {
                 </TouchableOpacity>
             </View>
 
-            // Card de usuários cadastrados 
+            {/* Card de usuários cadastrados */}
+
             <View style={style.cardUsuarios}>
-
-
-                <View style={style.usuarioItem}>
-                    <View style={style.avatar}>
-                        <Text style={style.avatarText}>JS</Text>
+                <Text style={style.tituloUsuarios}>Usuários Cadastrados</Text>
+                {employeesData.map((employee) => (
+                    <View style={style.usuarioItem} key={employee.id}>
+                        <View style={style.avatar}>
+                            <Text style={style.avatarText}>{getInitials(employee.name)}</Text>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <Text style={style.nomeUsuario}>{employee.name}</Text>
+                            <Text style={style.emailUsuario}>{employee.email}</Text>
+                        </View>
+                        <View style={style.tagCargo}>
+                            <Text style={style.tagCargoText}>{formatRole(employee.role)}</Text>
+                        </View>
                     </View>
-                    <View style={{ flex: 1 }}>
-                        <Text style={style.nomeUsuario}>João Silva</Text>
-                        <Text style={style.emailUsuario}>joaosilva@empresa.com</Text>
-                    </View>
-                    <View style={style.tagCargo}>
-                        <Text style={style.tagCargoText}>Líder técnico</Text>
-                    </View>
-                </View>
+                ))}
             </View>
         </ScrollView>
     )
@@ -148,7 +142,7 @@ const style = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
-        
+
 
     },
     tituloCardCadastro: {

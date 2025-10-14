@@ -1,10 +1,38 @@
 import SetaVoltar from "@/components/setaVoltar";
+import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { UserPlus, Users, Wrench } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+export interface Team {
+    id: number;
+    name: string;
+    description: string;
+    members: any[];
+}
+
 export default function CriarEquipe() {
+
+    const [TeamData, setTeamData] = useState<Team[]>([]);
+
+    useEffect(() => {
+        async function fetchTeams() {
+            try {
+                const res = await api.get('/team/get');
+                setTeamData(res.data);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+
+        fetchTeams();
+    }, [])
+
+
     return (
         <ScrollView style={TabsStyles.container}>
             <View style={TabsStyles.headerPrincipal}>
@@ -49,41 +77,35 @@ export default function CriarEquipe() {
                 <Text style={style.tituloCadastradas}>Equipes cadastradas</Text>
 
 
+                {TeamData.map((team) => (
+                    <View style={style.card}>
+                        <View style={style.groupEqui}>
 
-                {/* <View style={{ flexDirection: "row", gap: 12, right: 16,}}>
+                            <View style={style.iconeEquipe}>
+                                <Wrench color="white" />
+                            </View>
 
+                            <View style={style.infoEqui}>
+                                <Text style={style.tituloEqui}>{team.name}</Text>
+                                <Text style={style.descricaoEqui}>{team.description}</Text>
+                            </View>
 
-</View> */}
-                {/* input data */}
-
-                <View style={style.card}>
-                    <View style={style.groupEqui}>
-                        {/* icone grupo, cor random */}
-
-                        <View style={style.iconeEquipe}>
-                            <Wrench color="white" />
                         </View>
 
-                        <View style={style.infoEqui}>
-                            <Text style={style.tituloEqui}>Equipe de Manutenção</Text>
-                            <Text style={style.descricaoEqui}>Equipe responsável pela manutenção de máquinas e equipamentos</Text>
+                        <View style={style.footerCard}>
+
+                            < TouchableOpacity>
+                                <Link href={`/home/verEquipe?teamId=${team.id}`}>
+                                    <View>
+                                        <Text style={style.verEquipe}>Ver equipe</Text>
+
+                                    </View>
+                                </Link>
+                            </TouchableOpacity>
                         </View>
-
-                        {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
                     </View>
+                ))}
 
-                    <View style={style.footerCard}>
-
-                        < TouchableOpacity>
-                            <Link href={`/home/verEquipe`}>
-                                <View>
-                                    <Text style={style.verEquipe}>Ver equipe</Text>
-
-                                </View>
-                            </Link>
-                        </TouchableOpacity>
-                    </View>
-                </View>
             </View>
 
 
@@ -178,7 +200,7 @@ const style = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.10,
         shadowRadius: 4,
-        // elevation: 3,
+        marginBottom: 70,
 
     },
     tituloCadastradas: {

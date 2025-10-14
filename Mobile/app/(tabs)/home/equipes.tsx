@@ -18,22 +18,22 @@ export interface Team {
 
 export default function Equipes() {
 
-    const [TeamData, setTeamData] = useState<Team[]>([]);
+        const [TeamData, setTeamData] = useState<Team[]>([]);
 
-    useEffect(() => {
-        async function fetchTeams() {
-            try {
-                const res = await api.get('/team/get');
-                setTeamData(res.data);
+        useEffect(() => {
+            async function fetchTeams() {
+                try {
+                    const res = await api.get('/team/get');
+                    setTeamData(res.data);
 
-            } catch (error) {
-                console.log(error);
+                } catch (error) {
+                    console.log(error);
+                }
+
             }
 
-        }
-
-        fetchTeams();
-    }, [])
+            fetchTeams();
+        }, [])
 
     return (
         <ScrollView style={TabsStyles.container} >
