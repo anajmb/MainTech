@@ -40,16 +40,12 @@ export default function AgendaScreen() {
       const response = await api.get("/tasks/get");
       const data = response.data;
 
-      console.log("✅ Tarefas recebidas:", data);
-
       if (Array.isArray(data)) {
         setTasks(data);
         markTaskDates(data);
-      } else {
-        console.warn("⚠️ Resposta inesperada da API:", data);
       }
     } catch (error) {
-      console.error("❌ Erro ao buscar tarefas:", error);
+      console.error( "Erro ao buscar tarefas:", error);
     }
   };
 
@@ -65,11 +61,10 @@ export default function AgendaScreen() {
 
       marks[dateString] = {
         marked: true,
-        dotColor: "red",
+        dotColor: "#fff",
       };
     });
 
-    console.log("📅 Datas marcadas:", marks);
     setMarkedDates(marks);
   };
 
@@ -82,8 +77,7 @@ export default function AgendaScreen() {
         .split("T")[0];
       return localDate === day.dateString;
     });
-
-    console.log("📌 Tarefas do dia:", filtered);
+    
     setFilteredTasks(filtered);
   };
 

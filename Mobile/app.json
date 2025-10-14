@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Mobile",
-    "slug": "Mobile",
+    "name": "",
+    "slug": "",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/LogoBranca.png",
+    "icon": "./assets/images/LogoVermelha.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -47,9 +47,10 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/background-mobile.png",
-          "imageWidth": 200,
+          "imageWidth": 1000,
           "resizeMode": "contain",
-          "backgroundColor": "#A50702"
+          "backgroundColor": "#A50702",
+          "icon": "./assets/images/LogoBranca.png"
         }
       ]
     ],

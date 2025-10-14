@@ -11,11 +11,10 @@ export default function Cadastro() {
   const toggleSwitch = () => setIsAgree(previousState => !previousState)
 
 
-  // dentro do seu componente Cadastro
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
 
-  // funções
+  
   const showDatePicker = () => setDatePickerVisibility(true);
   const hideDatePicker = () => setDatePickerVisibility(false);
   const handleConfirm = (selectedDate: Date) => {

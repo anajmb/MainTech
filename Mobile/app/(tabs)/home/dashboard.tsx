@@ -5,7 +5,6 @@ import SetaVoltar from "@/components/setaVoltar";
 import ChartWebView from "../../../components/chartWebView";
 import type { ChartConfiguration } from 'chart.js';
 
-
 export default function Dashboard() {
 
     const weeklyActivityConfig: ChartConfiguration = {
