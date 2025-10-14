@@ -1,19 +1,67 @@
-import { StyleSheet, ScrollView, Text, View } from "react-native";
+import { StyleSheet, ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { CheckCircle, ListTodo, Clock, ClipboardList, BarChartBig, ChartPie } from "lucide-react-native";
 import { TabsStyles } from "@/styles/globalTabs";
 import SetaVoltar from "@/components/setaVoltar";
 import ChartWebView from "../../../components/chartWebView";
 import type { ChartConfiguration } from 'chart.js';
+import { useEffect, useState } from "react";
+import { api } from "@/lib/axios";
+
+// Interface atualizada para corresponder ao enum do Prisma
+interface Task {
+    id: number;
+    status: 'PENDING' | 'COMPLETED';
+    updateDate: string;
+}
 
 export default function Dashboard() {
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [loading, setLoading] = useState(true);
 
+    const fetchTasks = async () => {
+        try {
+            // Verifique se a sua rota no backend é '/tasks/get' ou '/tasks'
+            const response = await api.get("/tasks/get");
+            setTasks(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar tarefas:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
+    // ---- Processamento de Dados Dinâmicos ----
+
+    // Lógica de filtro atualizada para 'COMPLETED' e 'PENDING'
+    const completedTasks = tasks.filter(t => t.status.toUpperCase() === "COMPLETED");
+    const pendingTasks = tasks.filter(t => t.status.toUpperCase() === "PENDING");
+    const totalTasks = tasks.length;
+
+      const percentageCompleted = totalTasks > 0 
+        ? (completedTasks.length / totalTasks) * 100 
+        : 0;
+
+    // Lógica para o gráfico de atividade semanal
+    const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    const completedByDay = new Array(7).fill(0);
+
+    completedTasks.forEach(task => {
+        const dayIndex = new Date(task.updateDate).getDay();
+        completedByDay[dayIndex] += 1;
+    });
+
+    // Configurações dos gráficos agora com dados dinâmicos
     const weeklyActivityConfig: ChartConfiguration = {
         type: 'bar',
         data: {
-            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+            labels: daysOfWeek,
             datasets: [{
                 label: 'Tarefas Concluídas',
-                data: [8, 12, 5, 9, 7, 4],
+                data: completedByDay, // DADO DINÂMICO
                 backgroundColor: '#E34945',
                 borderRadius: 4,
             }]
@@ -30,38 +78,35 @@ export default function Dashboard() {
     };
 
     const serviceOrdersConfig: ChartConfiguration = {
-    type: 'pie',
-    data: {
-        // 1. Adicionado 'labels' para identificar cada fatia
-        labels: ['Concluídas', 'Pendentes'], 
-        
-        datasets: [{
-            data: [8, 2], 
-
-            backgroundColor: [
-                '#AA9EFF', 
-                '#DBB9FF'  
-            ],
-            
-            borderColor: '#ffffff',
-            borderWidth: 2,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { 
-            // Você pode reativar a legenda se quiser, trocando false por true
-            legend: { 
-                display: false,
-                position: 'top', 
-            } 
+        type: 'pie',
+        data: {
+            labels: ['Concluídas', 'Pendentes'],
+            datasets: [{
+                data: [completedTasks.length, pendingTasks.length], // DADOS DINÂMICOS
+                backgroundColor: ['#AA9EFF', '#DBB9FF'],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+            }]
         },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+        }
+    };
+
+    // Renderiza um indicador de carregamento enquanto os dados não chegam
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+                <ActivityIndicator size="large" color="#CE221E" />
+                <Text style={{ marginTop: 10, color: '#555' }}>Carregando dados...</Text>
+            </View>
+        );
     }
-};
+
     return (
         <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 30 }}>
-
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -71,132 +116,84 @@ export default function Dashboard() {
             </View>
 
             <Text style={styles.sectionTitle}>Métricas principais</Text>
-
             <View style={styles.metricsRow}>
-
                 <View style={styles.metricBox}>
-
                     <View style={styles.metricHeader}>
-
                         <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
-
                         <Text style={styles.metricLabel}>Tarefas concluídas</Text>
-
                     </View>
-
                     <View style={styles.metricValueArea}>
-
-
-
-                        <Text style={styles.metricValue}>85%</Text>
-
-                        <Text style={styles.metricSub}>{""}</Text>
-
+                        <Text style={styles.metricValue}>{percentageCompleted.toFixed(0)}%</Text>
+                        <Text style={styles.metricSub}></Text>
                     </View>
-
                 </View>
 
                 <View style={styles.metricBox}>
-
                     <View style={styles.metricHeader}>
-
                         <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
-
                         <Text style={styles.metricLabel}>Total de tarefas</Text>
-
                     </View>
-
                     <View style={styles.metricValueArea}>
-
-                        <Text style={styles.metricValue}>15</Text>
-
+                        <Text style={styles.metricValue}>{totalTasks}</Text>
                         <Text style={styles.metricSub}>Neste mês</Text>
-
                     </View>
-
                 </View>
-
             </View>
 
+            {/* Métricas mantidas conforme o pedido */}
             <View style={styles.metricsRow}>
-
                 <View style={styles.metricBox}>
-
                     <View style={styles.metricHeader}>
-
                         <Clock color="#438BE9" size={20} style={styles.metricIcon} />
-
                         <Text style={styles.metricLabel}>Tempo médio</Text>
-
                     </View>
-
                     <View style={styles.metricValueArea}>
-
                         <Text style={styles.metricValue}>5 min</Text>
-
                         <Text style={styles.metricSub}>Check list</Text>
-
                     </View>
-
                 </View>
-
                 <View style={styles.metricBox}>
-
                     <View style={styles.metricHeader}>
-
                         <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
-
                         <Text style={styles.metricLabel}>Ordens de serviço</Text>
-
                     </View>
-
                     <View style={styles.metricValueArea}>
-
                         <Text style={styles.metricValue}>8</Text>
-
                         <Text style={styles.metricSub}>Neste mês</Text>
-
                     </View>
-
                 </View>
-
             </View>
-
 
             <View style={styles.graphicTitleArea}>
                 <Text style={styles.sectionTitleGraphic}>Gráficos</Text>
             </View>
 
-            {/* 4. Implementação dos gráficos nos cards */}
             <View style={styles.graphCardsColumn}>
                 <View style={styles.graphCard}>
                     <View style={styles.graphText}>
-                <BarChartBig color="#CE221E" size={22} style={styles.graphicIcon} />
-                    <Text style={styles.sectionsubTitle}>Atividade semanal</Text>
+                        <BarChartBig color="#CE221E" size={22} style={styles.graphicIcon} />
+                        <Text style={styles.sectionsubTitle}>Atividade semanal</Text>
                     </View>
                     <ChartWebView config={weeklyActivityConfig} />
                 </View>
                 <View style={styles.graphCard}>
-                     <View style={styles.graphText}>
-                    <ChartPie color="#AA9EFF" size={22} style={styles.graphicIcon} />
-                    <Text style={styles.sectionsubTitle}>Atividades realizadas</Text>
-                     </View>
+                    <View style={styles.graphText}>
+                        <ChartPie color="#AA9EFF" size={22} style={styles.graphicIcon} />
+                        <Text style={styles.sectionsubTitle}>Atividades realizadas</Text>
+                    </View>
                     <ChartWebView config={serviceOrdersConfig} />
                 </View>
             </View>
-
         </ScrollView>
     );
 }
-
-
 const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: "500",
         marginTop: 10,
         marginBottom: 25,
-        marginLeft: 7
+      marginLeft: 7
     },
     sectionsubTitle: {
         fontSize: 18,
@@ -235,21 +232,18 @@ const styles = StyleSheet.create({
         marginRight: 8,
         marginLeft: 2
     },
-
     metricLabel: {
         fontSize: 14,
         color: "#444",
         textAlign: "center",
         fontWeight: "500"
     },
-
     metricValueArea: {
         width: "100%",
         alignItems: "center",
         justifyContent: "center",
         minHeight: 48
     },
-
     metricValue: {
         fontSize: 22,
         fontWeight: "500",
@@ -258,7 +252,6 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         textAlign: "center"
     },
-
     metricSub: {
         fontSize: 12,
         color: "#8f8787ff",
@@ -266,8 +259,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         minHeight: 16
     },
-
-      graphicTitleArea: {
+    graphicTitleArea: {
         marginTop: 10,
         marginBottom: 10,
         marginLeft: 20,
@@ -300,6 +292,6 @@ const styles = StyleSheet.create({
     },
     graphText: {
         flexDirection: "row"
-        
     },
+
 });
