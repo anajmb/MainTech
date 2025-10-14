@@ -17,18 +17,22 @@ export default function CadastrarUsuario() {
             /* Card de cadastro */
             <View style={style.cardCadastro}>
                 <Text style={style.tituloCardCadastro}>Informe os dados para liberar o cadastro</Text>
+                <View>
                 <Text style={style.label}>Nome  Completo</Text>
                 <TextInput
                     style={style.input}
                     placeholder="Nome do Usuário"
                     placeholderTextColor="#C4C4C4"
                 />
+                </View>
+                <View style={{ marginTop: 8 }}>
                 <Text style={style.label}>CPF</Text>
                 <TextInput
                     style={style.input}
                     placeholder="Digite o CPF"
                     placeholderTextColor="#C4C4C4"
                 />
+                </View>
                 <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
                     <View style={{ flex: 1 }}>
                         <Text style={style.label}>Cargo</Text>
@@ -88,8 +92,6 @@ const style = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
-        
-
     },
     tituloCardCadastro: {
        fontSize: 18,
