@@ -29,7 +29,6 @@ export default function Configuracao() {
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
-                    <Text style={TabsStyles.subtituloPrincipal}>Configuração</Text>
                 </View>
             </View>
 
@@ -118,7 +117,7 @@ export default function Configuracao() {
                 </View>
 
                 {/* Suporte */}
-                <View style={styles.bloco}>
+                {/* <View style={styles.bloco}>
                     <Text style={styles.tituloCard}>Suporte</Text>
 
                     <View style={styles.card}>
@@ -135,7 +134,7 @@ export default function Configuracao() {
                             </View>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </View> */}
 
                 {/* Outros */}
                 <View style={styles.bloco}>

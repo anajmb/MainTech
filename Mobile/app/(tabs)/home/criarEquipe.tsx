@@ -7,20 +7,20 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 export default function CriarEquipe() {
     return (
         <ScrollView style={TabsStyles.container}>
-             <View style={TabsStyles.headerPrincipal}>
+            <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
-                <Text style={TabsStyles.tituloPrincipal}>Criar Equipe</Text>
-                <Text style={TabsStyles.subtituloPrincipal}>Informe os dados da equipe</Text>
-            </View>
-            
+                    <Text style={TabsStyles.tituloPrincipal}>Criar Equipe</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>Informe os dados da equipe</Text>
+                </View>
+
             </View>
 
             /* Card de cadastro */
             <View style={style.cardCriarEquipe}>
                 <Text style={style.tituloCardCriarEquipe}>Informe os dados para criar uma equipe</Text>
                 <Text style={style.label}>Nome da Equipe</Text>
-                <TextInput 
+                <TextInput
                     style={style.input}
                     placeholder="Nome da Equipe"
                     placeholderTextColor="#C4C4C4"
@@ -45,7 +45,7 @@ export default function CriarEquipe() {
             </View>
 
             // card equipes cadastradas
-             <View style={style.cardEquipesCadastradas}>
+            <View style={style.cardEquipesCadastradas}>
                 <Text style={style.tituloCadastradas}>Equipes cadastradas</Text>
 
 
@@ -54,37 +54,41 @@ export default function CriarEquipe() {
 
 
 </View> */}
-            {/* input data */ }
+                {/* input data */}
 
-            <View style={style.card}>
-                <View style={style.groupEqui}>
-                    {/* icone grupo, cor random */}
+                <View style={style.card}>
+                    <View style={style.groupEqui}>
+                        {/* icone grupo, cor random */}
 
-                    <View style={style.iconeEquipe}>
-                        <Wrench color="white" />
+                        <View style={style.iconeEquipe}>
+                            <Wrench color="white" />
+                        </View>
+
+                        <View style={style.infoEqui}>
+                            <Text style={style.tituloEqui}>Equipe de Manutenção</Text>
+                            <Text style={style.descricaoEqui}>Equipe responsável pela manutenção de máquinas e equipamentos</Text>
+                        </View>
+
+                        {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
                     </View>
 
-                    <View style={style.infoEqui}>
-                        <Text style={style.tituloEqui}>Equipe de Manutenção</Text>
-                        <Text style={style.descricaoEqui}>Equipe responsável pela manutenção de máquinas e equipamentos</Text>
-                    </View>
+                    <View style={style.footerCard}>
 
-                    {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
-                </View>
-                    
-                <View style={style.footerCard}>
-                    <Link href={'/home/verEquipe'}>
-                    <View>
-                        <Text style={style.verEquipe}>Ver equipe</Text>
+                        < TouchableOpacity>
+                            <Link href={`/home/verEquipe`}>
+                                <View>
+                                    <Text style={style.verEquipe}>Ver equipe</Text>
+
+                                </View>
+                            </Link>
+                        </TouchableOpacity>
                     </View>
-                    </Link>
                 </View>
             </View>
-</View>
 
 
 
-        
+
         </ScrollView>
     )
 }
@@ -95,10 +99,10 @@ const style = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         color: "#222",
-        left: 10,           
+        left: 10,
     },
     cardCriarEquipe: {
-       backgroundColor: "#fff",
+        backgroundColor: "#fff",
         borderRadius: 16,
         padding: 16,
         marginVertical: 8,
@@ -117,12 +121,12 @@ const style = StyleSheet.create({
         textAlign: "center"
     },
     label: {
-       fontSize: 15,
+        fontSize: 15,
         color: "#222",
         marginBottom: 4,
         fontWeight: "400",
     },
-     input: {
+    input: {
         backgroundColor: "#F5F5F5",
         borderRadius: 8,
         paddingHorizontal: 12,
@@ -136,29 +140,29 @@ const style = StyleSheet.create({
         marginBottom: 4,
         fontWeight: "400",
     },
- inputDescrição: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 8,
-    marginBottom: 8,
-    fontSize: 14,
-    textAlignVertical: "top",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    height: 95, 
-},
+    inputDescrição: {
+        backgroundColor: "#F5F5F5",
+        borderRadius: 8,
+        marginBottom: 8,
+        fontSize: 14,
+        textAlignVertical: "top",
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        height: 95,
+    },
     inputText: {
         color: "#C4C4C4",
         fontSize: 14,
     },
     botaoCriarEquipe: {
         backgroundColor: "#CE221E",
-        borderRadius: 8,    
+        borderRadius: 8,
         paddingVertical: 9,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 20,
         width: 230,
-        alignSelf: "center",     
+        alignSelf: "center",
     },
     textoBotaoCriarEquipe: {
         color: "#fff",
@@ -175,18 +179,18 @@ const style = StyleSheet.create({
         shadowOpacity: 0.10,
         shadowRadius: 4,
         // elevation: 3,
-        
+
     },
     tituloCadastradas: {
-        fontSize: 17 ,
+        fontSize: 17,
         color: "#000000",
         fontWeight: "500",
         marginBottom: 12,
         textAlign: "center",
         marginTop: -5,
-        
+
     },
-     card: {
+    card: {
         backgroundColor: "#fff",
         borderRadius: 20,
         padding: 16,
@@ -224,13 +228,11 @@ const style = StyleSheet.create({
 
     },
     verEquipe: {
-       fontSize: 13,
+        fontSize: 13,
         marginTop: 4,
         color: "#CE221E",
-        marginRight: 120,
+        marginRight: 12,
         fontWeight: "500",
-        // marginLeft: 45,
-        textAlign: "right",
 
     },
     quantMembro: {
@@ -246,9 +248,9 @@ const style = StyleSheet.create({
 
     },
     footerCard: {
-         flexDirection: "row",
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "flex-end",
         marginTop: 12,
     },
     iconeEquipe: {
@@ -261,5 +263,5 @@ const style = StyleSheet.create({
         marginBottom: 15,
 
     },
-    
+
 })

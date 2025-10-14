@@ -36,7 +36,7 @@ export default function Historico() {
             </View>
 
 
-                /* card de historico informacoes */
+                {/*card de historico informacoes */}
 
             <View style={style.cardHistorico}>
                 <View >

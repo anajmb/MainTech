@@ -70,21 +70,25 @@ export default function CadastrarUsuario() {
                 </View>
             </View>
 
-            /* Card de cadastro */
+            {/* Card de cadastro */}
             <View style={style.cardCadastro}>
                 <Text style={style.tituloCardCadastro}>Informe os dados para liberar o cadastro</Text>
+                <View>
                 <Text style={style.label}>Nome  Completo</Text>
                 <TextInput
                     style={style.input}
                     placeholder="Nome do Usuário"
                     placeholderTextColor="#C4C4C4"
                 />
+                </View>
+                <View style={{ marginTop: 8 }}>
                 <Text style={style.label}>CPF</Text>
                 <TextInput
                     style={style.input}
                     placeholder="Digite o CPF"
                     placeholderTextColor="#C4C4C4"
                 />
+                </View>
                 <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
                     <View style={{ flex: 1 }}>
                         <Text style={style.label}>Cargo</Text>
@@ -104,25 +108,7 @@ export default function CadastrarUsuario() {
                 </TouchableOpacity>
             </View>
 
-            // Card de usuários cadastrados
-
-            <Text style={style.tituloUsuarios}>Usuários cadastrados</Text>
-
-            {employeesData.map((employee) => (
-                <View style={style.usuarioItem}>
-                    <View style={style.avatar}>
-                        <Text style={style.avatarText}>{getInitials(employee.name)}</Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <Text style={style.nomeUsuario}>{employee.name}</Text>
-                        <Text style={style.emailUsuario}>{employee.email}</Text>
-                    </View>
-                    <View style={style.tagCargo}>
-                        <Text style={style.tagCargoText}>{formatRole(employee.role)}</Text>
-                    </View>
-                </View>
-            ))}
-
+            // Card de usuários cadastrados 
             <View style={style.cardUsuarios}>
 
 
@@ -162,7 +148,7 @@ const style = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
-
+        
 
     },
     tituloCardCadastro: {

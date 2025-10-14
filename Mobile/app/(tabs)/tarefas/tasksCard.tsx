@@ -1,15 +1,16 @@
-import { StyleSheet, Text, View } from "react-native";
-import { Clock } from "lucide-react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Clock, Minus } from "lucide-react-native";
 
 interface TasksCards {
     id: number;
     title: string;
+    description: string;
     inspectorId: number;
     machineId: number;
     updateDate: string;
 }
 
-export const TasksCards: React.FC<TasksCards> = ({ id, title, inspectorId, machineId, updateDate }) => {
+export const TasksCards: React.FC<TasksCards> = ({ id, title, description, inspectorId, machineId, updateDate }) => {
 
     const formattedDate = new Date(updateDate).toLocaleString('pt-BR', {
         day: '2-digit',
@@ -20,36 +21,47 @@ export const TasksCards: React.FC<TasksCards> = ({ id, title, inspectorId, machi
     });
 
     return (
-        <>
             <View style={styles.card}>
                 <Text style={styles.title}>{title}</Text>
-                <Text style={styles.date}><Clock size={15} /> {formattedDate}</Text>
+                <Text style={styles.description}>{description}</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                <Minus size={50} color="#ffd104ff" strokeWidth={4}/>
+                <Text style={styles.date}><Clock size={15} color="#00000077"/> {formattedDate}</Text>
+                </View>
             </View>
-        </>
+    
     )
 
 }
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#eeeeee',
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+       backgroundColor: '#eeeeee',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 4,
+        marginBottom: 20,
     },
     title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 30,
+        fontSize: 17,
+        fontWeight: 500,
+        marginBottom: 10,
+    },
+    description: {
+        color: '#858585',
+        fontSize: 16,
+        marginBottom: 20,
     },
     id: {
         fontSize: 14,
     },
     date: {
-        fontSize: 16,
-        marginBottom: 8,
-        marginLeft: 200,
+        fontSize: 13,
+        
     },
 });
 

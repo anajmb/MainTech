@@ -1,73 +1,97 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
-import { Calendar } from "react-native-calendars";
-import { LocaleConfig } from "react-native-calendars";
-
-// interface AgendaCards {
-//     id: number;
-//     title: string;
-//     expirationDate: string 
-// }
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { Calendar, LocaleConfig, DateObject } from "react-native-calendars";
+import { api } from "../../../lib/axios";
 
 LocaleConfig.locales["pt-br"] = {
   monthNames: [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
+    "Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
   ],
   monthNamesShort: [
-    "jan",
-    "fev",
-    "mar",
-    "abr",
-    "mai",
-    "jun",
-    "jul",
-    "ago",
-    "set",
-    "out",
-    "nov",
-    "dez",
+    "jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"
   ],
   dayNames: [
-    "Domingo",
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
+    "Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"
   ],
-  dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+  dayNamesShort: ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"],
   today: "Hoje",
 };
-
-// Define o idioma padrão
 LocaleConfig.defaultLocale = "pt-br";
 
+interface Task {
+  id: number;
+  title: string;
+  expirationDate: string;
+  inspector?: { person?: { name: string } };
+}
 
 export default function AgendaScreen() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [markedDates, setMarkedDates] = useState<any>({});
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await api.get("/tasks/get");
+      const data = response.data;
+
+      if (Array.isArray(data)) {
+        setTasks(data);
+        markTaskDates(data);
+      }
+    } catch (error) {
+      console.error( "Erro ao buscar tarefas:", error);
+    }
+  };
+
+  const markTaskDates = (data: Task[]) => {
+    const marks: any = {};
+
+    data.forEach((task) => {
+      if (!task.expirationDate) return;
+
+      // Converte a data para o formato local YYYY-MM-DD (sem hora)
+      const localDate = new Date(task.expirationDate);
+      const dateString = localDate.toISOString().split("T")[0];
+
+      marks[dateString] = {
+        marked: true,
+        dotColor: "#fff",
+      };
+    });
+
+    setMarkedDates(marks);
+  };
+
+  const handleDayPress = (day: DateObject) => {
+    setSelectedDate(day.dateString);
+
+    const filtered = tasks.filter((task) => {
+      const localDate = new Date(task.expirationDate)
+        .toISOString()
+        .split("T")[0];
+      return localDate === day.dateString;
+    });
+    
+    setFilteredTasks(filtered);
+  };
 
   return (
     <View style={styles.container}>
-      {/* Calendário */}
       <View style={styles.calendarContainer}>
         <View style={styles.header}>
-          <Image style={styles.logoImage} source={require("../../../assets/images/LogoBranca.png")} />
-
+          <Image
+            style={styles.logoImage}
+            source={require("../../../assets/images/LogoBranca.png")}
+          />
         </View>
 
         <View style={styles.cardCalendar}>
-
           <Calendar
             theme={{
               backgroundColor: "#a50702",
@@ -83,54 +107,58 @@ export default function AgendaScreen() {
               arrowColor: "#fff",
               textDisabledColor: "#b36b6b",
             }}
-            hideExtraDays={true}
+            hideExtraDays
             markedDates={{
-              "2025-03-09": { selected: true },
-              "2025-03-18": { selected: true },
+              ...markedDates,
+              ...(selectedDate
+                ? { [selectedDate]: { selected: true, selectedColor: "#d10b03" } }
+                : {}),
             }}
+            onDayPress={handleDayPress}
           />
         </View>
       </View>
 
-      {/* Eventos */}
       <ScrollView style={styles.eventContainer}>
         <Text style={styles.sectionTitle}>Meus eventos</Text>
 
-        <View style={styles.eventCard}>
-          <View style={styles.eventDate}>
-            <Text style={styles.day}>9</Text>
-            <Text style={styles.month}>Março</Text>
-          </View>
-          <View style={styles.eventInfo}>
-            <Text style={styles.eventTitle}>Inspeção de Equipamento Elétrico</Text>
-            <Text style={styles.eventSubtitle}>Prazo: 10/03/2025</Text>
-          </View>
-        </View>
+        {filteredTasks.length === 0 ? (
+          <Text style={{ color: "#777", textAlign: "center" }}>
+            {selectedDate
+              ? "Nenhuma tarefa neste dia."
+              : "Selecione uma data para ver as tarefas."}
+          </Text>
+        ) : (
+          filteredTasks.map((task) => {
+            const date = new Date(task.expirationDate);
+            const day = date.getDate();
+            const month = date.toLocaleString("pt-BR", { month: "long" });
+            const responsible = task.inspector?.person?.name || "Não informado";
 
-        <View style={styles.eventCard}>
-          <View style={styles.eventDate}>
-            <Text style={styles.day}>18</Text>
-            <Text style={styles.month}>Março</Text>
-          </View>
-          <View style={styles.eventInfo}>
-            <Text style={styles.eventTitle}>Manutenção Preventiva – Setor B</Text>
-            <Text style={styles.eventSubtitle}>Responsável: Maria Souza</Text>
-          </View>
-        </View>
+            return (
+              <View key={task.id} style={styles.eventCard}>
+                <View style={styles.eventDate}>
+                  <Text style={styles.day}>{day}</Text>
+                  <Text style={styles.month}>{month}</Text>
+                </View>
+                <View style={styles.eventInfo}>
+                  <Text style={styles.eventTitle}>{task.title}</Text>
+                  <Text style={styles.eventSubtitle}>
+                    Responsável: {responsible}
+                  </Text>
+                </View>
+              </View>
+            );
+          })
+        )}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  logoImage: {
-    height: 150,
-    width: 200,
-    marginBottom: -50
-  },
+  container: { flex: 1 },
+  logoImage: { height: 150, width: 200, marginBottom: -50 },
   calendarContainer: {
     marginBottom: 16,
     backgroundColor: "#a50702",
@@ -141,20 +169,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  header: {
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  logo: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  year: {
-    color: "#fff",
-    fontSize: 16,
-    marginTop: 4,
-  },
+  header: { alignItems: "center", paddingVertical: 10 },
   eventContainer: {
     flex: 1,
     backgroundColor: "#fff",
@@ -162,13 +177,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 12,
     padding: 16,
-
   },
-  sectionTitle: {
-    fontSize: 16,
-    color: "#999",
-    marginBottom: 18,
-  },
+  sectionTitle: { fontSize: 16, color: "#999", marginBottom: 18 },
   eventCard: {
     flexDirection: "row",
     backgroundColor: "#fef2f2",
@@ -186,51 +196,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 12,
   },
-  day: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  month: {
-    fontSize: 12,
-    color: "#fff",
-  },
-  eventInfo: {
-    flex: 1,
-  },
-  eventTitle: {
-    fontSize: 14,
-    color: "#a50702",
-    fontWeight: "600",
-  },
-  eventSubtitle: {
-    fontSize: 12,
-    color: "#888",
-    marginTop: 4,
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    paddingVertical: 10,
-    borderTopWidth: 0.5,
-    borderTopColor: "#ddd",
-  },
-  centerButton: {
-    backgroundColor: "#a50702",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: -25,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 6,
-  },
-  cardCalendar: {
-
-  }
+  day: { fontSize: 18, color: "#fff", fontWeight: "bold" },
+  month: { fontSize: 12, color: "#fff" },
+  eventInfo: { flex: 1 },
+  eventTitle: { fontSize: 14, color: "#a50702", fontWeight: "600" },
+  eventSubtitle: { fontSize: 12, color: "#888", marginTop: 4 },
+  cardCalendar: {},
 });

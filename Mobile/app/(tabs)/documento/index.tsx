@@ -1,5 +1,6 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
+import { Tabs } from "expo-router";
 import { Download, FileText, Search } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -25,7 +26,8 @@ export default function Documento() {
     });
 
     return (
-        <View style={TabsStyles.container}>
+        
+        <ScrollView style={TabsStyles.container}>
             {/* Logo */}
 
             <View style={TabsStyles.headerPrincipal}>
@@ -78,7 +80,6 @@ export default function Documento() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView contentContainerStyle={{ paddingBottom: 250 }}>
                 <View style={styles.documentosList}>
                     <View style={styles.infosDocumentos}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
@@ -137,7 +138,7 @@ export default function Documento() {
 
                 </View>
             </ScrollView>
-        </View>
+        
     )
 }
 
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     filtro: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginBottom: 32,
+        marginBottom: 50,
         marginTop: 5,
         backgroundColor: '#eeeeee',
         paddingVertical: 25,

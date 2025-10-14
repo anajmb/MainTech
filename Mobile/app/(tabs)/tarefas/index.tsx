@@ -10,8 +10,10 @@ import TasksCards from "./tasksCard";
 interface Tasks {
     id: number;
     title: string;
+    description: string;    
     inspectorId: number;
     machineId: number;
+    status: string;
     updateDate: string;
 }
 
@@ -20,32 +22,39 @@ export default function Tarefas() {
     const [tasks, setTasks] = useState<Tasks[]>([]);
     const [filtro, setFiltro] = useState<"todas" | "pendente" | "concluida">("todas");
 
-    useEffect(() => {
-        async function fetchTasks() {
-            try {
-                const response = await fetch('https://maintech-backend-r6yk.onrender.com/tasks/get');
-                const data = await response.json();
+  useEffect(() => {
+    async function fetchTasks() {
+        try {
+            // Define a URL de acordo com o filtro
+            let url = 'https://maintech-backend-r6yk.onrender.com/tasks/get';
+            if (filtro === "pendente") url += "?status=PENDING";
+            if (filtro === "concluida") url += "?status=COMPLETED";
 
-                const mappedTasks = data.map((task: any) => ({
-                    id: task.id,
-                    title: task.title,
-                    inspectorId: task.inspectorId,
-                    machineId: task.machineId,
-                    status: task.status,
-                    updateDate: task.updateDate,
-                }));
+            const response = await fetch(url);
+            const data = await response.json();
 
-                setTasks(mappedTasks);
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-            }
+            const mappedTasks = data.map((task: any) => ({
+                id: task.id,
+                title: task.title,
+                description: task.description,
+                inspectorId: task.inspectorId,
+                machineId: task.machineId,
+                status: task.status,
+                updateDate: task.updateDate,
+            }));
+
+            setTasks(mappedTasks);
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
         }
+    }
 
-        fetchTasks();
-    }, []);
+    fetchTasks();
+}, [filtro]); // 🔁 Atualiza sempre que o filtro mudar
+
 
     return (
-        <View style={TabsStyles.container}>
+        <ScrollView style={TabsStyles.container}>
             {/* Logo */}
 
             <View style={TabsStyles.headerPrincipal}>
@@ -106,20 +115,20 @@ export default function Tarefas() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView>
                 {tasks.map(task => (
                     <TasksCards
                         key={task.id}
                         id={task.id}
                         title={task.title}
+                        description={task.description}
                         updateDate={task.updateDate}
                     />
 
                 ))}
-            </ScrollView>
+           
 
 
-        </View>
+        </ScrollView>
     )
 }
 
@@ -127,7 +136,7 @@ const styles = StyleSheet.create({
     filtro: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginBottom: 32,
+        marginBottom: 50,
         backgroundColor: '#eeeeee',
         paddingVertical: 25,
         borderRadius: 12,
