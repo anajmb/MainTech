@@ -39,15 +39,21 @@ export default function FazerTarefa() {
                             <Text style={styles.nameConjunto}>Unidade de Lubrificação</Text>
                         </TouchableOpacity>
                     </Link>
-                    <TouchableOpacity style={styles.cardConjunto}>
-                        <Text style={styles.nameConjunto}>Transmissão/Fusos Manual</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cardConjunto}>
-                        <Text style={styles.nameConjunto}>Sistemas de Proteção</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cardConjunto}>
-                        <Text style={styles.nameConjunto}>Motoredutores</Text>
-                    </TouchableOpacity>
+                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                        <TouchableOpacity style={styles.cardConjunto}>
+                            <Text style={styles.nameConjunto}>Transmissão/Fusos Manual</Text>
+                        </TouchableOpacity>
+                    </Link>
+                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                        <TouchableOpacity style={styles.cardConjunto}>
+                            <Text style={styles.nameConjunto}>Sistemas de Proteção</Text>
+                        </TouchableOpacity>
+                    </Link>
+                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                        <TouchableOpacity style={styles.cardConjunto}>
+                            <Text style={styles.nameConjunto}>Motoredutores</Text>
+                        </TouchableOpacity>
+                    </Link>
                 </View>
                 <View style={styles.cardPrioridade}>
                     <View style={{ flexDirection: 'row' }}>
