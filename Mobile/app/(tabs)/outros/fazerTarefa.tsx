@@ -32,26 +32,20 @@ export default function FazerTarefa() {
                     <Text style={styles.cardSubtitle}>Máquina fresadora 1</Text>
                 </View>
                 <View style={styles.cardMaq}>
-                    <Text style={styles.titleOficina}>Oficina:</Text>
-                    <Text style={styles.subOficina}>Manutenção - Principal</Text>
-                </View>
-                <View style={styles.cardMaq}>
                     <Text style={styles.titleConjuntos}>Conjuntos:</Text>
 
+                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                        <TouchableOpacity style={styles.cardConjunto}>
+                            <Text style={styles.nameConjunto}>Unidade de Lubrificação</Text>
+                        </TouchableOpacity>
+                    </Link>
                     <TouchableOpacity style={styles.cardConjunto}>
-                        {/* <Link href={'/'}/> */}
-                        <Text style={styles.nameConjunto}>Unidade de Lubrificação</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cardConjunto}>
-                        {/* <Link href={'/'}/> */}
                         <Text style={styles.nameConjunto}>Transmissão/Fusos Manual</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.cardConjunto}>
-                        {/* <Link href={'/'}/> */}
                         <Text style={styles.nameConjunto}>Sistemas de Proteção</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.cardConjunto}>
-                        {/* <Link href={'/'}/> */}
                         <Text style={styles.nameConjunto}>Motoredutores</Text>
                     </TouchableOpacity>
                 </View>
@@ -85,14 +79,13 @@ export default function FazerTarefa() {
                 </View>
             </View>
             <TouchableOpacity>
-            <View style={styles.confirmBtn}>Finalizar Checklist</View>
+                <View style={styles.confirmBtn}>Finalizar Checklist</View>
             </TouchableOpacity>
         </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
-
     todosCard: {
         gap: 20,
         paddingBottom: 30,
@@ -224,7 +217,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         fontSize: 18,
         fontFamily: "System",
-        fontWeight: "500",
+        fontWeight: 500,
         padding: 60,
 
     }
