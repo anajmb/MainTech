@@ -1,17 +1,73 @@
 import SetaVoltar from "@/components/setaVoltar";
+import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 
+export interface Employees {
+    id: number;
+    name: string;
+    cpf: string;
+    email: string;
+    phone: string;
+    birthDate: string;
+    role: 'INSPECTOR' | 'MAINTAINER';
+    createDate: string;
+    updateDate: string;
+}
+
+const getInitials = (name: string): string => {
+    if (!name) return '?';
+    const names = name.split(' ').filter(Boolean);
+    if (names.length === 0) return '?';
+    
+    const firstInitial = names[0][0];
+    const lastInitial = names.length > 1 ? names[names.length - 1][0] : '';
+    
+    return `${firstInitial}${lastInitial}`.toUpperCase();
+};
+
+
+const formatRole = (role: Employees['role']): string => {
+    if (role === 'INSPECTOR') {
+        return 'Inspetor';
+    }
+    if (role === 'MAINTAINER') {
+        return 'Manutenção';
+    }
+    return role; // Retorna o original caso não encontre
+};
+
+
+
 export default function CadastrarUsuario() {
+
+    const [employeesData, setEmployeesData] = useState<Employees[]>([]);
+
+    useEffect(() => {
+        async function fetchEmployees() {
+            try {
+                const res = await api.get('/employes/get');
+                setEmployeesData(res.data);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+
+        fetchEmployees();
+    }, [])
+
     return (
         <ScrollView style={TabsStyles.container}>
-            
+
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
-                <Text style={TabsStyles.tituloPrincipal}>Cadastrar Usuário</Text>
-                <Text style={TabsStyles.subtituloPrincipal}>Cadastre</Text>
-            </View>
+                    <Text style={TabsStyles.tituloPrincipal}>Cadastrar Usuário</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>Cadastre</Text>
+                </View>
             </View>
 
             /* Card de cadastro */
@@ -40,7 +96,7 @@ export default function CadastrarUsuario() {
                         <Text style={style.label}>Equipe</Text>
                         <View style={style.input}>
                             <Text style={style.inputText}>Selecione</Text>
-                        </View> 
+                        </View>
                     </View>
                 </View>
                 <TouchableOpacity style={style.botaoCadastro}>
@@ -48,10 +104,28 @@ export default function CadastrarUsuario() {
                 </TouchableOpacity>
             </View>
 
-            // Card de usuários cadastrados 
+            // Card de usuários cadastrados
+
+            <Text style={style.tituloUsuarios}>Usuários cadastrados</Text>
+
+            {employeesData.map((employee) => (
+                <View style={style.usuarioItem}>
+                    <View style={style.avatar}>
+                        <Text style={style.avatarText}>{getInitials(employee.name)}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text style={style.nomeUsuario}>{employee.name}</Text>
+                        <Text style={style.emailUsuario}>{employee.email}</Text>
+                    </View>
+                    <View style={style.tagCargo}>
+                        <Text style={style.tagCargoText}>{formatRole(employee.role)}</Text>
+                    </View>
+                </View>
+            ))}
+
             <View style={style.cardUsuarios}>
-                <Text style={style.tituloUsuarios}>Usuários cadastrados</Text>
-                
+
+
                 <View style={style.usuarioItem}>
                     <View style={style.avatar}>
                         <Text style={style.avatarText}>JS</Text>
@@ -70,12 +144,12 @@ export default function CadastrarUsuario() {
 }
 
 const style = StyleSheet.create({
-    
+
     tituloHeader: {
         fontSize: 24,
         fontWeight: "bold",
         color: "#222",
-        left: 10,           
+        left: 10,
     },
     cardCadastro: {
         backgroundColor: "#fff",
@@ -88,17 +162,17 @@ const style = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
-        
+
 
     },
     tituloCardCadastro: {
-       fontSize: 18,
+        fontSize: 18,
         fontWeight: "500",
         color: "#222",
         marginBottom: 25,
         textAlign: "center",
         marginTop: 3,
-       
+
     },
     label: {
         fontSize: 15,
@@ -125,7 +199,7 @@ const style = StyleSheet.create({
         justifyContent: "center",
         marginTop: 20,
         width: 230,
-        alignSelf: "center",     
+        alignSelf: "center",
     },
     textoBotaoCadastro: {
         color: "#fff",
@@ -144,7 +218,7 @@ const style = StyleSheet.create({
         padding: 16,
     },
     tituloUsuarios: {
-        fontSize: 17 ,
+        fontSize: 17,
         color: "#000000",
         fontWeight: "500",
         marginBottom: 12,
@@ -161,7 +235,7 @@ const style = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
-       
+
     },
     avatar: {
         width: 36,
@@ -194,7 +268,7 @@ const style = StyleSheet.create({
         paddingVertical: 4,
         marginLeft: 8,
         color: "#000000",
-        
+
     },
     tagCargoText: {
         color: "#000000",
