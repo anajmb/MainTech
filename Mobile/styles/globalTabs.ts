@@ -9,6 +9,9 @@ export const TabsStyles = StyleSheet.create({
         // flex: 1,
         backgroundColor: '#F5F5F5',
     },
+    text: {
+  fontFamily: "Poppins-Regular",
+},
     tituloPrincipal: {
         fontSize: 28,
         // fontFamily: 'Poppins-Regular'

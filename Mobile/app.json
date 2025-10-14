@@ -52,7 +52,8 @@
           "backgroundColor": "#A50702",
           "icon": "./assets/images/LogoBranca.png"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

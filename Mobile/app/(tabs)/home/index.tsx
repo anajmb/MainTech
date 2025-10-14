@@ -1,8 +1,9 @@
 import { Link } from "expo-router";
-import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle } from "lucide-react-native";
+import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus } from "lucide-react-native";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
 import { useState } from "react";
+import { CustomText } from "@/components/customText";
 
 // achar um icone de máquina para por no lugar de Nova Tarefa
 // colocar função para que ao clicar no icone ativo, recarregue a página
@@ -77,13 +78,13 @@ export default function Home() {
 
       {/* Ações rápidas */}
       <View>
-        <Text style={styles.titulo}>Ações Rápidas</Text>
+        <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
 
         <View style={styles.cardsAcoes} >
 
           <Link href="/(tabs)/home/maquinas" asChild>
             <TouchableOpacity style={styles.acaoCard}>
-              <Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
+              <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao}/>
               <Text style={styles.tituloAcao}>Máquinas</Text>
             </TouchableOpacity>
           </Link>
