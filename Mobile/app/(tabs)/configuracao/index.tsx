@@ -29,7 +29,6 @@ export default function Configuracao() {
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
-                    <Text style={TabsStyles.subtituloPrincipal}>Configuração</Text>
                 </View>
             </View>
 

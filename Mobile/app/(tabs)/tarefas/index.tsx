@@ -10,6 +10,7 @@ import TasksCards from "./tasksCard";
 interface Tasks {
     id: number;
     title: string;
+    description: string;    
     inspectorId: number;
     machineId: number;
     status: string;
@@ -35,6 +36,7 @@ export default function Tarefas() {
             const mappedTasks = data.map((task: any) => ({
                 id: task.id,
                 title: task.title,
+                description: task.description,
                 inspectorId: task.inspectorId,
                 machineId: task.machineId,
                 status: task.status,
@@ -52,7 +54,7 @@ export default function Tarefas() {
 
 
     return (
-        <View style={TabsStyles.container}>
+        <ScrollView style={TabsStyles.container}>
             {/* Logo */}
 
             <View style={TabsStyles.headerPrincipal}>
@@ -113,20 +115,20 @@ export default function Tarefas() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView>
                 {tasks.map(task => (
                     <TasksCards
                         key={task.id}
                         id={task.id}
                         title={task.title}
+                        description={task.description}
                         updateDate={task.updateDate}
                     />
 
                 ))}
-            </ScrollView>
+           
 
 
-        </View>
+        </ScrollView>
     )
 }
 
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     filtro: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginBottom: 32,
+        marginBottom: 50,
         backgroundColor: '#eeeeee',
         paddingVertical: 25,
         borderRadius: 12,

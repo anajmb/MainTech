@@ -14,7 +14,7 @@ export default function CadastrarUsuario() {
             </View>
             </View>
 
-            /* Card de cadastro */
+            {/* Card de cadastro */}
             <View style={style.cardCadastro}>
                 <Text style={style.tituloCardCadastro}>Informe os dados para liberar o cadastro</Text>
                 <Text style={style.label}>Nome  Completo</Text>
@@ -48,7 +48,7 @@ export default function CadastrarUsuario() {
                 </TouchableOpacity>
             </View>
 
-            // Card de usuários cadastrados 
+            { /* Card de usuários cadastrados */}
             <View style={style.cardUsuarios}>
                 <Text style={style.tituloUsuarios}>Usuários cadastrados</Text>
                 
