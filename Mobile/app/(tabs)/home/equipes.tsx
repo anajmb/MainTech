@@ -4,10 +4,7 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { Wrench, UserPlus, Users } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
-
-// arrumar icone de add membro e equipe
-
+import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from "react-native";
 
 export interface Team {
     id: number;
@@ -16,24 +13,75 @@ export interface Team {
     members: any[];
 }
 
+export interface Employees {
+    id: number;
+    name: string;
+    email: string;
+}
+
+
+
 export default function Equipes() {
+    const [TeamData, setTeamData] = useState<Team[]>([]);
+    const [employeesData, setEmployeesData] = useState<Employees[]>([]);
+    const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+    const [selectedEmployee, setSelectedEmployee] = useState<Employees | null>(null);
+    const [modalTeamVisible, setModalTeamVisible] = useState(false);
+    const [modalEmployeeVisible, setModalEmployeeVisible] = useState(false);
+    const [feedback, setFeedback] = useState<string>("");
 
-        const [TeamData, setTeamData] = useState<Team[]>([]);
-
-        useEffect(() => {
-            async function fetchTeams() {
-                try {
-                    const res = await api.get('/team/get');
-                    setTeamData(res.data);
-
-                } catch (error) {
-                    console.log(error);
-                }
-
+     async function fetchTeams() {
+            try {
+                const res = await api.get('/team/get');
+                setTeamData(res.data);
+            } catch (error) {
+                console.log(error);
             }
+        }
+
+    useEffect(() => {
+       fetchTeams();
+        async function fetchEmployees() {
+            try {
+                const res = await api.get('/employees/get');
+                setEmployeesData(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchTeams();
+        fetchEmployees();
+    }, []);
+
+    async function handleAddMember() {
+        if (!selectedTeam || !selectedEmployee) {
+            setFeedback("Selecione uma equipe e um membro.");
+            return;
+        }
+
+        console.log(selectedTeam, selectedEmployee);
+        try {
+            const res = await api.post("/teamMember/create", {
+                teamId: selectedTeam.id,
+                personId: selectedEmployee.id,
+            });
+            setFeedback(res.data.msg || "Membro adicionado!");
+
+            setSelectedTeam(null);
+            setSelectedEmployee(null);
+            // setTeamData(prev => prev.map(team => 
+            //     team.id === selectedTeam.id 
+            //     ? { ...team, members: [...team.members, selectedEmployee] } 
+            //     : team.members.find(m => m.id === selectedEmployee.id)? {...team, members: [...team.members.filter(m => m.id !== selectedEmployee.id)]} : team
+            // ));
 
             fetchTeams();
-        }, [])
+        } catch (error: any) {
+            setFeedback(error.response?.data?.msg || "Erro ao adicionar membro.");
+        }
+
+    }
+    
 
     return (
         <ScrollView style={TabsStyles.container} >
@@ -77,14 +125,14 @@ export default function Equipes() {
                     {TeamData.map((team) => (
                         <View key={team.id} style={{ marginTop: 20 }}>
                             <View style={style.groupEqui}>
-                                {/* icone grupo, cor random */}
+          
                                 <View style={style.iconeEquipe}>
                                     <Wrench color="white" />
                                 </View>
                                 <View style={style.infoEqui}>
                                     <Text style={style.tituloEqui}>{team.name}</Text>
                                     <Text style={style.descricaoEqui}>{team.description}</Text>
-                                    {/* <Link href={'#'} style={style.verEquipe}>Ver equipe</Link> */}
+                                   
                                 </View>
                             </View>
 
@@ -118,28 +166,118 @@ export default function Equipes() {
                 <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
                 <View style={{ marginTop: 12 }}>
                     <Text style={style.labelAdicionar}>Nome da equipe:</Text>
-                    <TextInput
+                    <TouchableOpacity
                         style={style.inputAdicionar}
-                        placeholder="Ex: Manutenção"
-                        placeholderTextColor="#C4C4C4"
-                    />
+                        onPress={() => setModalTeamVisible(true)}
+                    >
+                        <Text style={style.inputTextAdicionar}>
+                            {selectedTeam ? selectedTeam.name : "Selecione a equipe"}
+                        </Text>
+                    </TouchableOpacity>
+                    <Modal
+                        visible={modalTeamVisible}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={() => setModalTeamVisible(false)}
+                    >
+                        <View style={{
+                            flex: 1,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(0,0,0,0.3)"
+                        }}>
+                            <View style={{
+                                backgroundColor: "#fff",
+                                borderRadius: 10,
+                                padding: 20,
+                                minWidth: 250,
+                                maxHeight: 300
+                            }}>
+                                {TeamData.map(team => (
+                                    <TouchableOpacity
+                                        key={team.id}
+                                        style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: "#eee" }}
+                                        onPress={() => {
+                                            setSelectedTeam(team);
+                                            setModalTeamVisible(false);
+                                        }}
+                                    >
+                                        <Text>{team.name}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                                <TouchableOpacity
+                                    style={{ marginTop: 10, alignSelf: "flex-end" }}
+                                    onPress={() => setModalTeamVisible(false)}
+                                >
+                                    <Text style={{ color: "blue" }}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
                 <View style={{ marginTop: 12 }}>
-                    <Text style={style.labelAdicionar}>E-mail:</Text>
-                    <TextInput
+                    <Text style={style.labelAdicionar}>Membro:</Text>
+                    <TouchableOpacity
                         style={style.inputAdicionar}
-                        placeholder="Ex: cida@email.com"
-                        placeholderTextColor="#C4C4C4"
-                        keyboardType="email-address"
-                    />
+                        onPress={() => setModalEmployeeVisible(true)}
+                    >
+                        <Text style={style.inputTextAdicionar}>
+                            {selectedEmployee ? selectedEmployee.name : "Selecione o membro"}
+                        </Text>
+                    </TouchableOpacity>
+                    <Modal
+                        visible={modalEmployeeVisible}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={() => setModalEmployeeVisible(false)}
+                    >
+                        <View style={{
+                            flex: 1,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(0,0,0,0.3)"
+                        }}>
+                            <View style={{
+                                backgroundColor: "#fff",
+                                borderRadius: 10,
+                                padding: 20,
+                                minWidth: 250,
+                                maxHeight: 300
+                            }}>
+                                {employeesData.map(emp => (
+                                    <TouchableOpacity
+                                        key={emp.id}
+                                        style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: "#eee" }}
+                                        onPress={() => {
+                                            setSelectedEmployee(emp);
+                                            setModalEmployeeVisible(false);
+                                        }}
+                                    >
+                                        <Text>{emp.name} ({emp.email})</Text>
+                                    </TouchableOpacity>
+                                ))}
+                                <TouchableOpacity
+                                    style={{ marginTop: 10, alignSelf: "flex-end" }}
+                                    onPress={() => setModalEmployeeVisible(false)}
+                                >
+                                    <Text style={{ color: "blue" }}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleAddMember}>
                     <View style={{ alignItems: "center", marginTop: 18 }}>
                         <View style={style.botaoAdicionar}>
                             <Text style={style.textoBotaoAdicionar}>Adicionar membro</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
+                {feedback ? (
+                    <Text style={{ color: feedback.includes("Erro") ? "red" : "green", marginTop: 10, textAlign: "center" }}>
+                        {feedback}
+                    </Text>
+                ) : null}
             </View>
 
         </ScrollView >
@@ -270,13 +408,13 @@ const style = StyleSheet.create({
     },
     botaoAdicionar: {
         backgroundColor: "#CE221E",
-        borderRadius: 8,    
+        borderRadius: 8,
         paddingVertical: 9,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 20,
         width: 230,
-        alignSelf: "center",     
+        alignSelf: "center",
     },
     textoBotaoAdicionar: {
         color: "#fff",
