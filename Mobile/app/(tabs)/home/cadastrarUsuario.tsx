@@ -90,7 +90,7 @@ export default function CadastrarUsuario() {
                     />
                 </View>
                 <View style={{ flex: 1 }}>
-                    <Text style={style.label}>Cargo</Text>
+                    <Text style={style.labelCargo}>Cargo</Text>
                     <View style={style.input}>
                         <Text style={style.inputText}>Selecione</Text>
                     </View>
@@ -154,11 +154,21 @@ const style = StyleSheet.create({
         marginTop: 3,
 
     },
+    labelCargo: {
+        fontSize: 15,
+        color: "#222",
+        marginBottom: 4,
+        fontWeight: "400",
+        marginTop: 10,
+
+     },
+
     label: {
         fontSize: 15,
         color: "#222",
         marginBottom: 4,
         fontWeight: "400",
+        marginTop: 1,
     },
     input: {
         backgroundColor: "#F5F5F5",
@@ -166,6 +176,7 @@ const style = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         justifyContent: "center",
+        marginTop: 4,
     },
     inputText: {
         color: "#C4C4C4",

@@ -6,6 +6,8 @@ import { Wrench, UserPlus, Users } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from "react-native";
 
+// mudar ou tirar icone dos times, pq esta vindo os mesmos para todas as equipes
+
 export interface Team {
     id: number;
     name: string;
