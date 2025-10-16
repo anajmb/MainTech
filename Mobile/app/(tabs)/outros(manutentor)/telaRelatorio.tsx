@@ -8,9 +8,11 @@ type SecaoProps = {
 
 export default function Secao({ title, children }: SecaoProps) {
     return (
-        <View style={styles.allCard}>
+        <View >
             {title && <Text style={styles.titleSecao}>{title}</Text>}
+            <View style={styles.cards}>
             <View style={styles.contentSecao}>{children}</View>
+            </View>
         </View>
     )
 }
@@ -61,16 +63,18 @@ export function Relatorio() {
 
 const styles = StyleSheet.create({
 
-    allCard: {
-        backgroundColor: '#eeeee', 
-        borderRadius: 8, 
-        marginHorizontal: 16, 
-        marginBottom: 16, 
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3, 
-        shadowRadius: 2 
+    cards:{
+       backgroundColor: '#eeeeee',
+        paddingLeft: 15,
+        paddingRight: 15,
+        marginBottom: 20,
+        borderBottomRightRadius: 10,
+        borderBottomLeftRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 4
     },
     titleSecao: {
         backgroundColor: '#CF0000',
@@ -83,7 +87,7 @@ const styles = StyleSheet.create({
     },
     contentSecao: {
         padding: 15,
-        gap: 15
+        gap: 30
     },
     row: {
         flexDirection: 'row', 

@@ -37,13 +37,13 @@ const styles = StyleSheet.create({
 
     btnSalvar:{
         backgroundColor: '#CF0000',
-        borderRadius: 20,
+        borderRadius: 10,
         width: '100%',
         marginRight: 10
     },
     btnAlterar:{
         backgroundColor: '#9c9898ff',
-        borderRadius: 20,
+        borderRadius: 10,
         width: '100%',
         marginRight: 10
     },
