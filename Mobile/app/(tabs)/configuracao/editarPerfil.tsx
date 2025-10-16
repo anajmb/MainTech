@@ -7,6 +7,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState } from "react";
 
 export default function EditarPerfil() {
+
+    // Estado para armazenar a imagem selecionada
     const [image, setImage] = useState(null);
 
     // Função para lidar com a seleção de imagem (galeria ou câmera)
@@ -32,6 +34,7 @@ export default function EditarPerfil() {
         )
     };
 
+    // Função para selecionar imagem da galeria
     const pickImageFromGallery = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -56,6 +59,8 @@ export default function EditarPerfil() {
         }
     };
 
+
+    // Função para tirar foto com a câmera
     const takePhotoWithCamera = async () => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -78,6 +83,11 @@ export default function EditarPerfil() {
             Alert.alert("Erro", "Não foi possível usar a câmera.");
         }
     };
+
+    // Criar tabela para salvar o base64 da imagem e uma rota exclusiva para salvar as imagens
+    // Fazer a integração com o backend para salvar a imagem no banco de dados
+    // Fazer as funções de pegar imagem salvarem no banco de dados
+    // Puxar imagem do banco de dados para o app
 
 
     return (
@@ -223,7 +233,7 @@ const styles = StyleSheet.create({
         position: 'relative',
         // Adicionando borda para manter o design sem o "fundo" extra
         borderWidth: 2,
-        borderColor: '#CE221E', 
+        borderColor: '#CE221E',
     },
     avatarImage: {
         height: 90,
