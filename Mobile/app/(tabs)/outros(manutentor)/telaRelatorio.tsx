@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         shadowRadius: 2 
     },
     titleSecao: {
-        backgroundColor: '#A50702',
+        backgroundColor: '#CF0000',
         color: 'white',
         padding: 12,
         fontSize: 16, 

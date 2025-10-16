@@ -17,13 +17,13 @@ export default function OrdemServico() {
             </View>
             <Relatorio />
 
-             <View>
-            <TouchableOpacity>
+             <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20  }}>
+            <TouchableOpacity style={{alignItems: "center", marginBottom: 20, marginTop: 10}}>
                 <View style={styles.btnSalvar}>
                     <Text style={styles.botaoText}>Salvar Alterações</Text>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity style={{alignItems: "center"}}>
+            <TouchableOpacity style={{alignItems: "center", marginBottom: 20, marginTop: 10}}>
                 <View style={styles.btnAlterar}>
                     <Text style={styles.botaoText}>Rejeitar</Text>
                 </View>
@@ -36,16 +36,16 @@ export default function OrdemServico() {
 const styles = StyleSheet.create({
 
     btnSalvar:{
-        backgroundColor: '#A50702',
+        backgroundColor: '#CF0000',
         borderRadius: 20,
-        width: '30%',
+        width: '100%',
         marginRight: 10
     },
     btnAlterar:{
         backgroundColor: '#9c9898ff',
         borderRadius: 20,
-        width: '30%',
-        
+        width: '100%',
+        marginRight: 10
     },
 
     botaoText:{
