@@ -1,7 +1,8 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { Lock, Shield, TriangleAlert } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Lock, Shield, TriangleAlert, Eye, EyeOff } from "lucide-react-native";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
+import { useState } from "react";
 
 const dicasDeSeguranca = [
   "Use senhas únicas e complexas;",
@@ -11,6 +12,40 @@ const dicasDeSeguranca = [
 ];
 
 export default function Privacidade() {
+  // visibilidade dos inputs
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  // valores dos inputs
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+
+  const canSubmit = currentPwd.trim() !== "" && newPwd.trim() !== "" && confirmPwd.trim() !== "";
+
+  function handleChangePassword() {
+    if (!canSubmit) {
+      return Alert.alert("Preencher campos", "Por favor preencha todos os campos para alterar a senha.");
+    }
+
+    if (newPwd !== confirmPwd) {
+      return Alert.alert("Senhas não conferem", "A nova senha e a confirmação devem ser iguais.");
+    }
+
+    //Chamando lógica para alterar a senha
+    // placeholder de sucesso
+    Alert.alert("Sucesso", "Senha alterada com sucesso.");
+
+    // limpar campos
+    setCurrentPwd("");
+    setNewPwd("");
+    setConfirmPwd("");
+    setShowCurrent(false);
+    setShowNew(false);
+    setShowConfirm(false);
+  }
+
   return (
     <ScrollView style={TabsStyles.container}>
       <View style={TabsStyles.headerPrincipal}>
@@ -53,14 +88,68 @@ export default function Privacidade() {
           <Lock color="#E53935" size={20} />
           <Text style={styles.sectionTitle}>Alterar Senha</Text>
         </View>
+
         <Text style={styles.inputLabel}>Senha atual</Text>
-        <TextInput secureTextEntry style={styles.textInput} />
+        <View style={styles.inputWrapper}>
+          <TextInput
+            secureTextEntry={!showCurrent}
+            style={styles.textInput}
+            placeholder=""
+            value={currentPwd}
+            onChangeText={setCurrentPwd}
+          />
+          <TouchableOpacity
+            style={styles.eyeButton}
+            onPress={() => setShowCurrent(v => !v)}
+            activeOpacity={0.7}
+          >
+            {showCurrent ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.inputLabel}>Nova senha</Text>
-        <TextInput secureTextEntry style={styles.textInput} />
+        <View style={styles.inputWrapper}>
+          <TextInput
+            secureTextEntry={!showNew}
+            style={styles.textInput}
+            placeholder=""
+            value={newPwd}
+            onChangeText={setNewPwd}
+          />
+          <TouchableOpacity
+            style={styles.eyeButton}
+            onPress={() => setShowNew(v => !v)}
+            activeOpacity={0.7}
+          >
+            {showNew ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.inputLabel}>Confirmar nova senha</Text>
-        <TextInput secureTextEntry style={styles.textInput} />
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.buttonText}>Alterar Senha</Text>
+        <View style={styles.inputWrapper}>
+          <TextInput
+            secureTextEntry={!showConfirm}
+            style={styles.textInput}
+            placeholder=""
+            value={confirmPwd}
+            onChangeText={setConfirmPwd}
+          />
+          <TouchableOpacity
+            style={styles.eyeButton}
+            onPress={() => setShowConfirm(v => !v)}
+            activeOpacity={0.7}
+          >
+            {showConfirm ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.actionButton, !canSubmit && styles.actionButtonDisabled]}
+          onPress={handleChangePassword}
+          activeOpacity={0.8}
+          disabled={!canSubmit}
+        >
+          <Text style={[styles.buttonText, !canSubmit && styles.buttonTextDisabled]}>Alterar Senha</Text>
         </TouchableOpacity>
       </View>
 
@@ -79,6 +168,7 @@ export default function Privacidade() {
     </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
@@ -88,7 +178,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 5,
     shadowColor: "#000",
-     shadowOpacity: 0.06,
+    shadowOpacity: 0.06,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 15,
   },
@@ -111,7 +201,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: "bold",
-     color: "#2E7D32",
+    color: "#2E7D32",
   },
   cardSubtitle: {
     fontSize: 14,
@@ -141,7 +231,7 @@ const styles = StyleSheet.create({
     color: "#888",
     marginTop: 4,
   },
-    sectionHeader: {
+  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 24,
@@ -158,6 +248,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginTop: 12,
   },
+  inputWrapper: {
+    position: 'relative',
+    marginBottom: 4,
+  },
   textInput: {
     backgroundColor: "#F7F7F7",
     borderRadius: 10,
@@ -165,7 +259,16 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
     borderWidth: 0,
-    marginBottom: 4,
+    paddingRight: 44,
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 10,
+    top: 12,
+    height: 24,
+    width: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   actionButton: {
     backgroundColor: "#E53935",
@@ -174,12 +277,18 @@ const styles = StyleSheet.create({
     marginTop: 24,
     alignItems: 'center',
   },
+  actionButtonDisabled: {
+    backgroundColor: "#D8D8D8",
+  },
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
   },
-    tipItem: {
+  buttonTextDisabled: {
+    color: "#888",
+  },
+  tipItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 12,
