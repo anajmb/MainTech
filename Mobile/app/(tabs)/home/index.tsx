@@ -1,67 +1,43 @@
 import { Link } from "expo-router";
 import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus } from "lucide-react-native";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { CustomText } from "@/components/customText";
-
-// achar um icone de máquina para por no lugar de Nova Tarefa
-// colocar função para que ao clicar no icone ativo, recarregue a página
-
-const mockNotificacoes = [
-  { id: '1', title: 'Análise de O.S.', description: 'uma nova O.S. precisa ser analisada', time: '2h' },
-  { id: '2', title: 'Manutenção Preventiva', description: 'uma manutenção preventiva foi concluída', time: '5h' },
-];
-
-interface NotificacoesModalProps {
-  visible: boolean;
-  onClose: () => void;
-}
-
-const NotificacoesModal: React.FC<NotificacoesModalProps> = ({ visible, onClose }) => {
-  return (
-    <Modal
-      transparent={true}
-      visible={visible}
-      // animationType="fade"
-      onRequestClose={onClose}>
-      <Pressable style={styles.modalOverlay} onPress={onClose}>
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.dropdownTitle}>Notificações</Text>
-          {mockNotificacoes.map((notificacoes) => (
-            <View key={notificacoes.id} style={styles.notificacaoItem}>
-              <View style={styles.notificacaoIcon}>
-                <AlertTriangle color="#fde4b6ff" size={20} />
-              </View>
-              <View style={styles.notificacaoContent}>
-                <Text style={styles.itemTitle}>{notificacoes.title}</Text>
-                <Text style={styles.itemDescription}>{notificacoes.description}</Text>
-              </View>
-              <Text style={styles.itemTime}>{notificacoes.time}</Text>
-            </View>
-          ))}
-        </View>
-      </Pressable>
-    </Modal>
-  )
-}
+import NotificationDropdown from "@/components/notification";
 
 export default function Home() {
-  const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);                            
+  const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    console.log("Recarregando dados da página Home...");
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
 
   return (
-    <ScrollView style={TabsStyles.container}>
-      {/* Logo */}
+    <ScrollView
+      style={TabsStyles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#CE221E"]} />
+      }
+    >
 
       <View>
-        <TouchableOpacity style={styles.header}>
+        <View style={styles.header}>
           {/* <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center', }}> */}
 
           <View style={{ flexDirection: 'row', gap: 10 }}>
 
-            <View style={TabsStyles.userFotoIcon}>
-              <User color={'#fff'} size={22} />
-            </View>
+              <Link href={"/configuracao"}>
+            <TouchableOpacity style={TabsStyles.userFotoIcon}>
+                <User color={'#fff'} size={22} />
+            </TouchableOpacity>
+              </Link>
 
             <View>
               <Text style={styles.tituloHeader}>Olá, Usuário</Text>
@@ -69,11 +45,16 @@ export default function Home() {
             </View>
           </View>
 
+          
           <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
             <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{ right: 2 }} />
           </TouchableOpacity>
-          {/* </Link> */}
-        </TouchableOpacity>
+          
+          <NotificationDropdown 
+                visible={isNotificacoesVisible} 
+                onClose={() => setNotificacoesVisible(false)}
+            />
+        </View>
       </View>
 
       {/* Ações rápidas */}
@@ -84,7 +65,7 @@ export default function Home() {
 
           <Link href="/(tabs)/home/maquinas" asChild>
             <TouchableOpacity style={styles.acaoCard}>
-              <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao}/>
+              <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Máquinas</Text>
             </TouchableOpacity>
           </Link>
@@ -131,8 +112,8 @@ export default function Home() {
       </View>
 
       {/* Notificações Modal */}
-      <NotificacoesModal visible={isNotificacoesVisible} 
-      onClose={() => setNotificacoesVisible(false)}/>
+      {/* <NotificacoesModal visible={isNotificacoesVisible} 
+      onClose={() => setNotificacoesVisible(false)}/> */}
 
     </ScrollView>
   )
@@ -221,12 +202,12 @@ const styles = StyleSheet.create({
   // modal styles
   modalOverlay: {
     flex: 1,
-    
+
   },
-  dropdownContainer:{
+  dropdownContainer: {
     position: 'absolute',
-    top: 125,     
-    right: 35,    
+    top: 125,
+    right: 35,
     width: 300,
     backgroundColor: '#f5f5f5',
     borderRadius: 16,
@@ -251,7 +232,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0ff'
   },
-  notificacaoIcon:{
+  notificacaoIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -261,16 +242,16 @@ const styles = StyleSheet.create({
     marginRight: 12,
     margin: 4
   },
-  notificacaoContent:{
+  notificacaoContent: {
     flex: 1
   },
-  itemTitle:{
-     fontSize: 14,
+  itemTitle: {
+    fontSize: 14,
     fontWeight: '600',
     color: '#444',
   },
   itemDescription: {
-     fontSize: 13,
+    fontSize: 13,
     color: '#888',
     marginTop: 2,
   },
