@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { Calendar, LocaleConfig, DateObject } from "react-native-calendars";
 import { api } from "../../../lib/axios";
 
+// mudar a cor do dia de hoje
+
 LocaleConfig.locales["pt-br"] = {
   monthNames: [
     "Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"

@@ -12,6 +12,8 @@ interface Machines {
     qrCode: string
 }
 
+// arrumar layout maquinas cadastradas
+
 export default function Maquinas() {
     const [machines, setMachines] = useState<Machines[]>([]);
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
