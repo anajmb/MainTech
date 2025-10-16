@@ -72,52 +72,52 @@ export default function NovaTarefa() {
     const [machines, setMachines] = useState('');
 
     const handleCreateTask = async () => {
-  if (!title || !description || !inspectorId || !machines || !date) {
-    alert("Por favor, preencha todos os campos obrigatórios!");
-    return;
-  }
+        if (!title || !description || !inspectorId || !machines || !date) {
+            alert("Por favor, preencha todos os campos obrigatórios!");
+            return;
+        }
 
-  try {
-    const expirationDate = date.toISOString(); // formato esperado pelo backend
+        try {
+            const expirationDate = date.toISOString(); // formato esperado pelo backend
 
-    const response = await fetch("https://maintech-backend-r6yk.onrender.com/tasks/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: title,
-        description: description,
-        inspectorId: Number(inspectorId),
-        machineId: Number(machines),
-        expirationDate: expirationDate,
-      }),
-    });
+            const response = await fetch("https://maintech-backend-r6yk.onrender.com/tasks/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: title,
+                    description: description,
+                    inspectorId: Number(inspectorId),
+                    machineId: Number(machines),
+                    expirationDate: expirationDate,
+                }),
+            });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.log("Erro ao criar tarefa:", errorData);
-      alert("Erro ao criar tarefa!");
-      return;
-    }
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log("Erro ao criar tarefa:", errorData);
+                alert("Erro ao criar tarefa!");
+                return;
+            }
 
-    const data = await response.json();
-    console.log("Tarefa criada com sucesso:", data);
-    alert("Tarefa criada com sucesso!");
-    
-    // limpar os campos
-    setTitle("");
-    setDescription("");
-    setInspectorId("");
-    setMachines("");
-    setDate(null);
-    setTime(null);
+            const data = await response.json();
+            console.log("Tarefa criada com sucesso:", data);
+            alert("Tarefa criada com sucesso!");
 
-  } catch (error) {
-    console.error("Erro:", error);
-    alert("Erro de conexão com o servidor!");
-  }
-};
+            // limpar os campos
+            setTitle("");
+            setDescription("");
+            setInspectorId("");
+            setMachines("");
+            setDate(null);
+            setTime(null);
+
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro de conexão com o servidor!");
+        }
+    };
 
     return (
         <ScrollView style={TabsStyles.container}>
@@ -141,28 +141,28 @@ export default function NovaTarefa() {
                     <View>
                         <Text style={styles.label}>Titulo</Text>
                         <TextInput placeholder="Digite o título da tarefa"
-                            placeholderTextColor={'#8B8686'}
+                            placeholderTextColor={'#C4C4C4'}
                             style={styles.input}
                             value={title}
                             onChangeText={setTitle} />
                     </View>
 
+
+
                     <View>
                         <Text style={styles.label}>Descrição</Text>
-                        <TextInput placeholder="Descreva os detalhes"
-                            placeholderTextColor={'#8B8686'}
+                        <TextInput style={styles.inputDescreva}
+                            placeholder="Descreva os detalhes"
+                            placeholderTextColor="#C4C4C4"
                             multiline={true}
-                            numberOfLines={5}
-                            style={styles.inputDescricao}
-                            value={description}
-                            onChangeText={setDescription}
+                            numberOfLines={8}
                         />
                     </View>
 
                     <View>
                         <Text style={styles.label}>Máquina</Text>
                         <TextInput placeholder="Digite o ID da máquina"
-                            placeholderTextColor={'#8B8686'}
+                            placeholderTextColor={'#C4C4C4'}
                             style={styles.inputDescricao}
                             value={machines}
                             onChangeText={setMachines}
@@ -205,6 +205,7 @@ export default function NovaTarefa() {
                                 </Text>
                             </TouchableOpacity>
 
+
                             <DateTimePickerModal
                                 isVisible={isDatePickerVisible}
                                 mode="date"
@@ -237,7 +238,7 @@ export default function NovaTarefa() {
                                 is24Hour={true}
                                 minimumDate={minimumTime}
                                 maximumDate={maximumTime}
-
+                                
                             />
                         </View>
                     </View>
@@ -251,7 +252,7 @@ export default function NovaTarefa() {
 
                     <TextInput placeholder="Atribuir a..."
                         style={styles.inputDescricao}
-                        placeholderTextColor={'#8B8686'}
+                        placeholderTextColor={'#C4C4C4'}
                         value={inspectorId}
                         onChangeText={setInspectorId}
                     />
@@ -275,14 +276,14 @@ export default function NovaTarefa() {
 const styles = StyleSheet.create({
     todosCard: {
         gap: 30,
-        paddingBottom: 90,
-        // marginTop: 40
+        paddingBottom: 50,
+        
     },
     card: {
-         backgroundColor: "#fff",
+        backgroundColor: "#fff",
         borderRadius: 16,
         padding: 16,
-        marginVertical: 8,
+        marginVertical: -6,
         marginHorizontal: 8,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
         marginBottom: 12
     },
     input: {
-         backgroundColor: "#F5F5F5",
+        backgroundColor: "#F5F5F5",
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -322,7 +323,7 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
     },
     inputDescricao: {
-         backgroundColor: "#F5F5F5",
+        backgroundColor: "#F5F5F5",
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -333,6 +334,19 @@ const styles = StyleSheet.create({
         marginRight: 8
     },
     subtituloData: {
-        // flexDirection: 'row'
+        marginTop: 8,
+        marginBottom: 8,
+        marginRight: 20,
+
     },
+    inputDescreva: {
+        backgroundColor: "#F5F5F5",
+        borderRadius: 8,
+        marginBottom: 8,
+        fontSize: 14,
+        textAlignVertical: "top",
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        height: 95,
+    }
 })
