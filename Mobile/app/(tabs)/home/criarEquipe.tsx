@@ -13,6 +13,8 @@ export interface Team {
     members: any[];
 }
 
+// tirar icone de equipes cadastradas  mesma coisa de "equipes"
+
 export default function CriarEquipe() {
 
     const [TeamData, setTeamData] = useState<Team[]>([]);

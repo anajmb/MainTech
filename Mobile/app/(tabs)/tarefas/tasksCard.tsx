@@ -30,14 +30,18 @@ export const TasksCards: React.FC<TasksCards> = ({ id, title, description, inspe
 
     return (
         <View style={styles.card}>
-    
-                <Text style={styles.title}>{title}</Text>
+
+            <Text style={styles.title}>{title}</Text>
 
             <Text style={styles.description}>{description}</Text>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Minus size={50} color={statusInfo.iconColor}  strokeWidth={4} />
-                <Text style={styles.date}><Clock size={15} color="#00000077" /> {formattedDate}</Text>
+                <Minus size={50} color={statusInfo.iconColor} strokeWidth={4} />
+
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Clock size={15} color="#00000077" style={styles.time} />
+                    <Text style={styles.date}>{formattedDate}</Text>
+                </View>
             </View>
         </View>
 
@@ -72,13 +76,19 @@ const styles = StyleSheet.create({
     },
     date: {
         fontSize: 13,
+        alignItems: 'center',
+        color: '#00000077',
+        gap: 5
 
     },
     statusPendente: {
 
     },
     statusConcluido: {
-        
+
+    },
+    time: {
+        marginRight: 5,
     }
 });
 

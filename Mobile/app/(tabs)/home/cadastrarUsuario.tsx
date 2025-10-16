@@ -7,7 +7,8 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 export interface Employees {
     id: number;
     name: string;
-    cpf: string;
+    cpf: string; 
+
     email: string;
     phone: string;
     birthDate: string;
@@ -239,12 +240,12 @@ const style = StyleSheet.create({
     },
     avatarText: {
         fontSize: 15,
-        fontWeight: "bold",
+        fontWeight: "600",
         color: "#222",
     },
     nomeUsuario: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: "500",
         color: "#222",
     },
     emailUsuario: {

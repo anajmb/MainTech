@@ -279,16 +279,23 @@ const styles = StyleSheet.create({
         // marginTop: 40
     },
     card: {
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-        backgroundColor: '#eeeeee',
-        padding: 20,
-        borderRadius: 10,
+         backgroundColor: "#fff",
+        borderRadius: 16,
+        padding: 16,
+        marginVertical: 8,
+        marginHorizontal: 8,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     label: {
-        fontSize: 12,
-        textAlign: 'left',
-        marginBottom: 8,
-        marginTop: 10
+        fontSize: 15,
+        color: "#222",
+        marginBottom: 4,
+        fontWeight: "400",
+        marginTop: 10,
     },
     tituloCard: {
         fontSize: 15,
@@ -300,10 +307,12 @@ const styles = StyleSheet.create({
         marginBottom: 12
     },
     input: {
-        borderRadius: 10,
-        backgroundColor: '#e6e6e6',
-        padding: 10,
-        textAlign: 'left'
+         backgroundColor: "#F5F5F5",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        marginBottom: 8,
+        fontSize: 14,
     },
     inputSelecionar: {
         borderRadius: 10,
@@ -313,10 +322,12 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
     },
     inputDescricao: {
-        borderRadius: 10,
-        backgroundColor: '#e6e6e6',
-        padding: 10,
-        textAlign: 'left',
+         backgroundColor: "#F5F5F5",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        marginBottom: 8,
+        fontSize: 14,
     },
     iconCard: {
         marginRight: 8
