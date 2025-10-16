@@ -74,6 +74,12 @@ const styles = StyleSheet.create({
         fontSize: 13,
 
     },
+    statusPendente: {
+
+    },
+    statusConcluido: {
+        
+    }
 });
 
 export default TasksCards;
