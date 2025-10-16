@@ -6,9 +6,6 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../../lib/axios";
 
-
-
-
 export interface Team {
     id: number;
     name: string;
@@ -22,7 +19,6 @@ export interface Team {
         };
     }[];
 }
-
 
 export default function VerEquipe() {
 
@@ -83,15 +79,15 @@ export default function VerEquipe() {
                         <Text style={style.emailUsuario}>{member.person.email}</Text>
                     </View>
                     <View style={style.tagCargo}>
-                        <Text style={style.tagCargoText}>{member.person.role}</Text>
+                        <Text style={style.tagCargoText}>
+                            {member.person.role}
+                        </Text>
                     </View>
                     <TouchableOpacity style={style.menuIcon} onPress={() => { }}>
                         <MoreVertical color="#000" size={16} />
                     </TouchableOpacity>
                 </View>
             ))}
-
-
         </ScrollView>
     )
 }
@@ -142,12 +138,12 @@ const style = StyleSheet.create({
     },
     avatarText: {
         fontSize: 15,
-        fontWeight: "bold",
+        fontWeight: "600",
         color: "#222",
     },
     nomeUsuario: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: "500",
         color: "#222",
     },
     emailUsuario: {
@@ -167,7 +163,7 @@ const style = StyleSheet.create({
     tagCargoText: {
         color: "#000000",
         fontSize: 12,
-        fontWeight: "500",
+        textTransform: "none", 
     },
     menuIcon: {
         position: "absolute",
