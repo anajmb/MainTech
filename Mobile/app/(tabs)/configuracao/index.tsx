@@ -2,8 +2,9 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
-import { useState } from "react";
-import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import * as Notifications from 'expo-notifications';
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
@@ -13,12 +14,47 @@ import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "re
 
 export default function Configuracao() {
 
-    const [isNotification, setIsNotification] = useState(false);
-    const [isAcessibilidade, setIsAcessibilidade] = useState(false);
+    const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
 
-    const toggleSwitch = () => setIsNotification(previousState => !previousState)
+    useEffect(() => {
+        const syncPermissionStatus = async () => {
+            const { status } = await Notifications.getPermissionsAsync();
+            setInAppNotificationsEnabled(status === 'granted');
+        };
+        syncPermissionStatus();
+    }, []);
 
-     const toggleSwitch2 = () => setIsAcessibilidade(previousState => !previousState)
+    const handleToggleNotifications = async () => {
+        if (inAppNotificationsEnabled) {
+            setInAppNotificationsEnabled(false);
+            Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
+            
+            return;
+        }
+
+        const { status, canAskAgain } = await Notifications.getPermissionsAsync();
+
+        // if (status === 'granted') {
+        //     setInAppNotificationsEnabled(true);
+        //     Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+        //     // Aqui você salvaria a preferência (true)
+        //     return;
+        // }
+
+        if (canAskAgain || status === 'undetermined') {
+            const { status: newStatus } = await Notifications.requestPermissionsAsync();
+            if (newStatus === 'granted') {
+                setInAppNotificationsEnabled(true);
+            }
+        } else {
+            Alert.alert(
+                "Ação Necessária",
+                "As notificações estão bloqueadas nas configurações do seu celular. Para ativá-las, você precisa ir manualmente nas configurações do app.",
+                [{ text: "OK" }]
+            );
+        }
+    };
+
 
     return (
 
@@ -69,6 +105,19 @@ export default function Configuracao() {
                             </TouchableOpacity>
                         </Link>
 
+                        <Link href={'/(tabs)/configuracao/privacidade'} asChild>
+                            <TouchableOpacity style={styles.opcao}>
+                                <View style={styles.infoCardButton}>
+                                    <PersonStanding />
+
+                                    <View style={styles.infoCard1}>
+                                        <Text style={styles.tituloOpcao}>Politica de Privacidade</Text>
+                                        <Text style={styles.subtitulo}>Entenda o uso dos seus dados</Text>
+                                    </View>
+
+                                </View>
+                            </TouchableOpacity>
+                        </Link>
                     </View>
                 </View>
 
@@ -77,41 +126,25 @@ export default function Configuracao() {
                     <Text style={styles.tituloCard}>Preferências</Text>
 
                     <View style={styles.card}>
-                        <TouchableOpacity style={styles.opcao}>
+                        <View style={styles.opcao}>
                             <View style={styles.infoCardButton}>
                                 <BellRing style={{ marginRight: 12 }} />
                                 <View style={styles.infoCard1}>
                                     <Text style={styles.tituloOpcao}>Notificações</Text>
                                     <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
                                 </View>
+                                <TouchableOpacity>
                                 <Switch
                                     trackColor={{ false: "#767577", true: "#D10B03" }}
-                                    thumbColor={isNotification ? "#f4f4f4" : "#f4f3f4"}
+                                    thumbColor={ "#f4f3f4"}
                                     ios_backgroundColor="#3e3e3e"
-                                    onValueChange={toggleSwitch}
-                                    value={isNotification}
+                                    onValueChange={handleToggleNotifications}
+                                value={inAppNotificationsEnabled}
                                     style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
                                 />
-                            </View>
                         </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.opcao}>
-                           <View style={styles.infoCardButton}>
-                                <PersonStanding />
-
-                                <View style={styles.infoCard1}>
-                                    <Text style={styles.tituloOpcao}>Acessibilidade</Text>
-                                </View>
-                                  <Switch
-                                    trackColor={{ false: "#767577", true: "#D10B03" }}
-                                    thumbColor={isAcessibilidade ? "#f4f4f4" : "#f4f3f4"}
-                                    ios_backgroundColor="#3e3e3e"
-                                    onValueChange={toggleSwitch2}
-                                    value={isAcessibilidade}
-                                    style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                                />
                             </View>
-                        </TouchableOpacity>
+                            </View>
 
                     </View>
                 </View>
@@ -142,7 +175,7 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
 
-                        <Link href="/">
+                        <Link href={"/"} asChild>
                             <TouchableOpacity style={styles.opcao}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <LogOut color={'#F24040'} />
@@ -153,8 +186,8 @@ export default function Configuracao() {
                                     </View>
                                 </View>
                             </TouchableOpacity>
-                        </Link>
 
+                        </Link>
                     </View>
                 </View>
 
