@@ -4,6 +4,7 @@
     "slug": "",
     "version": "1.0.0",
     "orientation": "portrait",
+    "image": "./assets/images/background-mobile.png",
     "icon": "./assets/images/LogoVermelha.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
