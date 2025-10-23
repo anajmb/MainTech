@@ -133,13 +133,13 @@ export default function Maquinas() {
             <Modal visible={modalVisible} transparent animationType="fade">
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
                     <View style={{ backgroundColor: '#fff', padding: 40, borderRadius: 20, alignItems: 'center' }}>
-                        <Text style={{fontSize: 22}}>Deseja realmente deletar?</Text>
+                        <Text style={{ fontSize: 22 }}>Deseja realmente deletar?</Text>
                         <View style={{ flexDirection: 'row', marginTop: 24 }}>
                             <TouchableOpacity onPress={() => { /* ação de deletar */ setModalVisible(true); }}>
                                 <Text style={{ color: 'red', marginRight: 16, fontSize: 18 }}>Deletar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text style={{fontSize: 18}}>Cancelar</Text>
+                                <Text style={{ fontSize: 18 }}>Cancelar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -186,14 +186,16 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
     },
     botaoCad: {
-        backgroundColor: "#CE221E",
-        borderRadius: 8,
-        paddingVertical: 9,
+        backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 10,
+        marginBottom: 30,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 20,
-        width: 230,
-        alignSelf: "center",
+        alignSelf: "center"
     },
     cardMaq: {
         flexDirection: "row",
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     cardContent: {
-        flex: 1,                    // ocupa o espaço do meio
+        flex: 1,                    
         flexShrink: 1,
     },
     maqTitle: {
@@ -241,7 +243,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         marginLeft: 10,
         gap: 5,
-        
+
 
     },
     image: {

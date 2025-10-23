@@ -4,8 +4,6 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import React from "react";
 import { Relatorio } from "./telaRelatorio";
 
-
-
 export default function OrdemServico() {
     return (
         <ScrollView style={TabsStyles.container}>
@@ -17,41 +15,53 @@ export default function OrdemServico() {
             </View>
             <Relatorio />
 
-             <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20  }}>
-            <TouchableOpacity style={{alignItems: "center", marginBottom: 20, marginTop: 10}}>
-                <View style={styles.btnSalvar}>
-                    <Text style={styles.botaoText}>Salvar Alterações</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={{alignItems: "center", marginBottom: 20, marginTop: 10}}>
-                <View style={styles.btnAlterar}>
+            <View style={styles.botoesContainer}>
+                <TouchableOpacity style={styles.btnPrincipal}>
+                    <Text style={styles.botaoumText}>Salvar Alterações</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnSecundario}>
                     <Text style={styles.botaoText}>Rejeitar</Text>
-                </View>
-            </TouchableOpacity>
+                </TouchableOpacity>
             </View>
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-
-    btnSalvar:{
-        backgroundColor: '#CF0000',
-        borderRadius: 10,
-        width: '100%',
-        marginRight: 10
+    botoesContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 25,
+        marginBottom: 20,
+        gap: 12,
     },
-    btnAlterar:{
-        backgroundColor: '#9c9898ff',
-        borderRadius: 10,
-        width: '100%',
-        marginRight: 10
+    btnPrincipal: {
+    backgroundColor: '#A50702',
+    borderRadius: 10, // quadrado
+    paddingVertical: 10,
+    width: 150, // menor
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+},
+btnSecundario: {
+    backgroundColor: "#C5C5C5",
+    borderRadius: 10, // quadrado
+    paddingVertical: 10,
+    width: 150, // menor
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+},
+    botaoText: {
+        color: "#5C5C5C",
+        fontSize: 15,
+        fontWeight: "400",
     },
+    botaoumText: {
+        color: "#fff",
+        fontSize: 15,
+        fontWeight: "400",
 
-    botaoText:{
-        padding: 8,
-        textAlign: 'center',
-        color: '#fff'
-    }
-
-})
+    },
+});

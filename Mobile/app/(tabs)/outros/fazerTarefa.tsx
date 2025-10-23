@@ -85,8 +85,13 @@ export default function FazerTarefa() {
                 </View>
             </View>
             <TouchableOpacity>
-                <View style={styles.confirmBtn}>Finalizar Checklist</View>
+                <View style={styles.confirmBtn}>
+                    <Text style={{ color: "#fff", fontSize: 15, fontWeight: "500" }}>
+                        Finalizar Checklist
+                    </Text>
+                </View>
             </TouchableOpacity>
+
         </ScrollView>
     )
 }
@@ -191,7 +196,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     cardPrioridade: {
-       backgroundColor: '#eeeeee',
+        backgroundColor: '#eeeeee',
         padding: 10,
         borderRadius: 10,
         shadowColor: "#000",
@@ -216,15 +221,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     confirmBtn: {
-        backgroundColor: "#BF201C",
-        borderRadius: 20,
-        paddingVertical: 15,
-        color: "#fff",
+        backgroundColor: '#A50702',
+        borderRadius: 10, // quadrado
+        paddingVertical: 10,
+        width: 200, // menor
+        alignItems: "center",
+        justifyContent: "center",
         alignSelf: "center",
-        fontSize: 18,
-        fontFamily: "System",
-        fontWeight: 500,
-        padding: 60,
 
     }
 })

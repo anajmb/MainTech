@@ -409,19 +409,22 @@ const style = StyleSheet.create({
         fontSize: 14,
     },
     botaoAdicionar: {
-        backgroundColor: "#CE221E",
-        borderRadius: 8,
-        paddingVertical: 9,
+         backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 10,
+        marginBottom: 30,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 20,
-        width: 230,
-        alignSelf: "center",
+        alignSelf: "center"
+        
     },
     textoBotaoAdicionar: {
         color: "#fff",
         fontSize: 15,
-        fontWeight: "500",
+        fontWeight: "400",
     },
     iconeAcao: {
         backgroundColor: "#CE221E",

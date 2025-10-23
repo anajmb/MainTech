@@ -166,18 +166,17 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
     },
     botaoConfirmar: {
-       backgroundColor: "#CE221E",
-        borderRadius: 8,
-        paddingVertical: 9,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20,
-        width: 230,
-        alignSelf: "center",
+    backgroundColor: '#A50702',
+    borderRadius: 10, // quadrado
+    paddingVertical: 10,
+    width: 150, // menor
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
     },
     textoBotao: {
          color: "#fff",
         fontSize: 15,
-        fontWeight: "500",
+        fontWeight: "400",
     },
 });
