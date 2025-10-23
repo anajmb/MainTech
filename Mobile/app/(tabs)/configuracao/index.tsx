@@ -6,6 +6,12 @@ import { Link, useRouter } from "expo-router";
 import { BellRing, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+<<<<<<< HEAD
+import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+=======
+>>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
@@ -16,9 +22,12 @@ import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } f
 export default function Configuracao() {
     const router = useRouter(); 
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
+<<<<<<< HEAD
+=======
     const [user, setUser] = useState<any | null>(null); 
     const [loadingUser, setLoadingUser] = useState(true); 
 
+>>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
     useEffect(() => {
         (async () => {
             setLoadingUser(true);
@@ -28,6 +37,13 @@ export default function Configuracao() {
         })();
 
         const syncPermissionStatus = async () => {
+            const storedValue = await AsyncStorage.getItem('notificationsEnabled');
+            if (storedValue !== null) {
+                setInAppNotificationsEnabled(storedValue === 'true');
+                return;
+            }
+
+            // se não existir valor salvo, pega permissão atual
             const { status } = await Notifications.getPermissionsAsync();
             setInAppNotificationsEnabled(status === 'granted');
         };
@@ -40,6 +56,14 @@ export default function Configuracao() {
     };
     
     const handleToggleNotifications = async () => {
+<<<<<<< HEAD
+        try {
+            if (inAppNotificationsEnabled) {
+                setInAppNotificationsEnabled(false);
+                await AsyncStorage.setItem('notificationsEnabled', 'false');
+                Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
+                return;
+=======
         if (inAppNotificationsEnabled) {
             setInAppNotificationsEnabled(false);
             Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
@@ -52,13 +76,25 @@ export default function Configuracao() {
             const { status: newStatus } = await Notifications.requestPermissionsAsync();
             if (newStatus === 'granted') {
                 setInAppNotificationsEnabled(true);
+>>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
             }
-        } else {
-            Alert.alert(
-                "Ação Necessária",
-                "As notificações estão bloqueadas nas configurações do seu celular. Para ativá-las, você precisa ir manualmente nas configurações do app.",
-                [{ text: "OK" }]
-            );
+
+            const { status, canAskAgain } = await Notifications.getPermissionsAsync();
+
+            if (canAskAgain || status === 'undetermined') {
+                const { status: newStatus } = await Notifications.requestPermissionsAsync();
+                if (newStatus === 'granted') {
+                    setInAppNotificationsEnabled(true);
+                    await AsyncStorage.setItem('notificationsEnabled', 'true');
+                    Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+                }
+            } else if (status === 'granted') {
+                setInAppNotificationsEnabled(true);
+                await AsyncStorage.setItem('notificationsEnabled', 'true');
+            }
+
+        } catch (error) {
+            console.log('Erro ao alternar notificações:', error);
         }
 
     };

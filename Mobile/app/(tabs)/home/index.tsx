@@ -1,14 +1,29 @@
 import { Link } from "expo-router";
-import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus } from "lucide-react-native";
+import { Bell, BellOff, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus } from "lucide-react-native";
 import { Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
 import { useCallback, useState } from "react";
 import { CustomText } from "@/components/customText";
 import NotificationDropdown from "@/components/notification";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from "expo-router";
+
 
 export default function Home() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+useFocusEffect(
+  useCallback(() => {
+    const loadPreference = async () => {
+      const storedValue = await AsyncStorage.getItem('notificationsEnabled');
+      setNotificationsEnabled(storedValue === 'true');
+    };
+    loadPreference();
+  }, [])
+);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -45,13 +60,19 @@ export default function Home() {
             </View>
           </View>
 
-          
-          <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
-            <Bell color={"#D6231C"} fill={"#D6231C"} size={20} style={{ right: 2 }} />
+          {notificationsEnabled ? (
+
+            <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
+            <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
           </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => {}}>
+            <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+          </TouchableOpacity>
+          )}
           
           <NotificationDropdown 
-                visible={isNotificacoesVisible} 
+          visible={isNotificacoesVisible} 
                 onClose={() => setNotificacoesVisible(false)}
             />
         </View>

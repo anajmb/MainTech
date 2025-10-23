@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "",
-    "slug": "",
+    "name": "Maintech",
+    "slug": "maintech",
     "version": "1.0.0",
     "orientation": "portrait",
     "image": "./assets/images/background-mobile.png",
@@ -12,6 +12,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "Nosso app precisa do Bluetooth para conectar ao ESP32.",
+        "NSBluetoothPeripheralUsageDescription": "Nosso app precisa do Bluetooth para se comunicar com dispositivos.",
         "NSCameraUsageDescription": "Este app precisa acessar a câmera para ler QR Codes."
       }
     },
@@ -25,7 +27,12 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "package": "com.anonymous.Mobile"
     },
@@ -45,6 +52,18 @@
         }
       ],
       [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": true,
+          "modes": [
+            "Peripheral",
+            "Central"
+          ],
+          "bluetoothAlwaysUsageDescription": "Nosso app precisa do Bluetooth para conectar ao ESP32.",
+          "bluetoothPeripheralUsageDescription": "Nosso app precisa do Bluetooth para se comunicar com dispositivos."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/background-mobile.png",
@@ -54,7 +73,8 @@
           "icon": "./assets/images/LogoBranca.png"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "react-native-ble-plx"
     ],
     "experiments": {
       "typedRoutes": true
