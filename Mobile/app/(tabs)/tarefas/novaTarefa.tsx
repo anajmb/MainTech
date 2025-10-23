@@ -42,11 +42,8 @@ export default function NovaTarefa() {
     let minimumTime: Date | undefined = undefined;
     let maximumTime: Date | undefined = undefined;
 
-
     if (date) {
         const now = new Date();
-
-
         maximumTime = new Date(date);
         maximumTime.setHours(22, 0, 0, 0);
 
@@ -54,12 +51,9 @@ export default function NovaTarefa() {
 
         if (isToday) {
             const minimumTimeBasedOnNow = now;
-
-
             const minimumTimeBasedOnRule = new Date(date);
             minimumTimeBasedOnRule.setHours(7, 0, 0, 0);
             minimumTime = minimumTimeBasedOnNow > minimumTimeBasedOnRule ? minimumTimeBasedOnNow : minimumTimeBasedOnRule;
-
         } else {
             minimumTime = new Date(date);
             minimumTime.setHours(7, 0, 0, 0);
@@ -78,7 +72,7 @@ export default function NovaTarefa() {
         }
 
         try {
-            const expirationDate = date.toISOString(); // formato esperado pelo backend
+            const expirationDate = date.toISOString();
 
             const response = await fetch("https://maintech-backend-r6yk.onrender.com/tasks/create", {
                 method: "POST",
@@ -105,7 +99,6 @@ export default function NovaTarefa() {
             console.log("Tarefa criada com sucesso:", data);
             alert("Tarefa criada com sucesso!");
 
-            // limpar os campos
             setTitle("");
             setDescription("");
             setInspectorId("");
@@ -121,23 +114,16 @@ export default function NovaTarefa() {
 
     return (
         <ScrollView style={TabsStyles.container}>
-            {/* Logo */}
-
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
-
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Nova Tarefa</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>Nova Tarefa</Text>
                 </View>
             </View>
 
-            {/* <KeyboardAvoidingView behavior="padding" style={styles.todosCard}> */}
-
-            {/* Titulo e descrição */}
             <View style={styles.todosCard}>
                 <View style={styles.card}>
-
                     <View>
                         <Text style={styles.label}>Titulo</Text>
                         <TextInput placeholder="Digite o título da tarefa"
@@ -146,9 +132,6 @@ export default function NovaTarefa() {
                             value={title}
                             onChangeText={setTitle} />
                     </View>
-
-
-
                     <View>
                         <Text style={styles.label}>Descrição</Text>
                         <TextInput style={styles.inputDescreva}
@@ -156,9 +139,10 @@ export default function NovaTarefa() {
                             placeholderTextColor="#C4C4C4"
                             multiline={true}
                             numberOfLines={8}
+                            value={description}
+                            onChangeText={setDescription}
                         />
                     </View>
-
                     <View>
                         <Text style={styles.label}>Máquina</Text>
                         <TextInput placeholder="Digite o ID da máquina"
@@ -167,31 +151,14 @@ export default function NovaTarefa() {
                             value={machines}
                             onChangeText={setMachines}
                         />
-                        {/* <DropDownPicker
-                            open={open}
-                            value={machinesSelecionada}
-                            items={machines}
-                            setOpen={setOpen}
-                            setValue={setMachinesSelecionada}
-                            setItems={setMachines}
-                            placeholder="Selecione"
-                            style={styles.inputSelecionar}
-                            dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
-                            placeholderStyle={{ color: '#6c6c6c' }}
-                            textStyle={{ color: machinesSelecionada ? '#000' : '#6c6c6c' }}
-                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                        /> */}
                     </View>
                 </View>
 
-                {/* Data e Hora */}
                 <View style={styles.card}>
-
                     <View style={styles.groupTitulo}>
                         <Calendar size={20} color={'#5C5C5C'} strokeWidth={1.6} style={styles.iconCard} />
                         <Text style={styles.tituloCard}>Data e Hora</Text>
                     </View>
-
                     <View style={{ flexDirection: 'row', gap: 100 }}>
                         <View style={styles.subtituloData}>
                             <Text style={styles.label}>Data de vencimento</Text>
@@ -204,8 +171,6 @@ export default function NovaTarefa() {
                                     {date ? date.toLocaleDateString("pt-BR") : "DD/MM/AA"}
                                 </Text>
                             </TouchableOpacity>
-
-
                             <DateTimePickerModal
                                 isVisible={isDatePickerVisible}
                                 mode="date"
@@ -216,7 +181,6 @@ export default function NovaTarefa() {
                                 locale="pt-BR"
                             />
                         </View>
-
                         <View style={styles.subtituloData}>
                             <Text style={styles.label}>Horário</Text>
                             <TouchableOpacity
@@ -238,7 +202,6 @@ export default function NovaTarefa() {
                                 is24Hour={true}
                                 minimumDate={minimumTime}
                                 maximumDate={maximumTime}
-                                
                             />
                         </View>
                     </View>
@@ -249,7 +212,6 @@ export default function NovaTarefa() {
                         <User size={22} color={'#5C5C5C'} strokeWidth={1.6} style={styles.iconCard} />
                         <Text style={styles.tituloCard}>Inspetor</Text>
                     </View>
-
                     <TextInput placeholder="Atribuir a..."
                         style={styles.inputDescricao}
                         placeholderTextColor={'#C4C4C4'}
@@ -257,15 +219,12 @@ export default function NovaTarefa() {
                         onChangeText={setInspectorId}
                     />
                 </View>
-                {/* </KeyboardAvoidingView> */}
 
                 <View style={{ alignItems: 'center' }}>
-                    <TouchableOpacity
-                        style={TabsStyles.viewBotaoPrincipal}
-                        onPress={handleCreateTask}
-                        activeOpacity={0.8}
-                    >
-                        <Text style={TabsStyles.botaoText}>Salvar</Text>
+                    <TouchableOpacity style={styles.botaoSalvar} onPress={handleCreateTask} activeOpacity={0.8}>
+                        <Text style={{ color: "#fff", fontSize: 18, fontWeight: "400" }}>
+                            Salvar
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -277,7 +236,18 @@ const styles = StyleSheet.create({
     todosCard: {
         gap: 30,
         paddingBottom: 50,
-        
+    },
+    botaoSalvar: {
+        backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 30,
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center"
     },
     card: {
         backgroundColor: "#fff",
@@ -337,7 +307,6 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom: 8,
         marginRight: 20,
-
     },
     inputDescreva: {
         backgroundColor: "#F5F5F5",

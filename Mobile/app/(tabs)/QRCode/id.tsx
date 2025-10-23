@@ -1,48 +1,41 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useRouter } from "expo-router";
-import { Calendar, User } from "lucide-react-native";
 import { useState } from "react";
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-// editar o subtituloPrincipal
-// colocar os inputs data e hora
-
+// ...existing imports...
 export default function NovaTarefa() {
-
-
     const [idInput, setIdInput] = useState("");
     const router = useRouter();
 
     return (
         <ScrollView style={TabsStyles.container}>
             {/* Logo */}
-
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
-
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Indentificação</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>de Máquinas</Text>
                 </View>
             </View>
 
-            {/* <KeyboardAvoidingView behavior="padding" style={styles.todosCard}> */}
-
-            {/* Titulo e descrição */}
             <View style={styles.containerCard}>
                 <View style={styles.card}>
                     <Text style={styles.titleCard}>Indentifique a máquina que deseja ter mais informações</Text>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={styles.label}>ID</Text>
-                        <TextInput placeholder="Digite o id da máquina"
+                        <TextInput
+                            placeholder="Digite o id da máquina"
                             placeholderTextColor={'#8B8686'}
                             style={styles.input}
                             value={idInput}
-                            onChangeText={setIdInput} />
+                            onChangeText={setIdInput}
+                        />
                     </View>
                     <View style={{ alignItems: 'center', marginTop: 10 }}>
-                        <TouchableOpacity style={TabsStyles.viewBotaoPrincipal}
+                        <TouchableOpacity
+                            style={styles.confirmBtn}
                             onPress={() => {
                                 if (idInput.trim()) {
                                     router.push({
@@ -51,13 +44,14 @@ export default function NovaTarefa() {
                                     })
                                 }
                             }}
+                            activeOpacity={0.8}
                         >
-                            <Text style={TabsStyles.botaoText}>Confirmar</Text>
+                            <Text style={{ color: "#fff", fontSize: 18, fontWeight: "400" }}>
+                                Confirmar
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-                {/* </KeyboardAvoidingView> */}
-
 
                 <View style={styles.card}>
                     <View>
@@ -65,7 +59,6 @@ export default function NovaTarefa() {
                         <View style={styles.subCard}>
                             <Text>QRCode</Text>
                         </View>
-
                         <View>
                             <View style={styles.subCard}>
                                 <Text>QRCode</Text>
@@ -81,7 +74,6 @@ export default function NovaTarefa() {
 const styles = StyleSheet.create({
     containerCard: {
         gap: 30,
-        // marginTop: 40
     },
     titleCard: {
         fontSize: 21,
@@ -118,11 +110,22 @@ const styles = StyleSheet.create({
         padding: 10,
         textAlign: 'left'
     },
-
     subCard: {
         backgroundColor: "#fff",
         padding: 40,
         borderRadius: 10,
         marginBottom: 15
     },
-})
+    confirmBtn: {
+         backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 30,
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center"
+    },
+});

@@ -7,7 +7,7 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 export interface Employees {
     id: number;
     name: string;
-    cpf: string; 
+    cpf: string;
 
     email: string;
     phone: string;
@@ -162,7 +162,7 @@ const style = StyleSheet.create({
         fontWeight: "400",
         marginTop: 10,
 
-     },
+    },
 
     label: {
         fontSize: 15,
@@ -184,19 +184,21 @@ const style = StyleSheet.create({
         fontSize: 14,
     },
     botaoCadastro: {
-        backgroundColor: "#CE221E",
-        borderRadius: 8,
-        paddingVertical: 10,
+        backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 30,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 20,
-        width: 230,
-        alignSelf: "center",
+        alignSelf: "center"
     },
     textoBotaoCadastro: {
         color: "#fff",
         fontSize: 15,
-        fontWeight: "500",
+        fontWeight: "400",
     },
     cardUsuarios: {
         backgroundColor: "#fff",

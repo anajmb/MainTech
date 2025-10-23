@@ -275,18 +275,20 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     marginTop: 24,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   actionButtonDisabled: {
     backgroundColor: "#D8D8D8",
   },
   buttonText: {
     color: "#FFFFFF",
-    fontWeight: "bold",
+    fontWeight: "400",
     fontSize: 16,
   },
   buttonTextDisabled: {
-    color: "#888",
+    color: "#AAAAAA",
+    justifyContent: "center",
+    alignSelf: "center",
   },
   tipItem: {
     flexDirection: 'row',

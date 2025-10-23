@@ -179,19 +179,21 @@ const style = StyleSheet.create({
         fontSize: 14,
     },
     botaoCriarEquipe: {
-        backgroundColor: "#CE221E",
-        borderRadius: 8,
-        paddingVertical: 9,
+       backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 30,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 20,
-        width: 230,
-        alignSelf: "center",
+        alignSelf: "center"
     },
     textoBotaoCriarEquipe: {
         color: "#fff",
         fontSize: 15,
-        fontWeight: "500",
+        fontWeight: "400",
     },
     cardEquipesCadastradas: {
         backgroundColor: "#fff",
