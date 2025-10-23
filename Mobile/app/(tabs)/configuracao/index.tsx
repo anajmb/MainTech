@@ -1,17 +1,13 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { fetchCurrentUser, removeToken } from "@/lib/auth";
 import { TabsStyles } from "@/styles/globalTabs";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Link, useRouter } from "expo-router";
 import { BellRing, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
-<<<<<<< HEAD
-import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-=======
->>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
@@ -22,12 +18,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Configuracao() {
     const router = useRouter(); 
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
-<<<<<<< HEAD
-=======
+
     const [user, setUser] = useState<any | null>(null); 
     const [loadingUser, setLoadingUser] = useState(true); 
 
->>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
     useEffect(() => {
         (async () => {
             setLoadingUser(true);
@@ -56,47 +50,38 @@ export default function Configuracao() {
     };
     
     const handleToggleNotifications = async () => {
-<<<<<<< HEAD
         try {
+            // desligar
             if (inAppNotificationsEnabled) {
                 setInAppNotificationsEnabled(false);
                 await AsyncStorage.setItem('notificationsEnabled', 'false');
                 Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
                 return;
-=======
-        if (inAppNotificationsEnabled) {
-            setInAppNotificationsEnabled(false);
-            Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
-            return;
-        }
+            }
 
-        const { status, canAskAgain } = await Notifications.getPermissionsAsync();
+            // checa permissão atual
+            const { status } = await Notifications.getPermissionsAsync();
+            if (status === 'granted') {
+                setInAppNotificationsEnabled(true);
+                await AsyncStorage.setItem('notificationsEnabled', 'true');
+                Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+                return;
+            }
 
-        if (canAskAgain || status === 'undetermined') {
+            // solicita permissão
             const { status: newStatus } = await Notifications.requestPermissionsAsync();
             if (newStatus === 'granted') {
                 setInAppNotificationsEnabled(true);
->>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
-            }
-
-            const { status, canAskAgain } = await Notifications.getPermissionsAsync();
-
-            if (canAskAgain || status === 'undetermined') {
-                const { status: newStatus } = await Notifications.requestPermissionsAsync();
-                if (newStatus === 'granted') {
-                    setInAppNotificationsEnabled(true);
-                    await AsyncStorage.setItem('notificationsEnabled', 'true');
-                    Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
-                }
-            } else if (status === 'granted') {
-                setInAppNotificationsEnabled(true);
                 await AsyncStorage.setItem('notificationsEnabled', 'true');
+                Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+            } else {
+                setInAppNotificationsEnabled(false);
+                await AsyncStorage.setItem('notificationsEnabled', 'false');
+                Alert.alert("Permissão negada", "Não foi possível ativar as notificações.");
             }
-
         } catch (error) {
             console.log('Erro ao alternar notificações:', error);
         }
-
     };
 
     return (
@@ -176,16 +161,14 @@ export default function Configuracao() {
                                     <Text style={styles.tituloOpcao}>Notificações</Text>
                                     <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
                                 </View>
-                                <TouchableOpacity>
-                                    <Switch
-                                        trackColor={{ false: "#767577", true: "#D10B03" }}
-                                        thumbColor={"#f4f3f4"}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={handleToggleNotifications}
-                                        value={inAppNotificationsEnabled}
-                                        style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                                    />
-                                </TouchableOpacity>
+                                <Switch
+                                    trackColor={{ false: "#767577", true: "#D10B03" }}
+                                    thumbColor={"#f4f3f4"}
+                                    ios_backgroundColor="#3e3e3e"
+                                    onValueChange={handleToggleNotifications}
+                                    value={inAppNotificationsEnabled}
+                                    style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                                />
                             </View>
                         </View>
 
@@ -239,7 +222,12 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: "#eeeeee69",
-        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        // RN shadow
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.12,
+        shadowRadius: 4,
+        elevation: 2,
         borderRadius: 10,
         marginBottom: 10,
         marginHorizontal: 2,
@@ -258,7 +246,8 @@ const styles = StyleSheet.create({
     infoCardButton: {
         flexDirection: 'row',
         justifyContent: "space-between",
-        flex: 1
+        flex: 1,
+        alignItems: 'center'
     },
     opcao: {
         padding: 20,
@@ -266,12 +255,12 @@ const styles = StyleSheet.create({
     },
     nomePerfil: {
         fontSize: 16,
-        fontWeight: 700,
+        fontWeight: "700",
 
     },
     emailPerfil: {
         fontSize: 12,
-        fontWeight: 'medium',
+        fontWeight: "500",
         color: '#00000075'
     },
     bloco: {
@@ -279,22 +268,22 @@ const styles = StyleSheet.create({
     },
     tituloCard: {
         fontSize: 15,
-        fontWeight: 500,
+        fontWeight: "500",
         marginTop: 20,
         marginBottom: 10
     },
     tituloOpcao: {
         fontSize: 14,
-        fontWeight: 'medium'
+        fontWeight: "500"
     },
     tituloOpcaoSair: {
         fontSize: 14,
-        fontWeight: 'medium',
+        fontWeight: "500",
         color: '#F24040'
     },
     subtitulo: {
         fontSize: 12,
-        fontWeight: 'medium',
+        fontWeight: "500",
         color: '#00000075'
     },
 })
