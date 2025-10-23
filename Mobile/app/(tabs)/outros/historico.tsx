@@ -36,17 +36,17 @@ export default function Historico() {
             </View>
 
 
-                {/*card de historico informacoes */}
+            {/*card de historico informacoes */}
 
             <View style={style.cardHistorico}>
                 <View >
                     <View style={{ flex: 1 }}>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                        <View style={{ backgroundColor: "#E0F7EF", padding: 6, borderRadius: 50 }}>
-                            <CheckCircle color="#6FCF97" size={21} />
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                            <View style={{ backgroundColor: "#E0F7EF", padding: 6, borderRadius: 50 }}>
+                                <CheckCircle color="#6FCF97" size={21} />
+                            </View>
+                            <Text style={style.tituloHistorico}>Sangrador pneumático de freios</Text>
                         </View>
-                        <Text style={style.tituloHistorico}>Sangrador pneumático de freios</Text>
-                    </View>
                         <Text style={style.subtituloHistorico}>Tarefa concluída</Text>
                         <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6, gap: 8 }}>
                             <Text style={style.dataHistorico}>15/07/2025</Text>
@@ -57,8 +57,8 @@ export default function Historico() {
                         </View>
                     </View>
                 </View>
-                <View style={style.botaoConcluido}>
-                    <Text style={style.botaoConcluidoText}>Concluído</Text>
+                <View>
+                    <Text style={style.ConcluidoText}>Concluído</Text>
                 </View>
             </View>
 
@@ -102,7 +102,7 @@ const style = StyleSheet.create({
         color: "#888",
     },
     cardHistorico: {
-        backgroundColor: "#F6FFF7",
+        backgroundColor: "#fff",
         borderRadius: 16,
         padding: 18,
         marginHorizontal: 8,
@@ -133,25 +133,16 @@ const style = StyleSheet.create({
     horaHistorico: {
         fontSize: 12,
         color: "#888",
-        marginLeft: 145,
-        marginTop: -18.6,
+        marginLeft: 115,
+        marginTop: -11.5,
     },
-    botaoConcluido: {
-    backgroundColor: "#CE221E",
-    borderRadius: 10,         
-    paddingHorizontal: 18,     
-    paddingVertical: 4,       
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: "auto",
-    marginRight: 0,
-    minHeight: 30,
-    marginTop: -13,
-},
-    botaoConcluidoText: {
-        color: "#fff",
-        fontSize: 11,
-        fontWeight: 400,
+
+
+    ConcluidoText: {
+        color: "#CE221E",
+        fontSize: 15,
+        fontWeight: "400",
+        marginLeft: 240,
     },
 });
 
