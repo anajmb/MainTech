@@ -1,50 +1,124 @@
-import { Link } from "expo-router";
+import { api } from "@/lib/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function Login() {
-
   const [isAgree, setIsAgree] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // novo estado
+  const [showPassword, setShowPassword] = useState(false);
 
+  const [cpfData, setCpfData] = useState("");
+  const [passwordData, setPasswordData] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const toggleSwitch = () => setIsAgree(previousState => !previousState)
-  
+  const router = useRouter();
+
+  const toggleSwitch = () => setIsAgree((previous) => !previous);
+
+  const handleLogin = async () => {
+    if (!cpfData.trim() || !passwordData.trim()) {
+      Alert.alert("Erro", "Preencha CPF e senha.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const payload = { cpf: cpfData.trim(), password: passwordData.trim() };
+      console.log("LOGIN PAYLOAD ->", payload);
+
+      const res = await api.post("/employees/login", payload);
+      console.log("LOGIN RESPONSE ->", res.status, res.data);
+
+      const token =
+        res.data?.token ||
+        res.data?.accessToken ||
+        res.data?.access_token ||
+        res.data?.accessTokenRaw;
+
+      if (!token) {
+        Alert.alert("Erro", "Resposta de login inválida: " + JSON.stringify(res.data));
+        setIsLoading(false);
+        return;
+      }
+
+      await AsyncStorage.setItem("@user_token", token);
+      router.replace("/(tabs)/home");
+    } catch (error: any) {
+      console.log("LOGIN ERROR ->", error.response?.status, error.response?.data, error.message);
+      const serverMsg =
+        error.response?.data?.msg ||
+        error.response?.data ||
+        error.message ||
+        "Erro ao fazer login";
+      Alert.alert("Falha no login", typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    
-    <KeyboardAvoidingView style={{ flex: 1 }}
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    keyboardVerticalOffset={-2}>
-    <View style={styles.container}>
-      <Image style={styles.backgroundImage} source={require("../../assets/images/background-mobile.png")} resizeMode="cover" />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={-2}
+    >
+      <View style={styles.container}>
+        <Image
+          style={styles.backgroundImage}
+          source={require("../../assets/images/background-mobile.png")}
+          resizeMode="cover"
+        />
         <View style={styles.infosLogo}>
-        <Image style={styles.logoImage} source={require("../../assets/images/LogoBranca.png")} resizeMode="cover" />
-        <Text style={styles.logoNome}>Gestão de maquinas</Text>
+          <Image style={styles.logoImage} source={require("../../assets/images/LogoBranca.png")} resizeMode="cover" />
+          <Text style={styles.logoNome}>Gestão de maquinas</Text>
         </View>
+
         <View style={styles.cardLogin}>
-
-
           <View style={styles.formLogin}>
             <Text style={styles.tituloLogin}>Login</Text>
 
             <View style={{ gap: 8 }}>
               <Text style={styles.labelLogin}>CPF:</Text>
-              <TextInput style={styles.inputLogin} placeholder="___.___.___-__" placeholderTextColor="#B9B9B9" />
+              <TextInput
+                style={styles.inputLogin}
+                placeholder="___.___.___-__"
+                placeholderTextColor="#B9B9B9"
+                value={cpfData}
+                onChangeText={setCpfData}
+                keyboardType="numeric"
+                autoCapitalize="none"
+              />
             </View>
 
             <View style={{ gap: 8 }}>
               <Text style={styles.labelLogin}>Senha:</Text>
 
               <View>
-                <TextInput style={styles.inputLogin} placeholder="*************" placeholderTextColor="#B9B9B9" secureTextEntry={!showPassword} />
-                {/* <EyeOff style={styles.eyeFechado} size={20} /> */}
+                <TextInput
+                  style={styles.inputLogin}
+                  placeholder="*************"
+                  placeholderTextColor="#B9B9B9"
+                  secureTextEntry={!showPassword}
+                  value={passwordData}
+                  onChangeText={setPasswordData}
+                  autoCapitalize="none"
+                />
                 <TouchableOpacity style={styles.eyeFechado} onPress={() => setShowPassword((prev) => !prev)}>
-                  {showPassword ? (
-                    <Eye size={20} />
-                  ) : (<EyeOff size={20} />
-                  )}
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                 </TouchableOpacity>
               </View>
             </View>
@@ -57,54 +131,41 @@ export default function Login() {
                 ios_backgroundColor="#3e3e3e"
                 onValueChange={toggleSwitch}
                 value={isAgree}
-                style={{ transform: [{ scaleX: 0.6 }, { scaleY: 0.6 }] }} // aumenta o tamanho
+                style={{ transform: [{ scaleX: 0.6 }, { scaleY: 0.6 }] }}
               />
             </View>
 
             <View style={{ alignItems: "center" }}>
-              <Link href={'/(tabs)/home'} asChild>
-                <TouchableOpacity style={styles.botaoLogin}>
-                  <Text style={{ color: "#fff" }}> Entrar </Text>
-                </TouchableOpacity>
-              </Link>
+              <TouchableOpacity style={styles.botaoLogin} onPress={handleLogin} disabled={isLoading}>
+                {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={{ color: "#fff" }}> Entrar </Text>}
+              </TouchableOpacity>
             </View>
 
             <View style={styles.hrefLogin}>
-                <Link href={'./recuperarSenha'} >
-              <Text style={{ color: "#D40303" }}>
-                Esqueci minha senha
-              </Text>
-                </Link>
+              <Link href={"./recuperarSenha"}>
+                <Text style={{ color: "#D40303" }}>Esqueci minha senha</Text>
+              </Link>
 
-                {/* <Text>Seu primeiro acesso?  */}
-                <Link href={'./cadastro'} >
+              <Link href={"./cadastro"}>
                 <Text style={{ color: "#D40303" }}>Cadastre-se</Text>
-                </Link>
+              </Link>
             </View>
-
           </View>
-
-        </View >
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
-// campos sendo tampados pelo teclado
-// adicionar icone de olho para mostrar senha
-// adicionar validação de campos
-// Colocar a logo no fundo
-// tirar o teclado quando clicar fora do input
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-end", // cardLogin vai para baixo
+    justifyContent: "flex-end",
     alignItems: "center",
   },
   infosLogo: {
     position: "absolute",
-    top: 50
+    top: 50,
   },
   backgroundImage: {
     position: "absolute",
@@ -114,13 +175,13 @@ const styles = StyleSheet.create({
   },
   logoImage: {
     height: 250,
-    width: 300
+    width: 300,
   },
   logoNome: {
     color: "#fff",
     alignItems: "center",
     left: 100,
-    top: -100
+    top: -100,
   },
   cardLogin: {
     backgroundColor: "#fff",
@@ -128,7 +189,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     padding: 30,
-    minHeight: "55%", // ajuste conforme necessário
+    minHeight: "55%",
   },
   formLogin: {
     gap: 18,
@@ -139,38 +200,28 @@ const styles = StyleSheet.create({
     fontSize: 35,
     alignSelf: "center",
     marginBottom: 20,
-    fontFamily: "poppins"
   },
   labelLogin: {
     fontSize: 13,
-    color: "#222222ff"
+    color: "#222222ff",
   },
   inputLogin: {
     backgroundColor: "#E6E6E6",
     borderRadius: 12,
     height: 45,
     position: "relative",
-    padding: 15
+    padding: 15,
   },
-  // eyeAberto: {
-  //   position: "absolute",
-  //   width: 16,
-  //   height: 16,
-  //   right: 15,
-  //   top: 10,
-  //   display: "none"
-  // },
   eyeFechado: {
     position: "absolute",
     right: 15,
-    top: 10
+    top: 10,
   },
   mantenhaConectado: {
-    flexDirection: "row", // <-- adicione esta linha
-    alignItems: "center", // <-- centraliza verticalmente
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "flex-end",
-    marginLeft: 150
-
+    marginLeft: 150,
   },
   botaoLogin: {
     backgroundColor: "#A50702",
@@ -186,6 +237,7 @@ const styles = StyleSheet.create({
   hrefLogin: {
     flexDirection: "row",
     fontSize: 12,
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    gap: 16,
   },
 });

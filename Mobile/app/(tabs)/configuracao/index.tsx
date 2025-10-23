@@ -1,12 +1,17 @@
 import SetaVoltar from "@/components/setaVoltar";
+import { fetchCurrentUser, removeToken } from "@/lib/auth"; 
 import { TabsStyles } from "@/styles/globalTabs";
-import { Link } from "expo-router";
-import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
+import * as Notifications from 'expo-notifications';
+import { Link, useRouter } from "expo-router";
+import { BellRing, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+<<<<<<< HEAD
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+=======
+>>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
@@ -15,9 +20,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // add um subtitulo
 
 export default function Configuracao() {
-
+    const router = useRouter(); 
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
+<<<<<<< HEAD
+=======
+    const [user, setUser] = useState<any | null>(null); 
+    const [loadingUser, setLoadingUser] = useState(true); 
+
+>>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
     useEffect(() => {
+        (async () => {
+            setLoadingUser(true);
+            const u = await fetchCurrentUser();
+            if (u) setUser(u);
+            setLoadingUser(false);
+        })();
+
         const syncPermissionStatus = async () => {
             const storedValue = await AsyncStorage.getItem('notificationsEnabled');
             if (storedValue !== null) {
@@ -32,13 +50,33 @@ export default function Configuracao() {
         syncPermissionStatus();
     }, []);
 
+    const handleLogout = async () => { 
+        await removeToken();
+        router.replace("/index"); 
+    };
+    
     const handleToggleNotifications = async () => {
+<<<<<<< HEAD
         try {
             if (inAppNotificationsEnabled) {
                 setInAppNotificationsEnabled(false);
                 await AsyncStorage.setItem('notificationsEnabled', 'false');
                 Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
                 return;
+=======
+        if (inAppNotificationsEnabled) {
+            setInAppNotificationsEnabled(false);
+            Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
+            return;
+        }
+
+        const { status, canAskAgain } = await Notifications.getPermissionsAsync();
+
+        if (canAskAgain || status === 'undetermined') {
+            const { status: newStatus } = await Notifications.requestPermissionsAsync();
+            if (newStatus === 'granted') {
+                setInAppNotificationsEnabled(true);
+>>>>>>> b4f2fad3f897e50d2de2d9e985ad6cdc2fb2ba84
             }
 
             const { status, canAskAgain } = await Notifications.getPermissionsAsync();
@@ -58,11 +96,10 @@ export default function Configuracao() {
         } catch (error) {
             console.log('Erro ao alternar notificações:', error);
         }
+
     };
 
-
     return (
-
         <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>
@@ -75,22 +112,23 @@ export default function Configuracao() {
 
             <View style={styles.cardContainer}>
 
-                <TouchableOpacity style={styles.card}>
-                    {/* imagem de perfil */}
-                    <Link href={'/(tabs)/configuracao/editarPerfil'}>
-                        <View style={styles.opcao}  >
-
+                <Link href={'/(tabs)/configuracao/editarPerfil'} asChild>
+                    <TouchableOpacity style={styles.card}>
+                        <View style={styles.opcao}>
                             <View style={TabsStyles.userFotoIcon}>
                                 <User size={22} color={'#fff'} />
                             </View>
-
                             <View style={styles.infoCard}>
-                                <Text style={styles.nomePerfil}>João Silva</Text>
-                                <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
+                                <Text style={styles.nomePerfil}>
+                                    {loadingUser ? "Carregando..." : (user?.name ?? "Usuário")}
+                                </Text>
+                                <Text style={styles.emailPerfil}>
+                                    {loadingUser ? "" : (user?.email ?? "")}
+                                </Text>
                             </View>
                         </View>
-                    </Link>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </Link>
 
                 {/* Conta */}
                 <View style={styles.bloco}>
@@ -181,14 +219,11 @@ export default function Configuracao() {
                     <View style={styles.card}>
 
                         <Link href={"/"} asChild>
-                            <TouchableOpacity style={styles.opcao}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <LogOut color={'#F24040'} />
-
-                                    <View style={styles.infoCard}>
-                                        <Text style={styles.tituloOpcaoSair}>Sair</Text>
-                                        <Text style={styles.subtitulo}>Desconectar da conta</Text>
-                                    </View>
+                            <TouchableOpacity onPress={handleLogout} style={styles.opcao}>
+                                <LogOut color={'#F24040'} />
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcaoSair}>Sair</Text>
+                                    <Text style={styles.subtitulo}>Desconectar da conta</Text>
                                 </View>
                             </TouchableOpacity>
 
@@ -200,6 +235,7 @@ export default function Configuracao() {
         </ScrollView>
     )
 }
+
 
 const styles = StyleSheet.create({
     cardContainer: {
