@@ -52,18 +52,6 @@
         }
       ],
       [
-        "react-native-ble-plx",
-        {
-          "isBackgroundEnabled": true,
-          "modes": [
-            "Peripheral",
-            "Central"
-          ],
-          "bluetoothAlwaysUsageDescription": "Nosso app precisa do Bluetooth para conectar ao ESP32.",
-          "bluetoothPeripheralUsageDescription": "Nosso app precisa do Bluetooth para se comunicar com dispositivos."
-        }
-      ],
-      [
         "expo-splash-screen",
         {
           "image": "./assets/images/background-mobile.png",
