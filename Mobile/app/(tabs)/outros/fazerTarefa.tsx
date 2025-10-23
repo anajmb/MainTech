@@ -221,15 +221,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     confirmBtn: {
-        backgroundColor: "#CE221E",
-        borderRadius: 8,
+        backgroundColor: '#A50702',
+        borderRadius: 10, // quadrado
         paddingVertical: 10,
+        width: 200, // menor
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 20,
-        width: 230,
         alignSelf: "center",
-        marginBottom: 30,
 
     }
 })
