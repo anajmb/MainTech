@@ -1,5 +1,5 @@
 import SetaVoltar from "@/components/setaVoltar";
-import { fetchCurrentUser, removeToken } from "@/lib/auth"; 
+import { fetchCurrentUser, removeToken } from "@/lib/auth";
 import { TabsStyles } from "@/styles/globalTabs";
 import * as Notifications from 'expo-notifications';
 import { Link, useRouter } from "expo-router";
@@ -36,7 +36,7 @@ export default function Configuracao() {
 
     const handleLogout = async () => { 
         await removeToken();
-        router.replace("/index"); 
+        router.replace("/"); 
     };
     
     const handleToggleNotifications = async () => {
@@ -181,17 +181,13 @@ export default function Configuracao() {
                     <Text style={styles.tituloCard}>Outros</Text>
 
                     <View style={styles.card}>
-
-                        <Link href={"/"} asChild>
-                            <TouchableOpacity onPress={handleLogout} style={styles.opcao}>
-                                <LogOut color={'#F24040'} />
-                                <View style={styles.infoCard}>
-                                    <Text style={styles.tituloOpcaoSair}>Sair</Text>
-                                    <Text style={styles.subtitulo}>Desconectar da conta</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                        </Link>
+                        <TouchableOpacity onPress={handleLogout} style={styles.opcao}>
+                            <LogOut color={'#F24040'} />
+                            <View style={styles.infoCard}>
+                                <Text style={styles.tituloOpcaoSair}>Sair</Text>
+                                <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
 
