@@ -18,7 +18,7 @@ interface NotificationDropdownProps {
 // Função que simula a busca de dados do backend
 const fetchNotificationsFromBackend = async (): Promise<NotificationData[]> => {
   try {
-    const response =  await api.get("/tasks/get")
+    const response =  await api.get("/tasks/get/expiring-soon")
 
     const mappedData = response.data.map((task: any) => ({
             id: task.id,
@@ -70,7 +70,7 @@ export default function NotificationDropdown({ visible, onClose }: NotificationD
         if (notifications.length === 0) {
             return (
                 <View style={styles.emptyContainer}>
-                    <BellOff size={24} color="#888" />
+                    {/* <BellOff size={24} color="#888" /> */}
                     <Text style={styles.emptyText}>Nenhuma notificação no momento.</Text>
                 </View>
             );
