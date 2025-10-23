@@ -222,7 +222,6 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: "#eeeeee69",
-        // RN shadow
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.12,
@@ -231,6 +230,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 10,
         marginHorizontal: 2,
+        boxShadow: "1px 4px 4px rgba(0, 0, 0, 0.25)",
     },
     infoCard: {
         flexDirection: 'column',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
         color: '#00000075'
     },
     bloco: {
-
+        
     },
     tituloCard: {
         fontSize: 15,
