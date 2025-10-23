@@ -61,8 +61,7 @@
           "icon": "./assets/images/LogoBranca.png"
         }
       ],
-      "expo-font",
-      "react-native-ble-plx"
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
