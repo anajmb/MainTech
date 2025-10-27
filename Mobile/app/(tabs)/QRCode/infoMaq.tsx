@@ -1,8 +1,41 @@
-import { useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../../lib/axios";
 
+
+interface MachineTask {
+  id: number;
+  title: string;
+  description: string;
+  inspectorId: number;
+  machineId: number;
+  status: string;
+  expirationDate: string;
+  createDate: string;
+  updateDate: string;
+}
+
+interface MachineSet {
+  id: number;
+  name: string;
+  machineId: number | null;
+  createDate: string;
+  updateDate: string;
+}
+
+interface Machines {
+  id: number;
+  name: string;
+  description: string;
+  location: string;
+  qrCode: string;
+  temperature: number | null;
+  createDate: string;
+  updateDate: string;
+  sets: MachineSet[];   // Array de MachineSet
+  tasks: MachineTask[]; // Array de MachineTask
+}
 
 export default function InfosMaquina() {
   const { codigo } = useLocalSearchParams();
@@ -11,7 +44,7 @@ export default function InfosMaquina() {
   const [selectedSet, setSelectedSet] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [machineData, setMachineData] = useState<any>(null);
+  const [machineData, setMachineData] = useState<Machines | null>(null);
 
   useEffect(() => {
     async function loadMachineById() {
@@ -52,13 +85,13 @@ export default function InfosMaquina() {
               </View>
 
               <View style={{ alignItems: "center", width: "50%" }}>
-                <Text style={styles.fieldsTitle}>Conjuntos</Text> 
+                <Text style={styles.fieldsTitle}>Conjuntos</Text>
                 <TouchableOpacity
                   style={styles.fieldsContent}
                   onPress={() => setModalVisible(true)}
                 >
                   <Text style={{ textAlign: "center", color: "rgba(0,0,0,0.44)", }}>
-                    {selectedSet ? selectedSet.name : `Ver conjuntos` }
+                    {selectedSet ? selectedSet.name : `Ver conjuntos`}
                   </Text>
                 </TouchableOpacity>
                 <Modal
@@ -80,7 +113,7 @@ export default function InfosMaquina() {
                       minWidth: 250,
                       maxHeight: 300
                     }}>
-                      <Text style={{fontSize: 20, marginBottom: 10}}>Conjuntos desta máquina:</Text>
+                      <Text style={{ fontSize: 20, marginBottom: 10 }}>Conjuntos desta máquina:</Text>
 
                       <ScrollView>
                         {machineData.sets.map((set: any) => (
@@ -92,7 +125,7 @@ export default function InfosMaquina() {
                               borderColor: "#e6e6e6ff",
                             }}
                           >
-                            <Text style={{fontSize: 15}}>{set.name}</Text>
+                            <Text style={{ fontSize: 15 }}>{set.name}</Text>
                           </View>
                         ))}
                       </ScrollView>
@@ -115,14 +148,33 @@ export default function InfosMaquina() {
             <Text style={styles.fieldsTitle}>Localização:</Text>
             <Text style={styles.fieldsContent}>{machineData.location}</Text>
 
-             <Text style={styles.fieldsTitle}>Temperatura:</Text>
-            <Text style={styles.fieldsContent}>25°C</Text>
+            <Text style={styles.fieldsTitle}>Temperatura:</Text>
+            <Text style={styles.fieldsContent}>{machineData.temperature}</Text>
 
+
+            {machineData.tasks && machineData.tasks.length > 0 && (
+              <>
+                <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
+
+                <Link
+                  href={'/(tabs)/outros/conjuntos'} // Você pode mudar o href
+                  asChild
+                >
+                  <TouchableOpacity >
+
+                    <Text style={styles.fieldsContent}>
+                      {`Realizar ${machineData.tasks.length} ${machineData.tasks.length > 1 ? "tarefas" : "tarefa"
+                        }`}
+                    </Text>
+                  </TouchableOpacity>
+                </Link>
+              </>
+            )}
           </View>
 
         </>
       ) : (
-        <Text style={{alignSelf: "center"}}>Carregando...</Text>
+        <Text style={{ alignSelf: "center" }}>Carregando...</Text>
       )}
     </View>
   );
