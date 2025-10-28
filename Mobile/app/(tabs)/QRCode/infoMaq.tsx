@@ -152,7 +152,7 @@ export default function InfosMaquina() {
             <Text style={styles.fieldsContent}>{machineData.temperature}</Text>
 
 
-            {machineData.tasks && machineData.tasks.length > 0 && (
+            {machineData.tasks && machineData.tasks.length > 0 ? (
               <>
                 <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
 
@@ -171,6 +171,10 @@ export default function InfosMaquina() {
                     </Text>
                   </TouchableOpacity>
                 </Link>
+              </>
+            ) : (
+              <>  
+              <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
               </>
             )}
           </View>

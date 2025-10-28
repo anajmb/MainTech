@@ -38,9 +38,12 @@ export default function NovaTarefa() {
                             style={styles.confirmBtn}
                             onPress={() => {
                                 if (idInput.trim()) {
+
+                                    const dataParaEnviar = JSON.stringify({ id: idInput });
+
                                     router.push({
                                         pathname: "/QRCode/infoMaq",
-                                        params: { codigo: idInput }
+                                        params: { codigo: dataParaEnviar } // Enviamos o JSON
                                     })
                                 }
                             }}
