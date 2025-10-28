@@ -1,5 +1,5 @@
 import { Modal, Pressable, StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import { AlertTriangle, BellOff } from "lucide-react-native";
+import { AlertTriangle } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/axios";
 
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     },
     dropdownContainer: { 
         position: 'absolute',
-         top: 125,
+         top: 210,
           right: 35, 
           width: 300, 
           backgroundColor: '#f5f5f5', 

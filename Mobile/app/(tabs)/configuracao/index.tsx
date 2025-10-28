@@ -17,44 +17,43 @@ export default function Configuracao() {
 
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
 
-    useEffect(() => {
-        const syncPermissionStatus = async () => {
-            const { status } = await Notifications.getPermissionsAsync();
-            setInAppNotificationsEnabled(status === 'granted');
-        };
-        syncPermissionStatus();
-    }, []);
+   useEffect(() => {
+  const loadPreference = async () => {
+    const storedValue = await AsyncStorage.getItem('notificationsEnabled');
+    setInAppNotificationsEnabled(storedValue === 'true');
+  };
+  loadPreference();
+}, []);
 
     const handleToggleNotifications = async () => {
-        if (inAppNotificationsEnabled) {
-            setInAppNotificationsEnabled(false);
-            Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
-            
-            return;
-        }
+  if (inAppNotificationsEnabled) {
+    setInAppNotificationsEnabled(false);
+    await AsyncStorage.setItem('notificationsEnabled', 'false');
+    Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
+    return;
+  }
 
-        const { status, canAskAgain } = await Notifications.getPermissionsAsync();
+  const { status, canAskAgain } = await Notifications.getPermissionsAsync();
 
-        // if (status === 'granted') {
-        //     setInAppNotificationsEnabled(true);
-        //     Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
-        //     // Aqui você salvaria a preferência (true)
-        //     return;
-        // }
-
-        if (canAskAgain || status === 'undetermined') {
-            const { status: newStatus } = await Notifications.requestPermissionsAsync();
-            if (newStatus === 'granted') {
-                setInAppNotificationsEnabled(true);
-            }
-        } else {
-            Alert.alert(
-                "Ação Necessária",
-                "As notificações estão bloqueadas nas configurações do seu celular. Para ativá-las, você precisa ir manualmente nas configurações do app.",
-                [{ text: "OK" }]
-            );
-        }
-    };
+  if (canAskAgain || status === 'undetermined') {
+    const { status: newStatus } = await Notifications.requestPermissionsAsync();
+    if (newStatus === 'granted') {
+      setInAppNotificationsEnabled(true);
+      await AsyncStorage.setItem('notificationsEnabled', 'true');
+      Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+    }
+  } else if (status === 'granted') {
+    setInAppNotificationsEnabled(true);
+    await AsyncStorage.setItem('notificationsEnabled', 'true');
+    Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+  } else {
+    Alert.alert(
+      "Ação Necessária",
+      "As notificações estão bloqueadas nas configurações do seu celular. Vá até as configurações do app para ativá-las.",
+      [{ text: "OK" }]
+    );
+  }
+};
 
 
     return (

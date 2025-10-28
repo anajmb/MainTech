@@ -2,7 +2,7 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
-import { Relatorio } from "./telaRelatorio";
+import { Relatorio } from "../../../components/telaRelatorio";
 
 export default function OrdemServico() {
     return (

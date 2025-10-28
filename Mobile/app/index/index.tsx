@@ -1,4 +1,5 @@
 import { api } from "@/lib/axios";
+import { saveToken, decodeJwt } from "@/lib/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
@@ -20,13 +21,11 @@ import {
 export default function Login() {
   const [isAgree, setIsAgree] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const [cpfData, setCpfData] = useState("");
   const [passwordData, setPasswordData] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
-
   const toggleSwitch = () => setIsAgree((previous) => !previous);
 
   const handleLogin = async () => {
@@ -55,7 +54,31 @@ export default function Login() {
         return;
       }
 
-      await AsyncStorage.setItem("@user_token", token);
+      // ✅ Salva o token no AsyncStorage e define no axios
+      await saveToken(token);
+
+      // ✅ Verifica se a API retornou o usuário
+      let user = res.data?.user;
+
+      // Se não veio, decodifica o token e busca pelo ID
+      if (!user) {
+        const payload = decodeJwt(token);
+        const id = payload?.id ?? payload?.sub ?? payload?.userId;
+        if (id) {
+          const userRes = await api.get(`/employees/getUnique/${id}`);
+          user = userRes.data;
+        }
+      }
+
+      // ✅ Salva o usuário no AsyncStorage
+      if (user) {
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+        console.log("Usuário salvo:", user);
+      } else {
+        console.warn("⚠️ Nenhum usuário retornado. Verifique o backend do login.");
+      }
+
+      // ✅ Redireciona para as tabs
       router.replace("/(tabs)/home");
     } catch (error: any) {
       console.log("LOGIN ERROR ->", error.response?.status, error.response?.data, error.message);
@@ -64,7 +87,10 @@ export default function Login() {
         error.response?.data ||
         error.message ||
         "Erro ao fazer login";
-      Alert.alert("Falha no login", typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg));
+      Alert.alert(
+        "Falha no login",
+        typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg)
+      );
     } finally {
       setIsLoading(false);
     }
@@ -82,9 +108,14 @@ export default function Login() {
           source={require("../../assets/images/background-mobile.png")}
           resizeMode="cover"
         />
+
         <View style={styles.infosLogo}>
-          <Image style={styles.logoImage} source={require("../../assets/images/LogoBranca.png")} resizeMode="cover" />
-          <Text style={styles.logoNome}>Gestão de maquinas</Text>
+          <Image
+            style={styles.logoImage}
+            source={require("../../assets/images/LogoBranca.png")}
+            resizeMode="cover"
+          />
+          <Text style={styles.logoNome}>Gestão de máquinas</Text>
         </View>
 
         <View style={styles.cardLogin}>
@@ -117,7 +148,10 @@ export default function Login() {
                   onChangeText={setPasswordData}
                   autoCapitalize="none"
                 />
-                <TouchableOpacity style={styles.eyeFechado} onPress={() => setShowPassword((prev) => !prev)}>
+                <TouchableOpacity
+                  style={styles.eyeFechado}
+                  onPress={() => setShowPassword((prev) => !prev)}
+                >
                   {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                 </TouchableOpacity>
               </View>
@@ -136,8 +170,16 @@ export default function Login() {
             </View>
 
             <View style={{ alignItems: "center" }}>
-              <TouchableOpacity style={styles.botaoLogin} onPress={handleLogin} disabled={isLoading}>
-                {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={{ color: "#fff" }}> Entrar </Text>}
+              <TouchableOpacity
+                style={styles.botaoLogin}
+                onPress={handleLogin}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={{ color: "#fff" }}> Entrar </Text>
+                )}
               </TouchableOpacity>
             </View>
 
