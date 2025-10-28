@@ -1,3 +1,4 @@
+import Logo from "@/components/logo";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Tabs } from "expo-router";
@@ -29,6 +30,8 @@ export default function Documento() {
 
         <ScrollView style={TabsStyles.container}>
             {/* Logo */}
+
+            <Logo/>
 
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />

@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, 
 import { Link } from "expo-router";
 import TasksCards from "./tasksCard";
 import { api } from "@/lib/axios";
+import Logo from "@/components/logo";
 
 interface Task {
     id: number;
@@ -51,6 +52,9 @@ export default function Tarefas() {
 
     return (
         <ScrollView style={TabsStyles.container}>
+
+            <Logo/>
+
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>

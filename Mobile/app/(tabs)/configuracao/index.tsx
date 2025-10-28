@@ -1,17 +1,11 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-<<<<<<< HEAD
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Link, useRouter } from "expo-router";
-import { BellRing, LockKeyhole, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
-=======
-import { Link } from "expo-router";
-import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
->>>>>>> 122b4aeda2aaf9453a30c20c1e2d582f9c250a89
+import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, LockKeyhole} from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
-import * as Notifications from 'expo-notifications';
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
