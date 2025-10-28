@@ -6,7 +6,7 @@ export default function Politica () {
             <View style={styles.card}>
                 <Text style={styles.title}>Política de Privacidade</Text>
                 <Text style={styles.text}>
-                    A [Nome da Empresa] valoriza a sua privacidade e está comprometida em proteger os dados pessoais coletados durante a prestação dos nossos serviços de gestão e prevenção de máquinas industriais. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos as informações que você nos fornece.
+                    A MainTech valoriza a sua privacidade e está comprometida em proteger os dados pessoais coletados durante a prestação dos nossos serviços de gestão e prevenção de máquinas industriais. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos as informações que você nos fornece.
                 </Text>
                 <Text style={styles.sectionTitle}>1. Coleta de Dados</Text>
                 <Text style={styles.text}>
@@ -38,7 +38,7 @@ export default function Politica () {
                 </Text>
                 <Text style={styles.sectionTitle}>7. Contato</Text>
                 <Text style={styles.text}>
-                    Para esclarecer dúvidas, solicitar informações ou exercer seus direitos relacionados à privacidade, entre em contato conosco pelo e-mail: [seuemail@dominio.com].
+                    Para esclarecer dúvidas, solicitar informações ou exercer seus direitos relacionados à privacidade, entre em contato conosco pelo e-mail: maintech@gmail.com.
                 </Text>
             </View>
         </ScrollView>
