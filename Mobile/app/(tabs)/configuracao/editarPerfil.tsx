@@ -1,7 +1,7 @@
+
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Calendar, Camera, IdCard, Mail, Phone, User } from "lucide-react-native";
-// Importado 'Image' e 'Platform' para o KeyboardAvoidingView
 import {
   Alert,
   Image,
@@ -16,35 +16,41 @@ import {
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function EditarPerfil() {
-  // Estado para armazenar a imagem selecionada
   const [image, setImage] = useState<string | null>(null);
 
-  // campos do formulário
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [cpf, setCpf] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
 
-  // estados de erro
   const [emailError, setEmailError] = useState<string | null>(null);
   const [cpfError, setCpfError] = useState<string | null>(null);
 
-  // controla altura do teclado para evitar sobreposição
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  const emailRef = useRef<TextInput | null>(null);
+  const cpfRef = useRef<TextInput | null>(null);
+
   useEffect(() => {
-    const show = Keyboard.addListener("keyboardDidShow", (e) => setKeyboardHeight(e.endCoordinates?.height || 0));
-    const hide = Keyboard.addListener("keyboardDidHide", () => setKeyboardHeight(0));
+    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const onShow = (e: any) => setKeyboardHeight(e.endCoordinates?.height || 0);
+    const onHide = () => setKeyboardHeight(0);
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
     return () => {
-      show.remove();
-      hide.remove();
+      showSub.remove();
+      hideSub.remove();
     };
   }, []);
 
-  // Função para lidar com a seleção de imagem (galeria ou câmera)
   const handleImagePicker = async () => {
     Keyboard.dismiss();
     Alert.alert("Selecionar foto", "Escolha uma opção para a sua foto de perfil", [
@@ -54,7 +60,6 @@ export default function EditarPerfil() {
     ]);
   };
 
-  // Função para selecionar imagem da galeria
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -79,7 +84,6 @@ export default function EditarPerfil() {
     }
   };
 
-  // Função para tirar foto com a câmera
   const takePhotoWithCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
@@ -103,18 +107,16 @@ export default function EditarPerfil() {
     }
   };
 
-  // validação de email (regex simples)
   function isValidEmail(value: string) {
     const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
     return re.test(String(value).toLowerCase());
   }
 
-  // validação de CPF (algoritmo clássico)
   function isValidCPF(value: string) {
     const v = value.replace(/\D/g, "");
     if (v.length !== 11) return false;
-    if (/^(\d)\1+$/.test(v)) return false; // todos iguais
+    if (/^(\d)\1+$/.test(v)) return false;
     const calc = (arr: number[]) => {
       let sum = 0;
       for (let i = 0; i < arr.length; i++) sum += arr[i] * (arr.length + 1 - i);
@@ -127,17 +129,23 @@ export default function EditarPerfil() {
     return digit1 === digits[9] && digit2 === digits[10];
   }
 
-  // handlers para validação onBlur/onChange
   function handleEmailBlur() {
     if (email.trim() === "") {
-      setEmailError(null);
+      setEmailError("E-mail obrigatório");
       return;
     }
     setEmailError(isValidEmail(email) ? null : "E-mail inválido");
   }
 
+  function handleEmailSubmit() {
+    if (!isValidEmail(email)) {
+      setEmailError("E-mail inválido");
+      Alert.alert("Formato inválido", "Digite um e‑mail válido antes de continuar.");
+      emailRef.current?.focus();
+    }
+  }
+
   function handleCpfChange(text: string) {
-    // mantém apenas números e limita a 11 dígitos
     const onlyDigits = text.replace(/\D/g, "").slice(0, 11);
     setCpf(onlyDigits);
     if (onlyDigits.length === 11) {
@@ -149,14 +157,22 @@ export default function EditarPerfil() {
 
   function handleCpfBlur() {
     if (cpf.trim() === "") {
-      setCpfError(null);
+      setCpfError("CPF obrigatório");
       return;
     }
     setCpfError(isValidCPF(cpf) ? null : "CPF inválido");
   }
 
-  // validação final para habilitar salvar
+  function handleCpfSubmit() {
+    if (!isValidCPF(cpf)) {
+      setCpfError("CPF inválido");
+      Alert.alert("CPF inválido", "Digite um CPF válido (11 dígitos).");
+      cpfRef.current?.focus();
+    }
+  }
+
   const canSave =
+    !!image &&
     nome.trim() !== "" &&
     email.trim() !== "" &&
     telefone.trim() !== "" &&
@@ -183,21 +199,22 @@ export default function EditarPerfil() {
       return Alert.alert("Corrija os erros", msgParts.join("\n"));
     }
 
-    // enviar para backend...
     Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
   }
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 60}
     >
       <ScrollView
         style={TabsStyles.container}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 + keyboardHeight }}
+        /* reduz o espaço padrão e limita o padding quando o teclado estiver aberto */
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: Math.min(40 + keyboardHeight, 220) }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
+        showsVerticalScrollIndicator={false}
       >
         <View style={TabsStyles.headerPrincipal}>
           <SetaVoltar />
@@ -229,7 +246,13 @@ export default function EditarPerfil() {
                   <User strokeWidth={1.5} size={22} />
                   <Text style={styles.label}>Nome completo</Text>
                 </View>
-                <TextInput style={styles.input} value={nome} onChangeText={setNome} placeholder="Digite seu nome" />
+                <TextInput
+                  style={styles.input}
+                  value={nome}
+                  onChangeText={setNome}
+                  placeholder="Digite seu nome"
+                  returnKeyType="next"
+                />
               </View>
 
               <View style={styles.opcaoForm}>
@@ -238,6 +261,7 @@ export default function EditarPerfil() {
                   <Text style={styles.label}>E-mail</Text>
                 </View>
                 <TextInput
+                  ref={emailRef}
                   style={styles.input}
                   value={email}
                   onChangeText={(t) => {
@@ -248,6 +272,8 @@ export default function EditarPerfil() {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   onBlur={handleEmailBlur}
+                  onSubmitEditing={handleEmailSubmit}
+                  returnKeyType="done"
                 />
                 {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
               </View>
@@ -257,7 +283,14 @@ export default function EditarPerfil() {
                   <Phone strokeWidth={1.5} size={22} />
                   <Text style={styles.label}>Telefone</Text>
                 </View>
-                <TextInput style={styles.input} value={telefone} onChangeText={setTelefone} placeholder="(99) 99999-9999" keyboardType="phone-pad" />
+                <TextInput
+                  style={styles.input}
+                  value={telefone}
+                  onChangeText={(t) => setTelefone(t.replace(/[^\d]/g, "").slice(0, 11))}
+                  placeholder="(99) 99999-9999"
+                  keyboardType="phone-pad"
+                  maxLength={11}
+                />
               </View>
 
               <View style={styles.opcaoForm}>
@@ -266,12 +299,15 @@ export default function EditarPerfil() {
                   <Text style={styles.label}>CPF</Text>
                 </View>
                 <TextInput
+                  ref={cpfRef}
                   style={styles.input}
                   value={cpf}
                   onChangeText={handleCpfChange}
                   placeholder="00000000000"
-                  keyboardType="numeric"
+                  keyboardType="number-pad"
                   onBlur={handleCpfBlur}
+                  onSubmitEditing={handleCpfSubmit}
+                  maxLength={11}
                 />
                 {cpfError ? <Text style={styles.errorText}>{cpfError}</Text> : null}
               </View>
@@ -281,7 +317,11 @@ export default function EditarPerfil() {
                   <Calendar strokeWidth={1.5} size={22} />
                   <Text style={styles.label}>Data de nascimento</Text>
                 </View>
-                <TextInput style={styles.input} value={dataNascimento} onChangeText={setDataNascimento} placeholder="DD/MM/AAAA" />
+                <TouchableOpacity activeOpacity={0.8} onPress={() => { Keyboard.dismiss(); /* aqui pode abrir DatePicker */ }}>
+                  <View pointerEvents="none">
+                    <TextInput style={styles.input} value={dataNascimento} placeholder="DD/MM/AAAA" editable={false} />
+                  </View>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -296,7 +336,7 @@ export default function EditarPerfil() {
     </KeyboardAvoidingView>
   );
 }
-
+// ...existing code...
 const styles = StyleSheet.create({
   cardFoto: {
     padding: 20,
@@ -309,17 +349,18 @@ const styles = StyleSheet.create({
     gap: 25,
   },
   card: {
-    backgroundColor: "#fff", // Fundo branco para os cards, como solicitado
-    shadowColor: "rgba(0, 0, 0, 0.25)", // Sombra para iOS
+    backgroundColor: "#fff",
+    shadowColor: "rgba(0, 0, 0, 0.25)",
     shadowOffset: { width: 1, height: 5 },
     shadowOpacity: 0.8,
     shadowRadius: 10,
-    elevation: 10, // Sombra para Android
+    elevation: 10,
     borderRadius: 10,
   },
+  /* reduz padding interno do container que adicionava espaço extra */
   todosCard: {
-    gap: 30,
-    paddingBottom: 90,
+    gap: 20,
+    paddingBottom: 20,
   },
   opcaoForm: {},
   input: {
@@ -329,7 +370,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: "600", // '600' é válido para fontWeight
+    fontWeight: "600",
   },
   iconELabel: {
     flexDirection: "row",
@@ -338,15 +379,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   avatarContainer: {
-    backgroundColor: "#CE221E", // Cor de fundo do círculo quando não há imagem
+    backgroundColor: "#CE221E",
     height: 90,
     width: 90,
-    borderRadius: 45, // Metade da largura/altura para ser um círculo
+    borderRadius: 45,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
     borderWidth: 2,
     borderColor: "#CE221E",
+    overflow: "hidden",
   },
   avatarImage: {
     height: 90,
@@ -357,11 +399,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     height: 30,
     width: 30,
-    borderRadius: 15, // Metade da largura/altura para ser um círculo
+    borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 5, // Sombra para Android
-    shadowColor: "#000", // Sombra para iOS
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -375,7 +417,7 @@ const styles = StyleSheet.create({
   disabledBotaoText: {
     color: "#888",
   },
-    errorText: {
+  errorText: {
     color: "#CE221E",
     marginTop: 6,
     fontSize: 12,
