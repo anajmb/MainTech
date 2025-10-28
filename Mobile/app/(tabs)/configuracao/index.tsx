@@ -1,13 +1,10 @@
 import SetaVoltar from "@/components/setaVoltar";
-import { fetchCurrentUser, removeToken } from "@/lib/auth";
 import { TabsStyles } from "@/styles/globalTabs";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
-import { Link, useRouter } from "expo-router";
-import { BellRing, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
+import { Link } from "expo-router";
+import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
-
+import * as Notifications from 'expo-notifications';
 
 // add switch buttons na notificação e na acessibilidade
 // vamos ter uma página Ajuda e Suporte?
@@ -16,75 +13,51 @@ import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } f
 // add um subtitulo
 
 export default function Configuracao() {
-    const router = useRouter(); 
+
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
 
-    const [user, setUser] = useState<any | null>(null); 
-    const [loadingUser, setLoadingUser] = useState(true); 
-
     useEffect(() => {
-        (async () => {
-            setLoadingUser(true);
-            const u = await fetchCurrentUser();
-            if (u) setUser(u);
-            setLoadingUser(false);
-        })();
-
         const syncPermissionStatus = async () => {
-            const storedValue = await AsyncStorage.getItem('notificationsEnabled');
-            if (storedValue !== null) {
-                setInAppNotificationsEnabled(storedValue === 'true');
-                return;
-            }
-
-            // se não existir valor salvo, pega permissão atual
             const { status } = await Notifications.getPermissionsAsync();
             setInAppNotificationsEnabled(status === 'granted');
         };
         syncPermissionStatus();
     }, []);
 
-    const handleLogout = async () => { 
-        await removeToken();
-        router.replace("/"); 
-    };
-    
     const handleToggleNotifications = async () => {
-        try {
-            // desligar
-            if (inAppNotificationsEnabled) {
-                setInAppNotificationsEnabled(false);
-                await AsyncStorage.setItem('notificationsEnabled', 'false');
-                Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
-                return;
-            }
+        if (inAppNotificationsEnabled) {
+            setInAppNotificationsEnabled(false);
+            Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
+            
+            return;
+        }
 
-            // checa permissão atual
-            const { status } = await Notifications.getPermissionsAsync();
-            if (status === 'granted') {
-                setInAppNotificationsEnabled(true);
-                await AsyncStorage.setItem('notificationsEnabled', 'true');
-                Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
-                return;
-            }
+        const { status, canAskAgain } = await Notifications.getPermissionsAsync();
 
-            // solicita permissão
+        // if (status === 'granted') {
+        //     setInAppNotificationsEnabled(true);
+        //     Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+        //     // Aqui você salvaria a preferência (true)
+        //     return;
+        // }
+
+        if (canAskAgain || status === 'undetermined') {
             const { status: newStatus } = await Notifications.requestPermissionsAsync();
             if (newStatus === 'granted') {
                 setInAppNotificationsEnabled(true);
-                await AsyncStorage.setItem('notificationsEnabled', 'true');
-                Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
-            } else {
-                setInAppNotificationsEnabled(false);
-                await AsyncStorage.setItem('notificationsEnabled', 'false');
-                Alert.alert("Permissão negada", "Não foi possível ativar as notificações.");
             }
-        } catch (error) {
-            console.log('Erro ao alternar notificações:', error);
+        } else {
+            Alert.alert(
+                "Ação Necessária",
+                "As notificações estão bloqueadas nas configurações do seu celular. Para ativá-las, você precisa ir manualmente nas configurações do app.",
+                [{ text: "OK" }]
+            );
         }
     };
 
+
     return (
+
         <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>
@@ -97,23 +70,22 @@ export default function Configuracao() {
 
             <View style={styles.cardContainer}>
 
-                <Link href={'/(tabs)/configuracao/editarPerfil'} asChild>
-                    <TouchableOpacity style={styles.card}>
-                        <View style={styles.opcao}>
+                <TouchableOpacity style={styles.card}>
+                    {/* imagem de perfil */}
+                    <Link href={'/(tabs)/configuracao/editarPerfil'}>
+                        <View style={styles.opcao}  >
+
                             <View style={TabsStyles.userFotoIcon}>
                                 <User size={22} color={'#fff'} />
                             </View>
+
                             <View style={styles.infoCard}>
-                                <Text style={styles.nomePerfil}>
-                                    {loadingUser ? "Carregando..." : (user?.name ?? "Usuário")}
-                                </Text>
-                                <Text style={styles.emailPerfil}>
-                                    {loadingUser ? "" : (user?.email ?? "")}
-                                </Text>
+                                <Text style={styles.nomePerfil}>João Silva</Text>
+                                <Text style={styles.emailPerfil}>joao.silva@email.com</Text>
                             </View>
                         </View>
-                    </TouchableOpacity>
-                </Link>
+                    </Link>
+                </TouchableOpacity>
 
                 {/* Conta */}
                 <View style={styles.bloco}>
@@ -161,16 +133,18 @@ export default function Configuracao() {
                                     <Text style={styles.tituloOpcao}>Notificações</Text>
                                     <Text style={styles.subtitulo}>Controlar alertas e avisos</Text>
                                 </View>
+                                <TouchableOpacity>
                                 <Switch
                                     trackColor={{ false: "#767577", true: "#D10B03" }}
-                                    thumbColor={"#f4f3f4"}
+                                    thumbColor={ "#f4f3f4"}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={handleToggleNotifications}
-                                    value={inAppNotificationsEnabled}
+                                value={inAppNotificationsEnabled}
                                     style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
                                 />
+                        </TouchableOpacity>
                             </View>
-                        </View>
+                            </View>
 
                     </View>
                 </View>
@@ -200,13 +174,20 @@ export default function Configuracao() {
                     <Text style={styles.tituloCard}>Outros</Text>
 
                     <View style={styles.card}>
-                        <TouchableOpacity onPress={handleLogout} style={styles.opcao}>
-                            <LogOut color={'#F24040'} />
-                            <View style={styles.infoCard}>
-                                <Text style={styles.tituloOpcaoSair}>Sair</Text>
-                                <Text style={styles.subtitulo}>Desconectar da conta</Text>
-                            </View>
-                        </TouchableOpacity>
+
+                        <Link href={"/"} asChild>
+                            <TouchableOpacity style={styles.opcao}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <LogOut color={'#F24040'} />
+
+                                    <View style={styles.infoCard}>
+                                        <Text style={styles.tituloOpcaoSair}>Sair</Text>
+                                        <Text style={styles.subtitulo}>Desconectar da conta</Text>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+
+                        </Link>
                     </View>
                 </View>
 
@@ -215,22 +196,16 @@ export default function Configuracao() {
     )
 }
 
-
 const styles = StyleSheet.create({
     cardContainer: {
         paddingBottom: 90
     },
     card: {
         backgroundColor: "#eeeeee69",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
-        elevation: 2,
+        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
         borderRadius: 10,
         marginBottom: 10,
         marginHorizontal: 2,
-        boxShadow: "1px 4px 4px rgba(0, 0, 0, 0.25)",
     },
     infoCard: {
         flexDirection: 'column',
@@ -246,8 +221,7 @@ const styles = StyleSheet.create({
     infoCardButton: {
         flexDirection: 'row',
         justifyContent: "space-between",
-        flex: 1,
-        alignItems: 'center'
+        flex: 1
     },
     opcao: {
         padding: 20,
@@ -255,35 +229,35 @@ const styles = StyleSheet.create({
     },
     nomePerfil: {
         fontSize: 16,
-        fontWeight: "700",
+        fontWeight: 700,
 
     },
     emailPerfil: {
         fontSize: 12,
-        fontWeight: "500",
+        fontWeight: 'medium',
         color: '#00000075'
     },
     bloco: {
-        
+
     },
     tituloCard: {
         fontSize: 15,
-        fontWeight: "500",
+        fontWeight: 500,
         marginTop: 20,
         marginBottom: 10
     },
     tituloOpcao: {
         fontSize: 14,
-        fontWeight: "500"
+        fontWeight: 'medium'
     },
     tituloOpcaoSair: {
         fontSize: 14,
-        fontWeight: "500",
+        fontWeight: 'medium',
         color: '#F24040'
     },
     subtitulo: {
         fontSize: 12,
-        fontWeight: "500",
+        fontWeight: 'medium',
         color: '#00000075'
     },
 })
