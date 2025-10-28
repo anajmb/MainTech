@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "image": "./assets/images/background-mobile.png",
-    "icon": "./assets/images/LogoVermelha.png",
+    "icon": "./assets/images/LogoVermelha2.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

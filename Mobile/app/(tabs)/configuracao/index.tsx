@@ -4,7 +4,7 @@ import { TabsStyles } from "@/styles/globalTabs";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Link, useRouter } from "expo-router";
-import { BellRing, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
+import { BellRing, LockKeyhole, LogOut, PersonStanding, Shield, User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 
@@ -88,7 +88,9 @@ export default function Configuracao() {
         <ScrollView style={TabsStyles.container}>
 
             <View style={TabsStyles.headerPrincipal}>
+                <View>
                 <SetaVoltar />
+                </View>
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
@@ -133,10 +135,10 @@ export default function Configuracao() {
                             </TouchableOpacity>
                         </Link>
 
-                        <Link href={'/(tabs)/configuracao/privacidade'} asChild>
+                        <Link href={'/(tabs)/configuracao/politica'} asChild>
                             <TouchableOpacity style={styles.opcao}>
                                 <View style={styles.infoCardButton}>
-                                    <PersonStanding />
+                                    <LockKeyhole/>
 
                                     <View style={styles.infoCard1}>
                                         <Text style={styles.tituloOpcao}>Politica de Privacidade</Text>

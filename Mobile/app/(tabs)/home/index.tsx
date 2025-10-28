@@ -7,6 +7,7 @@ import { CustomText } from "@/components/customText";
 import NotificationDropdown from "@/components/notification";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "expo-router";
+import Logo from "@/components/logo";
 
 
 export default function Home() {
@@ -41,6 +42,7 @@ useFocusEffect(
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#CE221E"]} />
       }
     >
+      <Logo/>
 
       <View>
         <View style={styles.header}>
