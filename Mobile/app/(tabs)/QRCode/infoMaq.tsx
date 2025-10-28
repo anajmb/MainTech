@@ -157,13 +157,16 @@ export default function InfosMaquina() {
                 <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
 
                 <Link
-                  href={'/(tabs)/outros/conjuntos'} // Você pode mudar o href
+                  href={{
+                    pathname: '/(tabs)/outros/conjuntos',
+                    params: { codigo: codigo } 
+                  }}
                   asChild
                 >
                   <TouchableOpacity >
 
                     <Text style={styles.fieldsContent}>
-                      {`Realizar ${machineData.tasks.length} ${machineData.tasks.length > 1 ? "tarefas" : "tarefa"
+                      {`clique para realizar ${machineData.tasks.length} ${machineData.tasks.length > 1 ? "tarefas" : "tarefa"
                         }`}
                     </Text>
                   </TouchableOpacity>
