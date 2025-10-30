@@ -11,10 +11,13 @@ import Logo from "@/components/logo";
 import { useAuth } from "@/hooks/useAuth";
 
 
+
 function AdminHome() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  const { user } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
@@ -54,7 +57,7 @@ function AdminHome() {
               </Link>
 
             <View>
-              <Text style={styles.tituloHeader}>Olá, Usuário</Text>
+              <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
               <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
             </View>
           </View>
@@ -139,6 +142,8 @@ function UsersHome() {
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
+   const { user } = useAuth();
+
   useFocusEffect(
     useCallback(() => {
       const loadPreference = async () => {
@@ -177,7 +182,7 @@ function UsersHome() {
               </Link>
 
             <View>
-              <Text style={styles.tituloHeader}>Olá, Usuário</Text>
+              <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
               <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
             </View>
           </View>

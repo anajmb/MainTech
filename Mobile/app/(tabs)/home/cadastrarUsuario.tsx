@@ -3,6 +3,7 @@ import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
 
 export interface Employees {
     id: number;
@@ -34,35 +35,69 @@ const formatRole = (role: Employees['role']): string => {
         return 'Inspetor';
     }
     if (role === 'MAINTAINER') {
-        return 'Manutenção';
+        return 'Manutentor';
     }
     return role;
 };
 
 
 
-export default function CadastrarUsuario() {
 
+export default function CadastrarUsuario() {
     const [employeesData, setEmployeesData] = useState<Employees[]>([]);
+    const [cpfData, setCpfData] = useState("");
+    const [name, setName] = useState("");
+    const [cargo, setCargo] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [openCargo, setOpenCargo] = useState(false);
+    const [cargos, setCargos] = useState([
+        { label: 'Inspetor', value: 'INSPECTOR' },
+        { label: 'Manutentor', value: 'MAINTAINER' },
+    ]);
+
+    async function fetchEmployees() {
+        try {
+            const res = await api.get('/employees/get');
+            setEmployeesData(res.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
-        async function fetchEmployees() {
-            try {
-                const res = await api.get('/employees/get');
-                setEmployeesData(res.data);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }
-
         fetchEmployees();
-    }, [])
+    }, []);
+
+    const handlePreRegister = async () => {
+        if (!name || !cpfData || !cargo) {
+            alert("Preencha todos os campos!");
+            return;
+        }
+        setIsLoading(true);
+        try {
+            await api.post('/employees/preRegister', {
+                name: name,
+                cpf: cpfData,
+                role: cargo,
+            });
+            alert("Usuário pré-cadastrado com sucesso!");
+            setName('');
+            setCpfData('');
+            setCargo('');
+            fetchEmployees(); 
+        } catch (error: any) {
+            if (error.response?.data?.msg) {
+                alert(error.response.data.msg);
+            } else {
+                alert("Erro ao cadastrar usuário.");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <ScrollView style={TabsStyles.container}>
-
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -80,6 +115,8 @@ export default function CadastrarUsuario() {
                         style={style.input}
                         placeholder="Nome do Usuário"
                         placeholderTextColor="#C4C4C4"
+                        value={name}
+                        onChangeText={setName}
                     />
                 </View>
                 <View style={{ marginTop: 8 }}>
@@ -88,20 +125,38 @@ export default function CadastrarUsuario() {
                         style={style.input}
                         placeholder="Digite o CPF"
                         placeholderTextColor="#C4C4C4"
+                        value={cpfData}
+                        onChangeText={setCpfData}
                     />
                 </View>
                 <View style={{ flex: 1 }}>
                     <Text style={style.labelCargo}>Cargo</Text>
-                    <View style={style.input}>
-                        <Text style={style.inputText}>Selecione</Text>
-                    </View>
+                    <DropDownPicker
+                        open={openCargo}
+                        value={cargo}
+                        items={cargos}
+                        setOpen={setOpenCargo}
+                        setValue={setCargo}
+                        setItems={setCargos}
+                        placeholder="Selecione"
+                        style={style.input}
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
+                        placeholderStyle={{ color: '#6c6c6c' }}
+                        disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                        textStyle={{ color: cargo ? '#000' : '#6c6c6c' }}
+                    />
                 </View>
-                <TouchableOpacity style={style.botaoCadastro}>
-                    <Text style={style.textoBotaoCadastro}>Cadastrar usuário</Text>
+
+                <TouchableOpacity
+                    style={style.botaoCadastro}
+                    onPress={handlePreRegister}
+                    disabled={isLoading}
+                >
+                    <Text style={style.textoBotaoCadastro}>
+                        {isLoading ? "Cadastrando..." : "Cadastrar usuário"}
+                    </Text>
                 </TouchableOpacity>
             </View>
-
-            {/* Card de usuários cadastrados */}
 
             <View style={style.cardUsuarios}>
                 <Text style={style.tituloUsuarios}>Usuários Cadastrados</Text>
@@ -121,7 +176,7 @@ export default function CadastrarUsuario() {
                 ))}
             </View>
         </ScrollView>
-    )
+    );
 }
 
 const style = StyleSheet.create({

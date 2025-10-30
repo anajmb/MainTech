@@ -1,7 +1,8 @@
-import { Link } from "expo-router";
+import { api } from "@/lib/axios";
+import { Link, useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function Cadastro() {
@@ -9,11 +10,16 @@ export default function Cadastro() {
   const [isAgree, setIsAgree] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // novo estado
   const toggleSwitch = () => setIsAgree(previousState => !previousState)
-
-
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
-
+  const [cpfData, setCpfData] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  // const [birthDate, setBirthDate] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  
   
   const showDatePicker = () => setDatePickerVisibility(true);
   const hideDatePicker = () => setDatePickerVisibility(false);
@@ -22,6 +28,44 @@ export default function Cadastro() {
     hideDatePicker();
   };
 
+  const router = useRouter();
+
+const handleCadastro = async () => {
+  if (!cpfData || !name || !email || !phone || !date || !password ) {
+      Alert.alert("Erro", "Preencha todos os campos!");
+      return;
+  }
+  setIsLoading(true);
+
+  try {
+  const res = await api.post("/employees/completeRegister", {
+    name,
+    cpf: cpfData,
+    email,
+    phone,
+    birthDate: date,
+    password,
+  });
+
+  Alert.alert("Sucesso", "Cadastro feito com sucesso!", [
+    {
+      text: "OK",
+      onPress: () => router.replace("/"),
+    },
+  ]);
+  // Não precisa salvar o user aqui!
+} catch (error: any) {
+  if (error.response?.status === 409) {
+    Alert.alert("Erro", error.response.data.msg);
+  } else if (error.response?.status === 404) {
+    Alert.alert("Erro", "Não existe um pré-cadastro para este CPF.");
+  } else {
+    Alert.alert("Erro", "Erro ao completar cadastro.");
+  }
+} finally {
+  setIsLoading(false);
+}
+};
 
   return (
 
@@ -46,7 +90,11 @@ export default function Cadastro() {
 
             <View style={{ gap: 8 }}>
               <Text style={styles.labelLogin}>Nome:</Text>
-              <TextInput style={styles.inputLogin} placeholder="Ex: Ana Luiza" placeholderTextColor="#B9B9B9" />
+              <TextInput style={styles.inputLogin} 
+              placeholder="Ex: Ana Luiza"
+               placeholderTextColor="#B9B9B9"
+               value={name}
+               onChangeText={setName} />
             </View>
 
             <View style={styles.dataEmail}>
@@ -75,7 +123,11 @@ export default function Cadastro() {
 
               <View style={{ gap: 8 }}>
                 <Text style={styles.labelLogin}>E-mail:</Text>
-                <TextInput style={styles.inputEmail} placeholder="Ex:ana@gmail.com" placeholderTextColor="#B9B9B9" />
+                <TextInput style={styles.inputEmail} 
+                placeholder="Ex:ana@gmail.com" 
+                placeholderTextColor="#B9B9B9"
+                value={email}
+                onChangeText={setEmail} />
               </View>
             </View>
 
@@ -83,12 +135,21 @@ export default function Cadastro() {
 
               <View style={{ gap: 8 }}>
                 <Text style={styles.labelLogin}>Telefone:</Text>
-                <TextInput style={styles.inputTel} placeholder="(__)____-____" placeholderTextColor="#B9B9B9" />
+                <TextInput style={styles.inputTel} 
+                placeholder="(__)____-____" 
+                placeholderTextColor="#B9B9B9" 
+                value={phone}
+                onChangeText={setPhone}/>
               </View>
 
               <View style={{ gap: 8 }}>
                 <Text style={styles.labelLogin}>CPF:</Text>
-                <TextInput style={styles.inputTel} placeholder="___.___.___-__" placeholderTextColor="#B9B9B9" />
+                <TextInput style={styles.inputTel} 
+                placeholder="___.___.___-__" 
+                placeholderTextColor="#B9B9B9"
+                value={cpfData}
+                onChangeText={setCpfData}
+                keyboardType="numeric" />
               </View>
 
             </View>
@@ -99,7 +160,12 @@ export default function Cadastro() {
               <Text style={styles.labelLogin}>Senha:</Text>
 
               <View>
-                <TextInput style={styles.inputLogin} placeholder="*************" placeholderTextColor="#B9B9B9"  secureTextEntry={!showPassword} />
+                <TextInput style={styles.inputLogin}
+                 placeholder="*************" 
+                 placeholderTextColor="#B9B9B9"  
+                 secureTextEntry={!showPassword}
+                 value={password}
+                 onChangeText={setPassword} />
                 {/* <EyeOff style={styles.eyeFechado} size={20} /> */}
                 <TouchableOpacity style={styles.eyeFechado} onPress={() => setShowPassword((prev) => !prev)}>
                   {showPassword ? (
@@ -111,11 +177,10 @@ export default function Cadastro() {
             </View>
 
             <View style={{ alignItems: "center" }}>
-              <Link href={'/(tabs)/home'} asChild>
-                <TouchableOpacity style={styles.botaoLogin}>
-                  <Text style={{ color: "#fff" }}> Cadastrar </Text>
+                <TouchableOpacity style={styles.botaoLogin}  onPress={handleCadastro} disabled={isLoading}>
+                  <Text style={{ color: "#fff" }}>{isLoading ? "Cadastrando..." : "Cadastrar" }  </Text>
                 </TouchableOpacity>
-              </Link>
+           
             </View>
 
             <View style={styles.hrefLogin}>

@@ -19,6 +19,14 @@ export default function Maquinas() {
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
     const [open, setOpen] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [conjuntoSelecionado, setConjuntoSelecionado] = useState("");
+    const [openConjunto, setOpenConjunto] = useState(false);
+
+    const [conjuntos, setConjuntos] = useState([
+        { label: 'Selecione', value: '', disabled: true },
+        { label: 'Conjunto 1', value: 'conjunto1' },
+        { label: 'Conjunto 2', value: 'conjunto2' },
+    ])
 
     const [oficinas, setOficinas] = useState([
         { label: 'Selecione', value: '', disabled: true },
@@ -90,7 +98,20 @@ export default function Maquinas() {
 
                     <View style={{ marginBottom: 20, marginTop: 10 }}>
                         <Text style={styles.label}>Conjuntos:</Text>
-                        <TextInput placeholder="Nome do conjunto" placeholderTextColor={"#6c6c6c"} style={styles.input} />
+                        <DropDownPicker
+                            open={openConjunto}
+                            value={conjuntoSelecionado}
+                            items={conjuntos}
+                            setOpen={setOpenConjunto}
+                            setValue={setConjuntoSelecionado}
+                            setItems={setConjuntos}
+                            placeholder="Selecione"
+                            style={styles.input}
+                            dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
+                            placeholderStyle={{ color: '#6c6c6c' }}
+                            textStyle={{ color: conjuntoSelecionado ? '#000' : '#6c6c6c' }}
+                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                        />
                     </View>
 
                     <TouchableOpacity style={styles.botaoCad}>
@@ -216,7 +237,7 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     cardContent: {
-        flex: 1,                    
+        flex: 1,
         flexShrink: 1,
     },
     maqTitle: {

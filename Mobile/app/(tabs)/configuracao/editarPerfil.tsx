@@ -1,7 +1,4 @@
-
-import SetaVoltar from "@/components/setaVoltar";
-import { TabsStyles } from "@/styles/globalTabs";
-import { Calendar, Camera, IdCard, Mail, Phone, User } from "lucide-react-native";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Image,
@@ -16,11 +13,14 @@ import {
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useRef, useState } from "react";
+import { Calendar, Camera, IdCard, Mail, Phone, User } from "lucide-react-native";
+import SetaVoltar from "@/components/setaVoltar";
+import { TabsStyles } from "@/styles/globalTabs";
+import { useAuth } from "@/hooks/useAuth";
+import { api } from "@/lib/axios";
 
 export default function EditarPerfil() {
   const [image, setImage] = useState<string | null>(null);
-
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -29,12 +29,35 @@ export default function EditarPerfil() {
 
   const [emailError, setEmailError] = useState<string | null>(null);
   const [cpfError, setCpfError] = useState<string | null>(null);
-
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const emailRef = useRef<TextInput | null>(null);
   const cpfRef = useRef<TextInput | null>(null);
 
+  const { user, updateUser } = useAuth();
+
+  // Carregar dados do usuário
+  useEffect(() => {
+    async function loadUserData() {
+      if (!user?.id) return;
+      try {
+        const res = await api.get(`/employees/getUnique/${user.id}`);
+        const data = res.data;
+        setNome(data.name || "");
+        setEmail(data.email || "");
+        setTelefone(data.phone || "");
+        setCpf(data.cpf || "");
+        setDataNascimento(data.birthDate ? new Date(data.birthDate).toLocaleDateString("pt-BR") : "");
+        setImage(data.photo || null);
+      } catch (error) {
+        console.log("Erro ao carregar dados do usuário:", error);
+        Alert.alert("Erro", "Não foi possível carregar os dados do perfil.");
+      }
+    }
+    loadUserData();
+  }, [user]);
+
+  // Ajuste de teclado
   useEffect(() => {
     const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
     const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
@@ -51,155 +74,145 @@ export default function EditarPerfil() {
     };
   }, []);
 
+  // Seleção de imagem
   const handleImagePicker = async () => {
     Keyboard.dismiss();
     Alert.alert("Selecionar foto", "Escolha uma opção para a sua foto de perfil", [
-      { text: "Escolher da Galeria", onPress: () => pickImageFromGallery() },
-      { text: "Tirar Foto", onPress: () => takePhotoWithCamera() },
+      { text: "Escolher da Galeria", onPress: pickImageFromGallery },
+      { text: "Tirar Foto", onPress: takePhotoWithCamera },
       { text: "Cancelar", style: "cancel" },
     ]);
   };
 
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permissão necessária", "Desculpe, precisamos da permissão da galeria para isso funcionar!");
-      return;
-    }
-
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.log("Erro ao selecionar imagem da galeria: ", error);
-      Alert.alert("Erro", "Não foi possível selecionar a imagem.");
+    if (status !== "granted") return Alert.alert("Permissão necessária", "Precisamos da permissão da galeria!");
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, allowsEditing: true, aspect: [1, 1], quality: 1 });
+    if (!result.canceled && result.assets.length > 0) {
+      const uri = result.assets[0].uri;
+      setImage(uri);
+      await savePhotoAutomatically(uri); // <-- 🔥 ALTERAÇÃO AQUI
     }
   };
 
   const takePhotoWithCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permissão necessária", "Desculpe, precisamos da permissão da câmera para isso funcionar!");
-      return;
-    }
-
-    try {
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.log("Erro ao tirar foto: ", error);
-      Alert.alert("Erro", "Não foi possível usar a câmera.");
+    if (status !== "granted") return Alert.alert("Permissão necessária", "Precisamos da permissão da câmera!");
+    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [1, 1], quality: 1 });
+    if (!result.canceled && result.assets.length > 0) {
+      const uri = result.assets[0].uri;
+      setImage(uri);
+      await savePhotoAutomatically(uri); // <-- 🔥 ALTERAÇÃO AQUI
     }
   };
 
-  function isValidEmail(value: string) {
-    const re =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
-    return re.test(String(value).toLowerCase());
-  }
+  // Validações
+  const isValidEmail = (value: string) =>
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i.test(value.toLowerCase());
 
-  function isValidCPF(value: string) {
+  const isValidCPF = (value: string) => {
     const v = value.replace(/\D/g, "");
-    if (v.length !== 11) return false;
-    if (/^(\d)\1+$/.test(v)) return false;
+    if (v.length !== 11 || /^(\d)\1+$/.test(v)) return false;
     const calc = (arr: number[]) => {
       let sum = 0;
       for (let i = 0; i < arr.length; i++) sum += arr[i] * (arr.length + 1 - i);
       const res = (sum * 10) % 11;
       return res === 10 ? 0 : res;
     };
-    const digits = v.split("").map((d) => parseInt(d, 10));
-    const digit1 = calc(digits.slice(0, 9));
-    const digit2 = calc(digits.slice(0, 10));
-    return digit1 === digits[9] && digit2 === digits[10];
-  }
-
-  function handleEmailBlur() {
-    if (email.trim() === "") {
-      setEmailError("E-mail obrigatório");
-      return;
-    }
-    setEmailError(isValidEmail(email) ? null : "E-mail inválido");
-  }
-
-  function handleEmailSubmit() {
-    if (!isValidEmail(email)) {
-      setEmailError("E-mail inválido");
-      Alert.alert("Formato inválido", "Digite um e‑mail válido antes de continuar.");
-      emailRef.current?.focus();
-    }
-  }
+    const digits = v.split("").map(d => parseInt(d, 10));
+    return calc(digits.slice(0, 9)) === digits[9] && calc(digits.slice(0, 10)) === digits[10];
+  };
 
   function handleCpfChange(text: string) {
     const onlyDigits = text.replace(/\D/g, "").slice(0, 11);
     setCpf(onlyDigits);
-    if (onlyDigits.length === 11) {
-      setCpfError(isValidCPF(onlyDigits) ? null : "CPF inválido");
-    } else {
-      setCpfError("CPF incompleto");
-    }
-  }
-
-  function handleCpfBlur() {
-    if (cpf.trim() === "") {
-      setCpfError("CPF obrigatório");
-      return;
-    }
-    setCpfError(isValidCPF(cpf) ? null : "CPF inválido");
-  }
-
-  function handleCpfSubmit() {
-    if (!isValidCPF(cpf)) {
-      setCpfError("CPF inválido");
-      Alert.alert("CPF inválido", "Digite um CPF válido (11 dígitos).");
-      cpfRef.current?.focus();
-    }
+    if (onlyDigits.length === 11) setCpfError(isValidCPF(onlyDigits) ? null : "CPF inválido");
+    else setCpfError("CPF incompleto");
   }
 
   const canSave =
-    !!image &&
     nome.trim() !== "" &&
     email.trim() !== "" &&
     telefone.trim() !== "" &&
-    cpf.trim() !== "" &&
-    dataNascimento.trim() !== "" &&
-    isValidEmail(email) &&
-    isValidCPF(cpf);
+    cpf.trim().length >= 11 &&
+    isValidEmail(email);
 
-  function handleSave() {
-    if (!canSave) {
-      const faltam: string[] = [];
-      if (!image) faltam.push("Foto");
-      if (nome.trim() === "") faltam.push("Nome");
-      if (email.trim() === "") faltam.push("E-mail");
-      if (telefone.trim() === "") faltam.push("Telefone");
-      if (cpf.trim() === "") faltam.push("CPF");
-      if (dataNascimento.trim() === "") faltam.push("Data de Nascimento");
-      const validationProblems: string[] = [];
-      if (email && !isValidEmail(email)) validationProblems.push("E-mail inválido");
-      if (cpf && !isValidCPF(cpf)) validationProblems.push("CPF inválido");
-      const msgParts = [];
-      if (faltam.length) msgParts.push(`Faltam: ${faltam.join(", ")}`);
-      if (validationProblems.length) msgParts.push(validationProblems.join(", "));
-      return Alert.alert("Corrija os erros", msgParts.join("\n"));
+
+  // Converter imagem em base64
+  async function toBase64(uri: string): Promise<string> {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // 🔥 INÍCIO DA ADIÇÃO
+  // Função para salvar foto automaticamente
+  const savePhotoAutomatically = async (uri: string) => {
+    if (!user?.id) {
+      Alert.alert("Erro", "Usuário não encontrado para salvar a foto.");
+      return;
     }
 
-    Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
+    try {
+      const base64Image = await toBase64(uri);
+
+      // Envia APENAS a foto, usando os dados do 'user' do contexto
+      // para não enviar dados do formulário que podem estar inválidos.
+      await api.put(`/employees/update/${user.id}`, {
+        ...user, // Envia dados do contexto (nome, email, etc. atuais)
+        photo: base64Image, // Sobrepõe com a nova foto
+      });
+
+      // Atualiza o contexto global do usuário
+      await updateUser({
+        ...user,
+        photo: base64Image,
+      });
+
+    } catch (error) {
+      console.log("Erro ao atualizar foto automaticamente:", error);
+      Alert.alert("Erro", "Não foi possível atualizar a foto do perfil.");
+    }
+  };
+
+  async function handleSave() {
+    if (!canSave || !user?.id) return Alert.alert("Erro", "Preencha todos os campos corretamente antes de salvar.");
+
+    try {
+      let base64Image = image;
+      if (image && image.startsWith("file://")) {
+        base64Image = await toBase64(image);
+      }
+
+      await api.put(`/employees/update/${user.id}`, {
+        name: nome,
+        email,
+        phone: telefone,
+        cpf,
+        birthDate: dataNascimento,
+        photo: base64Image,
+      });
+
+      await updateUser({
+        ...user,
+        name: nome,
+        email,
+        phone: telefone,
+        cpf,
+        birthDate: dataNascimento,
+        photo: base64Image || undefined,
+      });
+
+      Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
+    } catch (error) {
+      console.log("Erro ao atualizar perfil:", error);
+      Alert.alert("Erro", "Não foi possível atualizar o perfil.");
+    }
   }
 
   return (
@@ -271,8 +284,6 @@ export default function EditarPerfil() {
                   placeholder="email@exemplo.com"
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  onBlur={handleEmailBlur}
-                  onSubmitEditing={handleEmailSubmit}
                   returnKeyType="done"
                 />
                 {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -305,8 +316,6 @@ export default function EditarPerfil() {
                   onChangeText={handleCpfChange}
                   placeholder="00000000000"
                   keyboardType="number-pad"
-                  onBlur={handleCpfBlur}
-                  onSubmitEditing={handleCpfSubmit}
                   maxLength={11}
                 />
                 {cpfError ? <Text style={styles.errorText}>{cpfError}</Text> : null}
@@ -326,7 +335,13 @@ export default function EditarPerfil() {
             </View>
           </View>
 
-          <TouchableOpacity style={{ alignItems: "center", marginTop: 10 }} onPress={handleSave} activeOpacity={0.8} disabled={!canSave}>
+
+          <TouchableOpacity
+            style={{ alignItems: "center", marginTop: 10 }}
+            onPress={handleSave}
+            activeOpacity={0.8}
+            disabled={!canSave}
+          >
             <View style={[TabsStyles.viewBotaoPrincipal, !canSave && styles.disabledBotao]}>
               <Text style={[TabsStyles.botaoText, !canSave && styles.disabledBotaoText]}>Salvar Alterações</Text>
             </View>
@@ -336,7 +351,8 @@ export default function EditarPerfil() {
     </KeyboardAvoidingView>
   );
 }
-// ...existing code...
+
+
 const styles = StyleSheet.create({
   cardFoto: {
     padding: 20,
@@ -360,7 +376,7 @@ const styles = StyleSheet.create({
   /* reduz padding interno do container que adicionava espaço extra */
   todosCard: {
     gap: 20,
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
   opcaoForm: {},
   input: {

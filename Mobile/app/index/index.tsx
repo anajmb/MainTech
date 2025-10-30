@@ -5,18 +5,7 @@ import { Link, useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+  ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
   const [isAgree, setIsAgree] = useState(false);
@@ -180,7 +169,7 @@ export default function Login() {
                 ) : (
                   <Text style={{ color: "#fff" }}> Entrar </Text>
                 )}
-              </TouchableOpacity>
+              </TouchableOpacity> 
             </View>
 
             <View style={styles.hrefLogin}>
