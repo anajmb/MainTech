@@ -158,7 +158,7 @@ export default function InfosMaquina() {
 
                 <Link
                   href={{
-                    pathname: '/(tabs)/tarefas/conjuntosInspe',
+                    pathname: '/(tabs)/tarefas/fazerTarefaInspe',
                     params: { codigo: codigo } 
                   }}
                   asChild
