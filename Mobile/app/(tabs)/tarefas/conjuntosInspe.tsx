@@ -1,32 +1,8 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { api } from "../../../lib/axios";
-
-import SetaVoltar from "@/components/setaVoltar";
-import { TabsStyles } from "@/styles/globalTabs";
-import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
-import { CircleDot, Square } from "lucide-react-native";
-
-// --- Interfaces ---
-interface MachineTask {
-    id: number;
-    title: string;
-    description: string;
-    inspectorId: number;
-    machineId: number;
-    status: string;
-    expirationDate: string;
-    createDate: string;
-    updateDate: string;
-}
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import SetaVoltar from "@/components/setaVoltar"; // (Confirme o caminho)
+import { TabsStyles } from "@/styles/globalTabs"; // (Confirme o caminho)
 
 interface SubSet {
     id: number;
@@ -54,113 +30,74 @@ interface Machines {
     createDate: string;
     updateDate: string;
     sets: MachineSet[];
-    tasks: MachineTask[];
+    tasks: any[];
 }
 
-export default function Conjuntos() {
+export default function ConjuntosInspe() {
     // --- Hooks ---
-    const { codigo } = useLocalSearchParams();
+    const router = useRouter();
+    // Recebe os dados da página Hub
+    const { machineData: machineDataJSON, selections: selectionsJSON, setId } = 
+        useLocalSearchParams<{ machineData: string; selections: string; setId: string }>();
 
     // --- States ---
     const [machineData, setMachineData] = useState<Machines | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [currentSet, setCurrentSet] = useState<MachineSet | null>(null);
+    // Armazena TODAS as seleções recebidas
+    const [selections, setSelections] = useState<Record<number, { changes: number[]; repairs: number[] }>>({});
 
-    // índice do set atual que está sendo exibido
-    const [currentSetIndex, setCurrentSetIndex] = useState(0);
-
-    // NOVO ESTADO: controla a escolha 'perfeito' ou 'avariado' para o set atual
+    // Estados locais para ESTA inspeção
     const [currentStatus, setCurrentStatus] = useState<'perfeito' | 'avariado' | null>(null);
-
-    // seleções temporárias do set atual (subsets selecionados por ação)
     const [selectedChanges, setSelectedChanges] = useState<Record<number, boolean>>({});
     const [selectedRepairs, setSelectedRepairs] = useState<Record<number, boolean>>({});
 
-    // armazenamento final das seleções por setId
-    const [selectionsBySet, setSelectionsBySet] = useState<
-        Record<number, { changes: number[]; repairs: number[] }>
-    >({});
-
     // --- Effects ---
-
-    // Efeito para carregar os dados da máquina (via API)
+    // 1. Efeito para carregar os dados recebidos dos params
     useEffect(() => {
-        async function loadMachineById() {
-            if (!codigo) {
-                setLoading(false);
-                return;
-            }
-
+        if (machineDataJSON && selectionsJSON && setId) {
             try {
-                const info = JSON.parse(codigo as string);
-                if (!info.id) {
-                    setLoading(false);
-                    return;
+                const data: Machines = JSON.parse(machineDataJSON);
+                const currentSelections = JSON.parse(selectionsJSON);
+                const set = data.sets.find(s => s.id === Number(setId));
+
+                setMachineData(data);
+                setSelections(currentSelections);
+                
+                if (set) {
+                    setCurrentSet(set);
+                    // Carrega os dados JÁ SALVOS para este set, se existirem
+                    const saved = currentSelections[set.id];
+                    if (saved) {
+                        if (saved.changes.length === 0 && saved.repairs.length === 0) {
+                            setCurrentStatus("perfeito");
+                        } else {
+                            setCurrentStatus("avariado");
+                        }
+                        const changesMap: Record<number, boolean> = {};
+                        saved.changes.forEach((id) => (changesMap[id] = true));
+                        setSelectedChanges(changesMap);
+                        
+                        const repairsMap: Record<number, boolean> = {};
+                        saved.repairs.forEach((id) => (repairsMap[id] = true));
+                        setSelectedRepairs(repairsMap);
+                    } else {
+                         // Inicializa os toggles como falsos
+                        const initChanges: Record<number, boolean> = {};
+                        const initRepairs: Record<number, boolean> = {};
+                        (set.subsets || []).forEach((s) => {
+                            initChanges[s.id] = false;
+                            initRepairs[s.id] = false;
+                        });
+                        setSelectedChanges(initChanges);
+                        setSelectedRepairs(initRepairs);
+                    }
                 }
-
-                const res = await api.get(`/machines/getUnique/${info.id}`);
-                setMachineData(res.data || null);
-            } catch (error) {
-                console.log(error);
-                Alert.alert("Erro", "Falha ao carregar dados da máquina.");
-            } finally {
-                setLoading(false);
+            } catch (e) {
+                console.error("Falha ao parsear dados da inspeção:", e);
+                Alert.alert("Erro", "Não foi possível carregar os dados do conjunto.");
             }
         }
-
-        loadMachineById();
-    }, [codigo]);
-
-    // MODIFICADO: sempre que mudar de set, carrega o status (perfeito/avariado) e os toggles
-    useEffect(() => {
-        if (!machineData) return;
-        const sets = machineData.sets || [];
-        const setItem = sets[currentSetIndex];
-
-        if (!setItem) {
-            setCurrentStatus(null);
-            setSelectedChanges({});
-            setSelectedRepairs({});
-            return;
-        }
-
-        // se já existirem seleções salvas para este set, carregue
-        const saved = selectionsBySet[setItem.id];
-
-        if (saved) {
-            // Define o status (perfeito ou avariado)
-            if (saved.changes.length === 0 && saved.repairs.length === 0) {
-                setCurrentStatus("perfeito");
-            } else {
-                setCurrentStatus("avariado");
-            }
-
-            // Carrega os toggles de subset
-            const changesMap: Record<number, boolean> = {};
-            const repairsMap: Record<number, boolean> = {};
-            saved.changes.forEach((id) => (changesMap[id] = true));
-            saved.repairs.forEach((id) => (repairsMap[id] = true));
-            setSelectedChanges(changesMap);
-            setSelectedRepairs(repairsMap);
-
-        } else {
-            // Se não há dados salvos, reseta tudo
-            setCurrentStatus(null); // Pede ao usuário para escolher
-
-            // inicializa com false
-            const initChanges: Record<number, boolean> = {};
-            const initRepairs: Record<number, boolean> = {};
-            (setItem.subsets || []).forEach((s) => {
-                initChanges[s.id] = false;
-                initRepairs[s.id] = false;
-            });
-            setSelectedChanges(initChanges);
-            setSelectedRepairs(initRepairs);
-        }
-
-    }, [currentSetIndex, machineData, selectionsBySet]);
-
-
-    // --- Handlers (Toggles) ---
+    }, [machineDataJSON, selectionsJSON, setId]);
 
     function toggleChange(subId: number) {
         setSelectedChanges((prev) => ({ ...prev, [subId]: !prev[subId] }));
@@ -169,12 +106,10 @@ export default function Conjuntos() {
         setSelectedRepairs((prev) => ({ ...prev, [subId]: !prev[subId] }));
     }
 
-    // --- Handlers (Navegação/Envio) ---
-
-    function handleContinue() {
+    // Botão "Confirmar" (Salvar e Voltar)
+    function handleSaveAndReturn() {
         if (!currentSet) return;
 
-        // 1. Verifica se o usuário selecionou um status
         if (currentStatus === null) {
             Alert.alert("Atenção", "Por favor, selecione o estado do conjunto (Perfeito ou Avariado).");
             return;
@@ -183,282 +118,150 @@ export default function Conjuntos() {
         let changes: number[] = [];
         let repairs: number[] = [];
 
-        // 2. Se 'avariado', coleta os dados. Se 'perfeito', deixa os arrays vazios.
         if (currentStatus === 'avariado') {
-            changes = Object.keys(selectedChanges)
-                .filter((k) => selectedChanges[Number(k)])
-                .map((k) => Number(k));
-            repairs = Object.keys(selectedRepairs)
-                .filter((k) => selectedRepairs[Number(k)])
-                .map((k) => Number(k));
+            changes = Object.keys(selectedChanges).filter(k => selectedChanges[Number(k)]).map(Number);
+            repairs = Object.keys(selectedRepairs).filter(k => selectedRepairs[Number(k)]).map(Number);
         }
 
-        // 3. Salva o resultado para este set
-        setSelectionsBySet((prev) => ({
-            ...prev,
-            [currentSet.id]: { changes, repairs },
-        }));
+        // 1. Atualiza o objeto de seleções
+        const updatedSelections = {
+            ...selections,
+            [currentSet.id]: { changes, repairs }
+        };
 
-        // 4. Avança para próximo set, se houver
-        if (currentSetIndex < sets.length - 1) {
-            setCurrentSetIndex(currentSetIndex + 1);
-        } else {
-            Alert.alert("Concluído", "Você chegou ao último conjunto. Confirme para enviar.");
-        }
-    }
-
-    async function handleConfirm() {
-        if (!machineData) return;
-
-        // 1. Cria uma cópia final das seleções
-        const finalSelections = { ...selectionsBySet };
-
-        // 2. Adiciona/Sobrescreve os dados do SET ATUAL
-        if (currentSet) {
-            // Validação: Garante que o usuário selecionou um status para o set atual
-            if (currentStatus === null && (changeSubsets.length > 0 || repairSubsets.length > 0)) {
-                Alert.alert("Atenção", `Por favor, selecione o estado do conjunto "${currentSet.name}" antes de confirmar.`);
-                return;
+        // 2. Navega DE VOLTA para a página Hub, passando o estado ATUALIZADO
+        router.replace({
+            pathname: "/(tabs)/tarefas/fazerTarefaInspe", 
+            params: {
+                codigo: JSON.stringify({ id: machineData?.id }), 
+                updatedSelections: JSON.stringify(updatedSelections) 
             }
-
-            let changes: number[] = [];
-            let repairs: number[] = [];
-
-            if (currentStatus === 'avariado') {
-                changes = Object.keys(selectedChanges)
-                    .filter((k) => selectedChanges[Number(k)])
-                    .map((k) => Number(k));
-                repairs = Object.keys(selectedRepairs)
-                    .filter((k) => selectedRepairs[Number(k)])
-                    .map((k) => Number(k));
-            }
-            // Se 'perfeito' ou 'null' (e não precisava de seleção), salva como vazio
-            finalSelections[currentSet.id] = { changes, repairs };
-        }
-
-        // 3. Monta o resultado final iterando sobre a 'finalSelections' (que está 100% atualizada)
-        const result: {
-            machineId: number;
-            setId: number;
-            subsetId: number;
-            action: "change" | "repair";
-        }[] = [];
-
-        Object.keys(finalSelections).forEach((setIdStr) => {
-            const setId = Number(setIdStr);
-            const sel = finalSelections[setId];
-
-            sel?.changes.forEach((subsetId) =>
-                result.push({ machineId: machineData.id, setId, subsetId, action: "change" })
-            );
-            sel?.repairs.forEach((subsetId) =>
-                result.push({ machineId: machineData.id, setId, subsetId, action: "repair" })
-            );
         });
-
-        // 4. Envia para o backend
-        const payloadString = JSON.stringify(result);
-        console.log("Enviando:", payloadString); // Ótimo para debug
-
-        try {
-            const res = await api.post("/machines/submit-subsets", {
-                machineId: machineData.id,
-                payload: payloadString,
-            });
-            Alert.alert("Sucesso", res.data?.msg || "Dados enviados com sucesso.");
-
-            // Reseta os estados
-            setSelectionsBySet({});
-            setSelectedChanges({});
-            setSelectedRepairs({});
-            setCurrentStatus(null);
-            setCurrentSetIndex(0);
-
-        } catch (error: any) {
-            console.log("Erro ao enviar:", error?.response ?? error);
-            Alert.alert("Erro", error.response?.data?.msg || "Falha ao enviar dados.");
-            console.log(payloadString)
-        }
     }
 
-    // --- Render Loading / Error ---
-
-    if (loading) {
+    // --- Render ---
+    if (!currentSet) {
         return (
             <View style={[TabsStyles.container, styles.loadingContainer]}>
                 <ActivityIndicator size="large" color="#ce221e" />
-                <Text style={{ marginTop: 10 }}>Carregando...</Text>
             </View>
         );
     }
-
-    if (!machineData) {
-        return (
-            <View style={[TabsStyles.container, styles.loadingContainer]}>
-                <Text>Máquina não encontrada.</Text>
-            </View>
-        );
-    }
-
-    // --- Render Principal ---
-
-    const sets = machineData.sets || [];
-    const currentSet = sets[currentSetIndex];
-
-    // Filtra subsets apenas quando o 'currentSet' existir
-    const changeSubsets = currentSet?.subsets.filter((s) => s.changes) || [];
-    const repairSubsets = currentSet?.subsets.filter((s) => s.repairs) || [];
+    
+    const changeSubsets = currentSet.subsets.filter((s) => s.changes) || [];
+    const repairSubsets = currentSet.subsets.filter((s) => s.repairs) || [];
 
     return (
         <ScrollView style={TabsStyles.container}>
+            {/* Header (com SetaVoltar que funciona) */}
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
-                    <Text style={TabsStyles.tituloPrincipal}>{machineData.name}</Text>
-                    {currentSet && (
-                        <Text style={{ color: "#666", marginTop: 6 }}>
-                            Conjunto {currentSetIndex + 1} de {sets.length} — {currentSet?.name}
-                        </Text>
-                    )}
+                    {/* Título dinâmico do conjunto */}
+                    <Text style={TabsStyles.tituloPrincipal}>{currentSet.name}</Text>
                 </View>
             </View>
 
-            {/* Se não houver 'currentSet' (ex: 0 conjuntos), mostra mensagem */}
-            {currentSet ? (
-                <View style={styles.cardEstado}>
+            {/* O Wizard de Inspeção mora aqui agora */}
+            <View style={styles.cardEstado}>
+                <Text style={styles.pergunta}>Qual o estado do conjunto?</Text>
+                
+                {/* Botão Perfeito */}
+                <TouchableOpacity
+                    style={[
+                        styles.opcao,
+                        currentStatus === 'perfeito' && styles.opcaoSelecionadaVerde
+                    ]}
+                    onPress={() => setCurrentStatus('perfeito')}
+                >
+                    <Text style={[
+                        styles.textoVerde,
+                        currentStatus === 'perfeito' && styles.textoOpcaoSelecionada
+                    ]}>
+                        Perfeito estado
+                    </Text>
+                </TouchableOpacity>
 
-                    {/* --- Pergunta de Estado (Perfeito/Avariado) --- */}
-                    <Text style={styles.pergunta}>Qual o estado do {currentSet.name}</Text>
+                {/* Botão Avariado */}
+                <TouchableOpacity
+                    style={[
+                        styles.opcao,
+                        currentStatus === 'avariado' && styles.opcaoSelecionadaVermelha
+                    ]}
+                    onPress={() => setCurrentStatus('avariado')}
+                >
+                    <Text style={[
+                        styles.textoVermelho,
+                        currentStatus === 'avariado' && styles.textoOpcaoSelecionada
+                    ]}>
+                        Avariado
+                    </Text>
+                </TouchableOpacity>
+                
+                {currentStatus === 'avariado' && (
+                    <View style={styles.columnsWrapper}>
+                        <View style={styles.divisorHorizontal} />
+                        <View style={styles.columns}>
+                            
+                            {/* Coluna Trocar */}
+                            <View style={styles.checklistCol}>
+                                <Text style={styles.pergunta}>Trocar</Text>
+                                {changeSubsets.length === 0 ? (
+                                    <Text style={styles.noSubsetText}>Nenhum para trocar</Text>
+                                ) : (
+                                    changeSubsets.map((s) => (
+                                        <TouchableOpacity
+                                            key={`chg-${s.id}`}
+                                            style={styles.checkItem}
+                                            onPress={() => toggleChange(s.id)}
+                                        >
+                                            <View style={selectedChanges[s.id] ? styles.checkedBox : styles.checkBox}></View>
+                                            <Text style={styles.checkText}>
+                                                {s.name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))
+                                )}
+                            </View>
 
-                    <TouchableOpacity
-                        style={[
-                            styles.opcao,
-                            currentStatus === 'perfeito' && styles.textoVerdeSelectedContainer
-                        ]}
-                        onPress={() => setCurrentStatus('perfeito')}
-                    >
-                        <Text style={[
-                            styles.textoVerde,
-                            currentStatus === 'perfeito' && styles.textoVerdeSelected
-                        ]}>
-                            Perfeito estado
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.opcao,
-                            currentStatus === 'avariado' && styles.textoVermelhoSelectedContainer
-                        ]}
-                        onPress={() => setCurrentStatus('avariado')}
-                    >
-                        <Text style={[
-                            styles.textoVermelho,
-                            currentStatus === 'avariado' && styles.textoVermelhoSelected
-                        ]}>
-                            Avariado
-                        </Text>
-                    </TouchableOpacity>
-                    {/* --- Fim da Pergunta de Estado --- */}
-
-
-                    {/* --- Listas de Subsets (Condicional) --- */}
-                    {/* Só mostra as colunas de subsets se 'Avariado' for selecionado */}
-                    {currentStatus === 'avariado' && (
-                        <View style={styles.columnsWrapper}>
+                            {/* Divisória Vertical */}
                             <View style={styles.divisor} />
 
-                            <View style={styles.checklistContainer}>
-
-                                <View style={styles.checklistCol}>
-                                    <Text style={styles.pergunta}>Trocar</Text>
-                                    {changeSubsets.length === 0 ? (
-                                        <Text style={{ color: "#888" }}>Nenhum para trocar</Text>
-                                    ) : (
-                                        changeSubsets.map((s) => (
-                                            <TouchableOpacity
-                                                key={`chg-${s.id}`}
-                                                style={[
-                                                    styles.checkItem,
-                                                    selectedChanges[s.id] && styles.checkedItem,
-                                                ]}
-                                                onPress={() => toggleChange(s.id)}
-                                            >
-                                                {/* ---- CORRIGIDO ---- */}
-                                                <View style={selectedChanges[s.id] ? styles.checkedBox : styles.checkBox}></View>
-
-                                                <Text style={selectedChanges[s.id] ? styles.checkedText : styles.checkText}>
-                                                    {s.name}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))
-                                    )}
-                                </View>
-
-                                <View style={styles.divisor} />
-
-                                <View style={styles.checklistCol}>
-                                    <Text style={styles.pergunta}>Reparar</Text>
-                                    {repairSubsets.length === 0 ? (
-                                        <Text style={{ color: "#888" }}>Nenhum para reparar</Text>
-                                    ) : (
-                                        repairSubsets.map((s) => (
-                                            <TouchableOpacity
-                                                key={`rep-${s.id}`}
-                                                style={[
-                                                    styles.checkItem,
-                                                    selectedRepairs[s.id] && styles.checkedItem,
-                                                ]}
-                                                onPress={() => toggleRepair(s.id)}
-                                            >
-                                                {/* Este já estava correto */}
-                                                <View style={selectedRepairs[s.id] ? styles.checkedBox : styles.checkBox}></View>
-
-                                                <Text style={selectedRepairs[s.id] ? styles.checkedText : styles.checkText}>
-                                                    {s.name}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))
-                                    )}
-                                </View>
+                            {/* Coluna Reparar */}
+                            <View style={styles.checklistCol}>
+                                <Text style={styles.pergunta}>Reparar</Text>
+                                {repairSubsets.length === 0 ? (
+                                    <Text style={styles.noSubsetText}>Nenhum para reparar</Text>
+                                ) : (
+                                    repairSubsets.map((s) => (
+                                        <TouchableOpacity
+                                            key={`rep-${s.id}`}
+                                            style={styles.checkItem}
+                                            onPress={() => toggleRepair(s.id)}
+                                        >
+                                            <View style={selectedRepairs[s.id] ? styles.checkedBox : styles.checkBox}></View>
+                                            <Text style={styles.checkText}>
+                                                {s.name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))
+                                )}
                             </View>
+
                         </View>
-                    )}
-
-                    {/* --- Fim das Listas de Subsets --- */}
-
-                    <View style={styles.navigationContainer}>
-                        {/* Botão Voltar */}
-                        <TouchableOpacity
-                            onPress={() => {
-                                if (currentSetIndex > 0) setCurrentSetIndex(currentSetIndex - 1);
-                            }}
-                            style={[styles.botaoVoltar, currentSetIndex === 0 && styles.botaoVoltar]}
-                            disabled={currentSetIndex === 0}
-                        >
-                            <Text style={styles.navButtonText}>Voltar (Refazer)</Text>
-                        </TouchableOpacity>
-
-                        {/* Botão Avançar / Finalizar */}
-                        <TouchableOpacity
-
-                            onPress={currentSetIndex === sets.length - 1 ? handleConfirm : handleContinue}
-
-                            style={[styles.botaoConfirmar, styles.botaoConfirmar]}
-                        >
-                            <Text style={styles.textoBotao}>
-                                {/* Muda o texto dinamicamente */}
-                                {currentSetIndex === sets.length - 1 ? "Finalizar" : "Avançar"}
-                            </Text>
-                        </TouchableOpacity>
+                         <Text style={styles.obsCheck}>*Selecione mais de uma opção se necessário</Text>
                     </View>
+                )}
 
+                {/* Botão Salvar e Voltar */}
+                <View style={styles.navigationContainer}>
+                    <TouchableOpacity onPress={handleSaveAndReturn} style={[styles.navButton, styles.primaryNavButton]}>
+                        <Text style={[styles.navButtonText, styles.primaryNavButtonText]}>
+                            Confirmar
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-            ) : (
-                <View style={styles.cardEstado}>
-                    <Text>Não há conjuntos de inspeção para esta máquina.</Text>
-                </View>
-            )}
+            </View>
         </ScrollView>
     );
 }
@@ -466,198 +269,156 @@ export default function Conjuntos() {
 
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     cardEstado: {
         backgroundColor: "#fff",
-        borderRadius: 16,
-        padding: 24,
-        marginHorizontal: 18,
-        marginTop: 40,
-        marginBottom: 24,
-        alignItems: "center",
+        borderRadius: 10,
+        padding: 20,
+        margin: 15,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.10,
-        shadowRadius: 8,
-        elevation: 4,
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        alignItems: "center",
     },
-
     pergunta: {
         fontSize: 18,
         fontWeight: "500",
         color: "#222",
         marginBottom: 20,
-        alignSelf: "center", 
+        textAlign: 'center',
     },
-
     opcao: {
-        backgroundColor: "#EAEAEA",
+        borderWidth: 1,
+        borderColor: '#EAEAEA',
+        backgroundColor: "#F6F6F6",
         borderRadius: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 32,
+        paddingVertical: 12,
         marginBottom: 12,
-        width: "90%",
+        width: "100%",
         alignItems: "center",
     },
-
-    textoVerdeSelectedContainer: {
-        backgroundColor: "#3CB371",
-        color: "#fff",
+    opcaoSelecionadaVerde: {
+        backgroundColor: '#3CB371',
+        borderColor: '#3CB371',
     },
-
-    textoVerdeSelected: {
-        color: "#fff",
+    opcaoSelecionadaVermelha: {
+        backgroundColor: '#CE221E',
+        borderColor: '#CE221E',
     },
-
     textoVerde: {
         color: "#3CB371",
-        fontSize: 13,
-        fontWeight: "400",
+        fontSize: 15,
+        fontWeight: "500",
     },
-
-    textoVermelhoSelectedContainer: {
-        backgroundColor: "#CE221E",
-        color: "#fff",
-    },
-
-    textoVermelhoSelected: {
-        color: "#fff",
-    },
-
     textoVermelho: {
         color: "#CE221E",
-        fontSize: 13,
-        fontWeight: "400",
-    },
-
-    checklistContainer: {
-        flexDirection: "row",
-        width: "100%",
-        marginTop: 18,
-        marginBottom: 8,
-        justifyContent: "center",
-    },
-
-    checklistCol: {
-        flex: 1,
-        alignItems: "flex-start",
-        paddingHorizontal: 8,
-        alignContent: "center",
-    },
-
-    subItemSelectedRepair: {
-        backgroundColor: "#F8D7DA",
-        borderRadius: 8,
-        paddingVertical: 6,
-    },
-
-    checklistTitulo: {
-        fontSize: 14,
-        fontWeight: "400",
-        marginBottom: 8,
-        color: "#222",
-        justifyContent: "center",
-        marginLeft: 30,
-
-    },
-
-    checkText: {
-        marginLeft: 10,
         fontSize: 15,
-        color: "#000000ff",
-        textAlign: "center",
+        fontWeight: "500",
     },
-
-    checkedText: {
-        marginLeft: 10,
-        fontSize: 15,
-        color: "#000000ff",
-        textAlign: "center",
+    textoOpcaoSelecionada: {
+        color: "#FFFFFF",
+        fontWeight: "bold",
     },
-
-    checkItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 8,
-        borderRadius: 8,
-        padding: 3,
+    divisorHorizontal: {
+        borderTopWidth: 1,
+        borderColor: '#EAEAEA',
+        width: '100%',
+        marginVertical: 20,
     },
-
-    checkedItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 8,
-        borderRadius: 8,
-        padding: 3,
-    },
-
-    checkBox: {
-        width: 16,
-        height: 16,
-        borderWidth: 1,
-        borderColor: "#000",
-        fontSize: 18,
-    },
-
-    checkedBox: {
-        width: 16,
-        height: 16,
-        borderWidth: 1,
-        borderColor: "#000",
-        fontSize: 18,
-        backgroundColor: "#A50702",
-    },
-
     divisor: {
         width: 1,
         backgroundColor: "#E0E0E0",
         marginHorizontal: 10,
     },
-
+    columnsWrapper: {
+        width: '100%',
+        alignItems: 'center',
+    },
+    columns: {
+        flexDirection: "row",
+        width: "100%",
+        justifyContent: "space-between",
+    },
+    checklistCol: {
+        flex: 1,
+        alignItems: "flex-start", // Alinha os checkboxes à esquerda
+        paddingHorizontal: 5,
+    },
+    noSubsetText: {
+        color: "#888",
+        fontSize: 14,
+        fontStyle: 'italic',
+        alignSelf: 'center', // Centraliza só este texto
+    },
+    checkItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        paddingVertical: 10,
+        paddingHorizontal: 8,
+    },
+    checkBox: {
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderColor: '#CCC',
+        borderRadius: 4,
+        marginRight: 12,
+    },
+    checkedBox: {
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderColor: '#A50702',
+        backgroundColor: '#A50702',
+        borderRadius: 4,
+        marginRight: 12,
+    },
+    checkText: {
+        color: '#333',
+        fontSize: 14,
+        flexShrink: 1,
+    },
     obsCheck: {
         fontSize: 11,
         color: "#888",
-        marginTop: 4,
-        alignSelf: "flex-start",
+        marginTop: 15,
+        alignSelf: "center",
     },
-
     navigationContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: "100%",
-        marginTop: 30,
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 25,
+        width: '100%',
+        justifyContent: 'space-between',
+        borderTopWidth: 1,
+        borderTopColor: '#EAEAEA',
+        paddingTop: 20,
     },
-
-    botaoConfirmar: {
-        backgroundColor: '#A50702',
-        borderRadius: 10, 
-        paddingVertical: 10,
-        width: 150, 
+    navButton: {
+        backgroundColor: '#F0F0F0',
+        borderRadius: 8,
+        paddingVertical: 12,
+        flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        alignSelf: "center",
     },
-
-    botaoVoltar: {
-        borderRadius: 10, 
-        paddingVertical: 10,
-        width: 150, 
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "center",
-    },
-
-    textoBotao: {
-        color: "#fff",
-        fontSize: 15,
-        fontWeight: "400",
-    },
-
     navButtonText: {
-        color: "#888",
-        fontSize: 15,
-        marginTop: 2,
-        textAlign: "center",
+        color: "#333",
+        fontSize: 16,
+        fontWeight: "500",
+    },
+    primaryNavButton: {
+        backgroundColor: '#A50702',
+    },
+    primaryNavButtonText: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
     },
 });

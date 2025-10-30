@@ -1,10 +1,65 @@
+import { useLocalSearchParams, useRouter, Link } from "expo-router"; // Adicionado Link
+import React, { useEffect, useState } from "react";
+import { api } from "../../../lib/axios";
+
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { Link } from "expo-router";
 import { Flag } from "lucide-react-native";
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from "react-native";
 
+// --- Interfaces (Mantenha todas) ---
+interface MachineTask {
+    id: number;
+    title: string;
+    description: string;
+    inspectorId: number;
+    machineId: number;
+    status: string;
+    expirationDate: string;
+    createDate: string;
+    updateDate: string;
+}
+
+interface SubSet {
+    id: number;
+    name: string;
+    changes: boolean;
+    repairs: boolean;
+}
+
+interface MachineSet {
+    id: number;
+    name: string;
+    machineId: number | null;
+    createDate: string;
+    updateDate: string;
+    subsets: SubSet[];
+}
+
+interface Machines {
+    id: number;
+    name: string;
+    description: string;
+    location: string;
+    qrCode: string;
+    temperature: number | null;
+    createDate: string;
+    updateDate: string;
+    sets: MachineSet[];
+    tasks: MachineTask[];
+    // Adicionei a oficina para bater com a imagem
+    office?: string;
+}
+
+// --- Constantes ---
 type ChavePrioridade = 'low' | 'medium' | 'high';
 
 const prioridadeOpcao = [
@@ -14,47 +69,217 @@ const prioridadeOpcao = [
 ]
 
 export default function FazerTarefa() {
+    // --- Hooks ---
+    // 'codigo' é o param inicial para carregar
+    // 'updatedSelections' é o que recebemos DE VOLTA da página de inspeção
+    const { codigo, updatedSelections } = useLocalSearchParams<{ codigo: string; updatedSelections?: string }>();
+    const router = useRouter();
+
+    // --- States ---
+    const [machineData, setMachineData] = useState<Machines | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    // !! ESTADO PRINCIPAL: Armazena os resultados de todas as inspeções !!
+    const [selectionsBySet, setSelectionsBySet] = useState<
+        Record<number, { changes: number[]; repairs: number[] }>
+    >({});
+
     const [selectedPrioridade, setSelectedPrioridade] = useState<ChavePrioridade>('medium');
+
+    // 1. Efeito para carregar os dados da máquina (só na primeira vez)
+    useEffect(() => {
+        async function loadMachineById() {
+            if (!codigo) {
+                setLoading(false);
+                return;
+            }
+            try {
+                const info = JSON.parse(codigo as string);
+                if (!info.id) {
+                    setLoading(false);
+                    return;
+                }
+                const res = await api.get(`/machines/getUnique/${info.id}`);
+                setMachineData(res.data || null);
+            } catch (error) {
+                console.log(error);
+                Alert.alert("Erro", "Falha ao carregar dados da máquina.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        if (machineData && updatedSelections) {
+            setLoading(false);
+        }
+        // Se NÃO temos os dados (primeira carga), buscamos na API.
+        else if (!machineData) {
+            loadMachineById();
+        }
+
+    }, [codigo, updatedSelections, machineData]);
+
+    // 2. Efeito para ATUALIZAR o estado quando voltamos da página de inspeção
+    useEffect(() => {
+        if (updatedSelections) {
+            try {
+                // Atualiza o estado local com os dados que vieram da outra página
+                const selections = JSON.parse(updatedSelections);
+                setSelectionsBySet(selections);
+            } catch (e) {
+                console.error("Falha ao atualizar seleções:", e);
+            }
+        }
+    }, [updatedSelections]);
+
+    // --- Handler de Envio Final ---
+    async function handleConfirm() {
+        if (!machineData) return;
+
+        // 1. Monta o payload final.
+        // O 'selectionsBySet' já está 100% atualizado
+        const result: {
+            machineId: number;
+            setId: number;
+            subsetId: number;
+            action: "change" | "repair";
+        }[] = [];
+
+        Object.keys(selectionsBySet).forEach((setIdStr) => {
+            const setId = Number(setIdStr);
+            const sel = selectionsBySet[setId];
+            sel?.changes.forEach((subsetId) =>
+                result.push({ machineId: machineData.id, setId, subsetId, action: "change" })
+            );
+            sel?.repairs.forEach((subsetId) =>
+                result.push({ machineId: machineData.id, setId, subsetId, action: "repair" })
+            );
+        });
+
+        // Validação: Checa se todos os conjuntos foram inspecionados
+        if (Object.keys(selectionsBySet).length !== machineData.sets.length) {
+            Alert.alert("Atenção", "Você precisa inspecionar todos os conjuntos antes de finalizar.");
+            return;
+        }
+
+        console.log("Enviando:", {
+            machineId: machineData.id,
+            priority: selectedPrioridade,
+            payload: result,
+        });
+
+        // 2. Envia para o backend
+        try {
+            // ATENÇÃO: Verifique o endpoint da sua API
+            const res = await api.post("/machines/submit-subsets", {
+                machineId: machineData.id,
+                priority: selectedPrioridade,
+                payload: result,
+            });
+
+            Alert.alert("Sucesso", res.data?.msg || "Inspeção enviada com sucesso.");
+            router.back();
+
+        } catch (error: any) {
+            console.log("Erro ao enviar:", error?.response ?? error);
+            Alert.alert("Erro", error.response?.data?.msg || "Falha ao enviar dados.");
+        }
+    }
+
+    // --- Render Loading / Error ---
+    if (loading) {
+        return (
+            <View style={[TabsStyles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#ce221e" />
+                <Text style={{ marginTop: 10 }}>Carregando...</Text>
+            </View>
+        );
+    }
+
+    if (!machineData) {
+        return (
+            <View style={[TabsStyles.container, styles.loadingContainer]}>
+                <Text>Máquina não encontrada.</Text>
+            </View>
+        );
+    }
+
+    // --- Render Principal ---
+    const sets = machineData.sets || [];
+
+
+
+
+
     return (
         <ScrollView style={TabsStyles.container}>
-            {/* header */}
+
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Tarefa</Text>
-                    <Text style={TabsStyles.subtituloPrincipal}>Detalhes da tarefa</Text>
                 </View>
             </View>
 
             <View style={styles.todosCard}>
+
                 <View style={styles.cardName}>
                     <Text style={styles.cardTitle}>Nome da máquina:</Text>
-                    <Text style={styles.cardSubtitle}>Máquina fresadora 1</Text>
+                    <Text style={styles.cardSubtitle}>{machineData.name}</Text>
                 </View>
-                <View style={styles.cardMaq}>
-                    <Text style={styles.titleConjuntos}>Conjuntos:</Text>
 
-                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
-                        <TouchableOpacity style={styles.cardConjunto}>
-                            <Text style={styles.nameConjunto}>Unidade de Lubrificação</Text>
-                        </TouchableOpacity>
-                    </Link>
-                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
-                        <TouchableOpacity style={styles.cardConjunto}>
-                            <Text style={styles.nameConjunto}>Transmissão/Fusos Manual</Text>
-                        </TouchableOpacity>
-                    </Link>
-                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
-                        <TouchableOpacity style={styles.cardConjunto}>
-                            <Text style={styles.nameConjunto}>Sistemas de Proteção</Text>
-                        </TouchableOpacity>
-                    </Link>
-                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
-                        <TouchableOpacity style={styles.cardConjunto}>
-                            <Text style={styles.nameConjunto}>Motoredutores</Text>
-                        </TouchableOpacity>
-                    </Link>
+                <View style={styles.cardOficina}>
+                    <Text style={styles.cardTitle}>Oficina:</Text>
+                    <Text style={styles.cardSubtitle}>{machineData.location}</Text>
                 </View>
+
+                <View style={styles.cardMaq}>
+                    <Text style={styles.titleConjuntos}>Conjuntos</Text>
+
+                    {sets.length > 0 ? (
+                        sets.map((set) => {
+
+                            const isInspected = selectionsBySet.hasOwnProperty(set.id);
+                            const inspection = selectionsBySet[set.id];
+
+                            let statusText = "Pendente";
+                            let statusStyle = styles.statusPendente;
+                            if (isInspected) {
+                                if (inspection.changes.length === 0 && inspection.repairs.length === 0) {
+                                    statusText = "Perfeito";
+                                    statusStyle = styles.statusPerfeito;
+                                } else {
+                                    statusText = "Avariado";
+                                    statusStyle = styles.statusAvariado;
+                                }
+                            }
+
+                            return (
+                                <Link
+                                    key={set.id}
+                                    href={{
+
+                                        pathname: "/(tabs)/tarefas/conjuntosInspe",
+                                        params: {
+                                            machineData: JSON.stringify(machineData),
+                                            selections: JSON.stringify(selectionsBySet),
+                                            setId: set.id,
+                                        }
+                                    }}
+                                    asChild
+                                >
+                                    <TouchableOpacity style={styles.cardConjunto}>
+                                        <Text style={styles.nameConjunto}>{set.name}</Text>
+                                        <Text style={[styles.statusBase, statusStyle]}>{statusText}</Text>
+                                    </TouchableOpacity>
+                                </Link>
+                            );
+                        })
+                    ) : (
+                        <Text>Não há conjuntos de inspeção para esta máquina.</Text>
+                    )}
+                </View>
+
                 <View style={styles.cardPrioridade}>
                     <View style={{ flexDirection: 'row' }}>
                         <Flag style={styles.flagIcon} />
@@ -83,152 +308,188 @@ export default function FazerTarefa() {
                         })}
                     </View>
                 </View>
-            </View>
-            <TouchableOpacity>
-                <View style={styles.confirmBtn}>
-                    <Text style={{ color: "#fff", fontSize: 15, fontWeight: "500" }}>
-                        Finalizar Checklist
-                    </Text>
-                </View>
-            </TouchableOpacity>
 
+                <TouchableOpacity onPress={handleConfirm} style={styles.botaoConfirmar}>
+                    <Text style={styles.textoBotao}>Finalizar Checklist</Text>
+                </TouchableOpacity>
+
+            </View>
         </ScrollView>
-    )
+    );
 }
 
+
+
+
 const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
     todosCard: {
-        gap: 20,
-        paddingBottom: 30,
+        width: '90%',
+        alignSelf: 'center'
     },
     cardName: {
-        backgroundColor: '#eeeeee',
-        padding: 40,
+        backgroundColor: '#fff',
+        padding: 20,
         borderRadius: 10,
+        marginBottom: 15,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 4
+        elevation: 3,
+    },
+
+    cardOficina: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        marginBottom: 15,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     cardTitle: {
-        fontSize: 20,
-        textAlign: "center",
-        color: "#0000007c",
-        fontWeight: 500
-
+        fontSize: 16,
+        fontWeight: 'normal',
+        color: '#666',
+        alignSelf: "center"
     },
     cardSubtitle: {
-        fontSize: 25,
-        textAlign: "center",
-        color: "#000000",
-        marginTop: 10,
-        fontWeight: 500
-    },
-    cardMaq: {
-        backgroundColor: '#eeeeee',
-        padding: 20,
-        borderRadius: 10,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 4
-    },
-    titleOficina: {
-        fontSize: 18,
-        textAlign: "center",
-        color: "#0000007c",
-        fontWeight: 500
-    },
-    subOficina: {
-        fontSize: 15,
-        textAlign: "center",
-        color: "#000000",
-        marginTop: 10,
-        fontWeight: 500
-    },
-    titleConjuntos: {
-        fontSize: 18,
-        textAlign: "center",
-        color: "#00000086",
-        fontWeight: 500
-    },
-    cardConjunto: {
-        backgroundColor: '#e6e6e6',
-        padding: 20,
-        borderRadius: 10,
-        marginTop: 10,
-        marginBottom: 10,
-    },
-    nameConjunto: {
-        textAlign: "center",
-        fontSize: 18,
-        fontWeight: 600,
-        color: "#00000065"
-
-    },
-    flagIcon: {
-        width: 25,
-        height: 25,
-        color: '#0000007c',
-        marginLeft: 10,
-        marginTop: 10
-
-    },
-    titlePrioridade: {
-        fontSize: 18,
-        fontWeight: 500,
-        color: "#0000007c",
-        marginLeft: 10,
-        marginTop: 10,
-        marginBottom: 20
-    },
-    prioridadeBtn: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 16,
-        borderRadius: 12,
-        borderWidth: 1.5,
-        borderColor: '#e0e0e0',
-        marginHorizontal: 5,
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+        alignSelf: "center",
     },
     cardPrioridade: {
-        backgroundColor: '#eeeeee',
-        padding: 10,
+        backgroundColor: '#fff',
+        padding: 20,
         borderRadius: 10,
+        marginTop: 15,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 4
+        elevation: 3,
     },
-    corCircle: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        marginBottom: 8,
+    flagIcon: {
+        color: '#CE221E',
+        marginRight: 8,
     },
-    btnText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#555',
+    titlePrioridade: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333'
     },
     btnContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        marginTop: 15,
+        gap: 10,
     },
-    confirmBtn: {
+    prioridadeBtn: {
+        flex: 1,
+        flexDirection: 'column',
+        padding: 15,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#eee',
+    },
+    corCircle: {
+        width: 26,
+        height: 26,
+        borderRadius: 100,
+        marginBottom: 2,
+        alignSelf: 'center',
+    },
+    btnText: {
+        fontSize: 14,
+        fontWeight: '500',
+        alignSelf: 'center',
+    },
+
+
+
+    cardMaq: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    titleConjuntos: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    cardConjunto: {
+        backgroundColor: '#F6F6F6',
+        borderRadius: 8,
+        paddingVertical: 18,
+        paddingHorizontal: 15,
+        marginBottom: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#EAEAEA',
+    },
+    nameConjunto: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#333',
+        flexShrink: 1,
+        paddingRight: 10,
+    },
+    statusBase: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        borderRadius: 4,
+        overflow: 'hidden',
+    },
+    statusPendente: {
+        backgroundColor: '#F0F0F0',
+        color: '#666',
+    },
+    statusPerfeito: {
+        backgroundColor: 'rgba(59, 179, 113, 0.2)',
+        color: '#3BB371',
+    },
+    statusAvariado: {
+        backgroundColor: 'rgba(206, 34, 30, 0.2)',
+        color: '#CE221E',
+    },
+
+
+
+    botaoConfirmar: {
         backgroundColor: '#A50702',
-        borderRadius: 10, // quadrado
-        paddingVertical: 10,
-        width: 200, // menor
+        borderRadius: 100,
+        paddingVertical: 7,
+        paddingHorizontal: 10,
+        width: '70%',
         alignItems: "center",
         justifyContent: "center",
+        marginTop: 20,
+        marginBottom: 30,
         alignSelf: "center",
-        marginBottom: 30
-
-    }
-})
+    },
+    textoBotao: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+});
