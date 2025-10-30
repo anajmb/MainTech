@@ -1,18 +1,20 @@
 import { ArrowLeft } from "lucide-react-native";
 import { TouchableOpacity, View } from "react-native";
-
-// colocar função de voltar a tela anterior
+import { useNavigation } from "@react-navigation/native";
 
 export default function SetaVoltar() {
-    return (
-        <TouchableOpacity>
-            <View style={{backgroundColor: "#EAE7E7", padding: 10, borderRadius: "50%"}}>
+  const navigation = useNavigation<any>();
 
-            <ArrowLeft 
-            color="#575353"
-            size={25}
-            strokeWidth={2.5}/>
-            </View>
-        </TouchableOpacity>
-    )
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.goBack()}
+      accessibilityRole="button"
+      accessibilityLabel="Voltar"
+      activeOpacity={0.7}
+    >
+      <View style={{ backgroundColor: "#EAE7E7", padding: 10, borderRadius: 999 }}>
+        <ArrowLeft color="#575353" size={25} strokeWidth={2.5} />
+      </View>
+    </TouchableOpacity>
+  );
 }
