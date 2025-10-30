@@ -1,7 +1,7 @@
 import Logo from "@/components/logo";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { Tabs } from "expo-router";
+import { Link, Tabs } from "expo-router";
 import { Download, FileText, Search } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -77,15 +77,21 @@ export default function Documento() {
 
             <View style={styles.documentosList}>
                 <View style={styles.infosDocumentos}>
-                    <View style={{ flexDirection: 'row', gap: 15 }}>
-                        <View style={{ padding: 8, borderRadius: 5, backgroundColor: '#dd3b3b', marginTop: 3 }}>
-                            <FileText color={'#fff'} />
-                        </View>
-                        <Text style={styles.documentosNome}>Ordem de serviço 100</Text>
-                    </View>
-                    <Text style={styles.documentosDescricao}>3,4 MB • 19/09/2025</Text>
-                    <Download style={styles.downloadIcon} />
-                </View>
+  <Link href="/(tabs)/documento/ordemServicoManu" asChild>
+    <TouchableOpacity style={{ flexDirection: 'row', gap: 15}}>
+      <View style={{  backgroundColor: '#dd3b3b', padding: 8, borderRadius: 5, marginTop: 3 }}> 
+        <FileText color={'#fff'} />
+      </View>
+
+      <View style={{ flex: 1 }}>
+        <Text style={styles.documentosNome}>Ordem de serviço 100</Text>
+        <Text style={styles.documentosDescricao}>3,4 MB • 19/09/2025</Text>
+      </View>
+
+      <Download style={styles.downloadIcon} />
+    </TouchableOpacity>
+  </Link>
+</View>
 
                 <View style={styles.infosDocumentos}>
                     <View style={{ flexDirection: 'row', gap: 15 }}>
@@ -164,7 +170,7 @@ const styles = StyleSheet.create({
     },
     documentosList: {
         gap: 20,
-        marginBottom: 40
+        marginBottom: 120
     },
     infosDocumentos: {
         backgroundColor: '#eeeeee',
@@ -181,7 +187,7 @@ const styles = StyleSheet.create({
     documentosDescricao: {
         fontSize: 13,
         color: '#666',
-        marginTop: -6,
+        marginTop: 1,
         marginLeft: 55
     },
     downloadIcon: {

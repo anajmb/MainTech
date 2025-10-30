@@ -3,10 +3,11 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, ScrollView } from "react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import TasksCards from "./tasksCard";
 import { api } from "@/lib/axios";
 import Logo from "@/components/logo";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Task {
     id: number;
@@ -19,16 +20,19 @@ interface Task {
 }
 
 export default function Tarefas() {
+    const { user } = useAuth();
+    const router = useRouter();
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [filtro, setFiltro] = useState<"todas" | "pendente" | "concluida">("todas");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchTasks() {
+            if (!user) return; // espera user carregado
             setLoading(true);
             try {
-                // 👇 AQUI ESTÁ A CORREÇÃO
-                const params: { status?: string } = {};
+                const params: { status?: string; inspectorId?: number | string } = {};
 
                 if (filtro === "pendente") {
                     params.status = "PENDING";
@@ -37,9 +41,17 @@ export default function Tarefas() {
                     params.status = "COMPLETED";
                 }
 
+                // se for inspetor, trazer só as tarefas dele
+                if (user.role === "INSPECTOR") {
+                    // assume que stored user tem id; se não tiver, adapte conforme seu shape
+                    // cast seguro para any caso shape seja diferente
+                    const inspectorId = (user as any).id;
+                    if (inspectorId) params.inspectorId = inspectorId;
+                }
+                // admin não precisa de inspectorId (traz tudo)
+
                 const response = await api.get('/tasks/get', { params });
                 setTasks(response.data);
-
             } catch (error) {
                 console.error('Error fetching tasks:', error);
             } finally {
@@ -48,11 +60,12 @@ export default function Tarefas() {
         }
 
         fetchTasks();
-    }, [filtro]);
+    }, [filtro, user]);
+
+    if (!user) return <ActivityIndicator size="large" color="#CF0000" style={{ flex: 1 }} />;
 
     return (
         <ScrollView style={TabsStyles.container}>
-
             <Logo/>
 
             <View style={TabsStyles.headerPrincipal}>
@@ -61,11 +74,15 @@ export default function Tarefas() {
                     <Text style={TabsStyles.tituloPrincipal}>Tarefas</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>Minhas tarefas</Text>
                 </View>
-                <Link href={'/tarefas/novaTarefa'}>
+
+                {/* botão + apenas para ADMIN */}
+                {user.role === "ADMIN" && (
+                  <Link href={'/tarefas/novaTarefa'}>
                     <View style={styles.plusButton}>
                         <Plus color={"#fff"} strokeWidth={1.8} size={30} />
                     </View>
-                </Link>
+                  </Link>
+                )}
             </View>
 
             <View style={styles.filtro}>
@@ -95,13 +112,26 @@ export default function Tarefas() {
                 data={tasks}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
-                    <TasksCards
-                    id={item.id}
-                    title={item.title}
-                    description={item.description}
-                    updateDate={item.updateDate}
-                    status={item.status}
-                    />
+                    // se for INSPECTOR, ao clicar vai para fazerTarefa; admin não tem navegação ao clicar
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (user.role === "INSPECTOR") {
+                          router.push({
+                            pathname: "../tarefas/fazerTarefaInspe",
+                            params: { id: String(item.id) }
+                          });
+                        }
+                      }}
+                      activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
+                    >
+                      <TasksCards
+                        id={item.id}
+                        title={item.title}
+                        description={item.description}
+                        updateDate={item.updateDate}
+                        status={item.status}
+                      />
+                    </TouchableOpacity>
                 )}
                 contentContainerStyle={{ paddingBottom: 20 }}
                 ListEmptyComponent={

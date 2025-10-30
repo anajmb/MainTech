@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
-import { Bell, BellOff, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus } from "lucide-react-native";
-import { Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Bell, BellOff, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus, History } from "lucide-react-native";
+import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
 import { useCallback, useState } from "react";
 import { CustomText } from "@/components/customText";
@@ -8,23 +8,23 @@ import NotificationDropdown from "@/components/notification";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "expo-router";
 import Logo from "@/components/logo";
+import { useAuth } from "@/hooks/useAuth";
 
 
-export default function Home() {
+function AdminHome() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
-useFocusEffect(
-  useCallback(() => {
-    const loadPreference = async () => {
-      const storedValue = await AsyncStorage.getItem('notificationsEnabled');
-      setNotificationsEnabled(storedValue === 'true');
-    };
-    loadPreference();
-  }, [])
-);
+  useFocusEffect(
+    useCallback(() => {
+      const loadPreference = async () => {
+        const storedValue = await AsyncStorage.getItem('notificationsEnabled');
+        setNotificationsEnabled(storedValue === 'true');
+      };
+      loadPreference();
+    }, [])
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -33,7 +33,6 @@ useFocusEffect(
       setRefreshing(false);
     }, 2000);
   }, []);
-
 
   return (
     <ScrollView
@@ -46,8 +45,6 @@ useFocusEffect(
 
       <View>
         <View style={styles.header}>
-          {/* <Link href={'/(tabs)/configuracao/editarPerfil'} style={{ alignItems: 'center', justifyContent: 'center', }}> */}
-
           <View style={{ flexDirection: 'row', gap: 10 }}>
 
               <Link href={"/configuracao"}>
@@ -62,21 +59,20 @@ useFocusEffect(
             </View>
           </View>
 
-          {notificationsEnabled ? (
-
+             {notificationsEnabled ? (
             <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
-            <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
-          </TouchableOpacity>
+              <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={() => {}}>
-            <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
-          </TouchableOpacity>
+              <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            </TouchableOpacity>
           )}
           
           <NotificationDropdown 
-          visible={isNotificacoesVisible} 
-                onClose={() => setNotificacoesVisible(false)}
-            />
+            visible={isNotificacoesVisible} 
+            onClose={() => setNotificacoesVisible(false)}
+          />
         </View>
       </View>
 
@@ -90,7 +86,7 @@ useFocusEffect(
             <TouchableOpacity style={styles.acaoCard}>
               <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Máquinas</Text>
-            </TouchableOpacity>
+                </TouchableOpacity>
           </Link>
 
           <Link href="/(tabs)/home/calendario" asChild>
@@ -116,7 +112,7 @@ useFocusEffect(
 
         </View>
 
-        <View style={styles.ativRecente}>
+         <View style={styles.ativRecente}>
           <Text style={styles.titulo}>Atividades Recentes</Text>
 
           <View style={styles.ativRecenteCard}>
@@ -134,12 +130,139 @@ useFocusEffect(
 
       </View>
 
-      {/* Notificações Modal */}
-      {/* <NotificacoesModal visible={isNotificacoesVisible} 
-      onClose={() => setNotificacoesVisible(false)}/> */}
+    </ScrollView>
+  )
+}
+
+function UsersHome() {
+  const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadPreference = async () => {
+        const storedValue = await AsyncStorage.getItem('notificationsEnabled');
+        setNotificationsEnabled(storedValue === 'true');
+      };
+        loadPreference();
+    }, [])
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    console.log("Recarregando dados da página Home (Users)...");
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  return (
+    <ScrollView
+      style={TabsStyles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#CE221E"]} />
+      }
+    >
+      <Logo/>
+
+      <View>
+        <View style={styles.header}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+
+             <Link href={"/configuracao"}>
+            <TouchableOpacity style={TabsStyles.userFotoIcon}>
+                <User color={'#fff'} size={22} />
+            </TouchableOpacity>
+              </Link>
+
+            <View>
+              <Text style={styles.tituloHeader}>Olá, Usuário</Text>
+              <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
+            </View>
+          </View>
+
+          {notificationsEnabled ? (
+            <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
+              <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => {}}>
+              <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            </TouchableOpacity>
+          )}
+          
+          <NotificationDropdown 
+            visible={isNotificacoesVisible} 
+            onClose={() => setNotificacoesVisible(false)}
+          />
+             </View>
+      </View>
+
+      {/* Ações rápidas para Inspetor/Manutentor: Máquinas -> Históricos, Equipes -> Minha equipe */}
+      <View>
+        <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
+
+        <View style={styles.cardsAcoes} >
+
+          <Link href="/(tabs)/historico" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <History color={"#FF9705"} size={33} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Histórico</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/(tabs)/home/calendario" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Agenda</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/(tabs)/home/verEquipe" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <Users color={'#11C463'} size={35} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Minha equipe</Text>
+            </TouchableOpacity>
+          </Link>
+
+           <Link href="/(tabs)/home/dashboard" asChild>
+            <TouchableOpacity style={styles.acaoCard}>
+              <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
+              <Text style={styles.tituloAcao}>Dashboard</Text>
+            </TouchableOpacity>
+          </Link>
+
+        </View>
+
+        <View style={styles.ativRecente}>
+          <Text style={styles.titulo}>Atividades Recentes</Text>
+
+          <View style={styles.ativRecenteCard}>
+
+            <View style={styles.iconAtivRecente}>
+              <CheckCircle color={'#51C385'} size={22} />
+            </View>
+
+            <View style={styles.ativInfo}>
+              <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
+              <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
+            </View>
+          </View>
+        </View>
+
+         </View>
 
     </ScrollView>
   )
+}
+
+export default function Home() {
+  const { user } = useAuth();
+
+  if (!user) return <ActivityIndicator size="large" />;
+
+  return user.role === "ADMIN" ? <AdminHome /> : <UsersHome />;
 }
 
 const styles = StyleSheet.create({

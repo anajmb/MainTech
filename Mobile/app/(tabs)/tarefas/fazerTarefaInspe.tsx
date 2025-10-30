@@ -34,22 +34,22 @@ export default function FazerTarefa() {
                 <View style={styles.cardMaq}>
                     <Text style={styles.titleConjuntos}>Conjuntos:</Text>
 
-                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
                         <TouchableOpacity style={styles.cardConjunto}>
                             <Text style={styles.nameConjunto}>Unidade de Lubrificação</Text>
                         </TouchableOpacity>
                     </Link>
-                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
                         <TouchableOpacity style={styles.cardConjunto}>
                             <Text style={styles.nameConjunto}>Transmissão/Fusos Manual</Text>
                         </TouchableOpacity>
                     </Link>
-                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
                         <TouchableOpacity style={styles.cardConjunto}>
                             <Text style={styles.nameConjunto}>Sistemas de Proteção</Text>
                         </TouchableOpacity>
                     </Link>
-                    <Link href="/(tabs)/outros/conjuntos" asChild>
+                    <Link href="/(tabs)/tarefas/conjuntosInspe" asChild>
                         <TouchableOpacity style={styles.cardConjunto}>
                             <Text style={styles.nameConjunto}>Motoredutores</Text>
                         </TouchableOpacity>
@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center",
+        marginBottom: 30
 
     }
 })

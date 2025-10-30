@@ -1,3 +1,4 @@
+import Logo from "@/components/logo";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { CheckCircle } from "lucide-react-native";
@@ -6,6 +7,8 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 export default function Historico() {
     return (
         <ScrollView style={TabsStyles.container}>
+
+            <Logo />
 
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
