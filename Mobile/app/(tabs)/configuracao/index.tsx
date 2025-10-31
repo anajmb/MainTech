@@ -2,13 +2,12 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-// 🔥 1. Importar useFocusEffect e useCallback
 import { Link, useRouter, useFocusEffect } from "expo-router";
 import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, LockKeyhole, PersonStandingIcon } from "lucide-react-native";
-// 🔥 2. Importar useCallback e useState
 import { useEffect, useState, useCallback } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/authContext";
+
 
 // add switch buttons na notificação e na acessibilidade -> FEITO
 // vamos ter uma página Ajuda e Suporte?
@@ -20,21 +19,22 @@ export default function Configuracao() {
 
     const { user } = useAuth();
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
-    // 🔥 3. Adicionar estado para acessibilidade
-    const [accessibilityEnabled, setAccessibilityEnabled] = useState(false);
-    
-    // 🔥 4. Adicionar um estado "dummy" para forçar o re-render
-    // Isso é necessário para combater o "stale state" do react-navigation
+
+
     const [_, setForceUpdate] = useState(0);
 
-    // 🔥 5. Adicionar o useFocusEffect
-    // Isso é executado toda vez que o usuário "volta" para esta tela
+    if (!user) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <Text>Carregando...</Text>
+            </View>
+        );
+    }
+
     useFocusEffect(
         useCallback(() => {
-            // Força o componente a re-renderizar
-            // Ao re-renderizar, o `useAuth()` é chamado de novo
-            // e pega o valor ATUALIZADO do `user` no contexto.
-            setForceUpdate(c => c + 1); 
+
+            setForceUpdate(c => c + 1);
         }, [])
     );
 
@@ -42,9 +42,6 @@ export default function Configuracao() {
         const loadPreference = async () => {
             const storedValue = await AsyncStorage.getItem('notificationsEnabled');
             setInAppNotificationsEnabled(storedValue === 'true');
-            // Carregar preferência de acessibilidade (exemplo)
-            const storedAccessValue = await AsyncStorage.getItem('accessibilityEnabled');
-            setAccessibilityEnabled(storedAccessValue === 'true');
         };
         loadPreference();
     }, []);
@@ -79,17 +76,6 @@ export default function Configuracao() {
         }
     };
 
-    // 🔥 6. Adicionar função para o novo switch
-    const handleToggleAccessibility = async () => {
-        const newValue = !accessibilityEnabled;
-        setAccessibilityEnabled(newValue);
-        await AsyncStorage.setItem('accessibilityEnabled', String(newValue));
-        Alert.alert(
-            "Acessibilidade",
-            newValue ? "Modo de acessibilidade ativado." : "Modo de acessibilidade desativado."
-        );
-    };
-
     console.log("user (configuracao):", user?.photo); // Agora deve logar o valor atualizado
 
     return (
@@ -113,18 +99,18 @@ export default function Configuracao() {
                 {/* 🔥 9. Corrigido o Link do Perfil para usar o padrão asChild */}
                 <Link href={'/(tabs)/configuracao/editarPerfil'} asChild>
                     <TouchableOpacity style={styles.card}>
-                        <View style={styles.opcao}  >
+                        <View style={styles.opcao}>
                             <View style={TabsStyles.userFotoIcon}>
                                 {user?.photo ? (
                                     <Image
                                         source={{ uri: user.photo }}
-                                        style={{ width: 40, height: 40, borderRadius: 20 }}
+                                        style={TabsStyles.userFoto}
+                                        resizeMode="cover" // faz a imagem cobrir o espaço
                                     />
                                 ) : (
                                     <User size={22} color="#fff" />
                                 )}
                             </View>
-
                             <View style={styles.infoCard}>
                                 <Text style={styles.nomePerfil}>{user?.name?.split(" ")[0] || "Usuário"}</Text>
                                 <Text style={styles.emailPerfil}>{user?.email || " "}</Text>
@@ -192,50 +178,8 @@ export default function Configuracao() {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        
-                        {/* 🔥 10. Nova opção de Acessibilidade adicionada */}
-                        <View style={styles.opcao}>
-                            <View style={styles.infoCardButton}>
-                                <PersonStandingIcon style={{ marginRight: 12 }} />
-                                <View style={styles.infoCard1}>
-                                    <Text style={styles.tituloOpcao}>Acessibilidade</Text>
-                                    <Text style={styles.subtitulo}>Ajustes de leitura e contraste</Text>
-                                </View>
-                                <TouchableOpacity>
-                                    <Switch
-                                        trackColor={{ false: "#767577", true: "#D10B03" }}
-                                        thumbColor={"#f4f3f4"}
-                                        ios_backgroundColor="#3e3e3e"
-                                        onValueChange={handleToggleAccessibility}
-                                        value={accessibilityEnabled}
-                                        style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
                     </View>
                 </View>
-
-                {/* Suporte */}
-                {/* <View style={styles.bloco}>
-                    <Text style={styles.tituloCard}>Suporte</Text>
-
-                    <View style={styles.card}>
-                        <TouchableOpacity style={styles.opcao}>
-                            <View style={{ flexDirection: 'row' }}>
-
-                                <CircleQuestionMark />
-
-                                <View style={styles.infoCard}>
-                                    <Text style={styles.tituloOpcao}>Ajuda e suporte</Text>
-                                    <Text style={styles.subtitulo}>Central de ajuda e FAQ</Text>
-                                </View>
-                                
-                            </View>
-              _D           </TouchableOpacity>
-                    </View>
-                </View> */}
 
                 {/* Outros */}
                 <View style={styles.bloco}>
@@ -322,7 +266,7 @@ const styles = StyleSheet.create({
     tituloOpcaoSair: {
         fontSize: 14,
         fontWeight: '500', // mudei de 'medium' para '500'
-       color: '#F24040'
+        color: '#F24040'
     },
     subtitulo: {
         fontSize: 12,

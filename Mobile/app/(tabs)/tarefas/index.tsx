@@ -7,7 +7,7 @@ import { Link, useRouter } from "expo-router";
 import TasksCards from "./tasksCard";
 import { api } from "@/lib/axios";
 import Logo from "@/components/logo";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/authContext";
 
 interface Task {
     id: number;

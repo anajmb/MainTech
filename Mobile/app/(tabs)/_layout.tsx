@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { FileText, Focus, History, House, Settings, SquareCheckBig } from 'lucide-react-native';
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/authContext";
 import { ActivityIndicator, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 
 export default function TabsLayout() {

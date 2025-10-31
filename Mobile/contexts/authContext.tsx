@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type UserType = {
@@ -13,7 +13,15 @@ export type UserType = {
   status?: string;
 };
 
-export function useAuth() {
+type AuthContextType = {
+  user: UserType | null;
+  updateUser: (data: Partial<UserType>) => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserType | null>(null);
 
   useEffect(() => {
@@ -31,5 +39,15 @@ export function useAuth() {
     await AsyncStorage.setItem("user", JSON.stringify(newUser));
   }
 
-  return { user, updateUser };
+  return (
+    <AuthContext.Provider value={{ user, updateUser, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth deve ser usado dentro de AuthProvider");
+  return context;
 }

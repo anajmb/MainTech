@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { Bell, BellOff, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus, History } from "lucide-react-native";
-import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
 import { useCallback, useState } from "react";
 import { CustomText } from "@/components/customText";
@@ -8,7 +8,7 @@ import NotificationDropdown from "@/components/notification";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "expo-router";
 import Logo from "@/components/logo";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/authContext";
 
 
 
@@ -44,17 +44,26 @@ function AdminHome() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#CE221E"]} />
       }
     >
-      <Logo/>
+      <Logo />
 
       <View>
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
 
-              <Link href={"/configuracao"}>
-            <TouchableOpacity style={TabsStyles.userFotoIcon}>
+
+            <View style={TabsStyles.userFotoIcon}>
+              {user?.photo ? (
+                <Image
+                  source={{ uri: user.photo }}
+                  style={TabsStyles.userFoto}
+                  resizeMode="cover"
+                />
+              ) : (
+                // Caso contrário, exiba o ícone padrão
                 <User color={'#fff'} size={22} />
-            </TouchableOpacity>
-              </Link>
+              )}
+            </View>
+
 
             <View>
               <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
@@ -62,18 +71,18 @@ function AdminHome() {
             </View>
           </View>
 
-             {notificationsEnabled ? (
+          {notificationsEnabled ? (
             <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
               <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => { }}>
               <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
             </TouchableOpacity>
           )}
-          
-          <NotificationDropdown 
-            visible={isNotificacoesVisible} 
+
+          <NotificationDropdown
+            visible={isNotificacoesVisible}
             onClose={() => setNotificacoesVisible(false)}
           />
         </View>
@@ -89,7 +98,7 @@ function AdminHome() {
             <TouchableOpacity style={styles.acaoCard}>
               <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Máquinas</Text>
-                </TouchableOpacity>
+            </TouchableOpacity>
           </Link>
 
           <Link href="/(tabs)/home/calendario" asChild>
@@ -115,7 +124,7 @@ function AdminHome() {
 
         </View>
 
-         <View style={styles.ativRecente}>
+        <View style={styles.ativRecente}>
           <Text style={styles.titulo}>Atividades Recentes</Text>
 
           <View style={styles.ativRecenteCard}>
@@ -142,7 +151,7 @@ function UsersHome() {
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
-   const { user } = useAuth();
+  const { user } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
@@ -150,7 +159,7 @@ function UsersHome() {
         const storedValue = await AsyncStorage.getItem('notificationsEnabled');
         setNotificationsEnabled(storedValue === 'true');
       };
-        loadPreference();
+      loadPreference();
     }, [])
   );
 
@@ -169,17 +178,25 @@ function UsersHome() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#CE221E"]} />
       }
     >
-      <Logo/>
+      <Logo />
 
       <View>
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
 
-             <Link href={"/configuracao"}>
-            <TouchableOpacity style={TabsStyles.userFotoIcon}>
+            <View style={TabsStyles.userFotoIcon}>
+              {user?.photo ? (
+                <Image
+                  source={{ uri: user.photo }}
+                  style={TabsStyles.userFoto}
+                  resizeMode="cover"
+                />
+              ) : (
+                // Caso contrário, exiba o ícone padrão
                 <User color={'#fff'} size={22} />
-            </TouchableOpacity>
-              </Link>
+              )}
+            </View>
+
 
             <View>
               <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
@@ -192,16 +209,16 @@ function UsersHome() {
               <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => { }}>
               <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
             </TouchableOpacity>
           )}
-          
-          <NotificationDropdown 
-            visible={isNotificacoesVisible} 
+
+          <NotificationDropdown
+            visible={isNotificacoesVisible}
             onClose={() => setNotificacoesVisible(false)}
           />
-             </View>
+        </View>
       </View>
 
       {/* Ações rápidas para Inspetor/Manutentor: Máquinas -> Históricos, Equipes -> Minha equipe */}
@@ -231,7 +248,7 @@ function UsersHome() {
             </TouchableOpacity>
           </Link>
 
-           <Link href="/(tabs)/home/dashboard" asChild>
+          <Link href="/(tabs)/home/dashboard" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Dashboard</Text>
@@ -256,7 +273,7 @@ function UsersHome() {
           </View>
         </View>
 
-         </View>
+      </View>
 
     </ScrollView>
   )

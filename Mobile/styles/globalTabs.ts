@@ -10,8 +10,8 @@ export const TabsStyles = StyleSheet.create({
         backgroundColor: '#F5F5F5',
     },
     text: {
-  fontFamily: "Poppins-Regular",
-},
+        fontFamily: "Poppins-Regular",
+    },
     tituloPrincipal: {
         fontSize: 28,
         // fontFamily: 'Poppins-Regular'
@@ -30,10 +30,18 @@ export const TabsStyles = StyleSheet.create({
         marginBottom: 30
     },
     userFotoIcon: {
-        backgroundColor: '#D10B03',
-        padding: 12,
-        borderRadius: '50%',
-        right: 2,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#d10b03', // cor de fundo caso não tenha imagem
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden', // 🔥 garante que a imagem fique dentro do círculo
+    },
+
+    userFoto: {
+        width: '100%',
+        height: '100%',
     },
     viewBotaoPrincipal: {
         backgroundColor: '#CE221E',
