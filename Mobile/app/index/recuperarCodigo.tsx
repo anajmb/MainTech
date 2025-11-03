@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from "react-native-confirmation-code-field";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 export default function RecuperarCodigo() {
+  const { email } = useLocalSearchParams();
   const [value, setValue] = useState("");
-  const [email, setEmail] = useState(""); // e-mail vindo da tela anterior
   const CELL_COUNT = 4;
   const router = useRouter();
 
@@ -17,16 +18,35 @@ export default function RecuperarCodigo() {
   });
 
   const handleVerifyCode = async () => {
+    if (!value.trim()) {
+      Alert.alert("Atenção", "Digite o código de verificação!");
+      return;
+    }
+
     try {
       const res = await api.post("/auth/verify-code", { email, code: value });
-      if (res.data.success) {
+
+      if (res.data.valid) {
+        Alert.alert("Sucesso", "Código verificado!");
         router.push({
           pathname: "/index/redefinirsenha",
           params: { email },
         });
+      } else {
+        Alert.alert("Erro", "Código incorreto.");
       }
-    } catch (error: any) {
-      Alert.alert("Erro", error.response?.data?.error || "Falha ao verificar código");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ error?: string; message?: string }>;
+
+      console.error("Erro completo:", error);
+
+      const msg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Não foi possível verificar o código.";
+
+      Alert.alert("Erro", msg);
     }
   };
 

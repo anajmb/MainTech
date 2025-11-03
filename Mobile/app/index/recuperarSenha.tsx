@@ -55,16 +55,17 @@ export default function RedefinirSenha() {
                                 <Text style={{ color: "#fff" }}>Enviar</Text>
                             </TouchableOpacity>
 
-                            <Link href={'/recuperarCodigo'} asChild>
+                            <Link href={"/"}
+                                asChild>
                                 <TouchableOpacity>
-                                    <Text style={{ marginTop: 10, color: "#A50702" }}>Já recebi o código</Text>
+                                    <Text style={{ marginTop: 10, color: "#A50702" }}>Voltar ao login</Text>
                                 </TouchableOpacity>
                             </Link>
                         </View>
                     </View>
                 </View >
             </View>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     );
 }
 
