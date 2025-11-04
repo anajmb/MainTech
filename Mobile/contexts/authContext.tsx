@@ -18,8 +18,8 @@ type AuthContextType = {
   user: UserType | null;
   setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
   updateUser: (data: Partial<UserType>) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  loginUser: (user:any) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,33 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem("user", JSON.stringify(newUser));
   }
 
-  // 🔹 Login — limpa dados antigos antes de salvar o novo usuário
-  async function login(email: string, password: string) {
-    try {
-      await AsyncStorage.clear(); // limpa sessão anterior
 
-      const response = await axios.post("https://seu-backend.onrender.com/auth/login", {
-        email,
-        password,
-      });
+  function loginUser (user:any) {
+    setUser(user);
 
-      const user = response.data.user;
-      const token = response.data.token;
-
-      if (!user || !token) {
-        throw new Error("Login inválido — dados incompletos do servidor");
-      }
-
-      await AsyncStorage.setItem("user", JSON.stringify(user));
-      await AsyncStorage.setItem("token", token);
-      setUser(user);
-
-      console.log("✅ Login bem-sucedido:", user.role);
-
-    } catch (error: any) {
-      console.error("LOGIN ERROR ->", error.response?.data || error.message);
-      throw error;
-    }
   }
 
   // 🔹 Logout — limpa tudo e reseta o estado
@@ -80,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, setUser, updateUser, login, logout }}
+      value={{ user, setUser, updateUser, logout, loginUser }}
     >
       {children}
     </AuthContext.Provider>

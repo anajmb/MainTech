@@ -21,7 +21,7 @@ const router = useRouter();
 
 export default function Configuracao() {
 
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
 
     const [_, setForceUpdate] = useState(0);
@@ -32,11 +32,9 @@ export default function Configuracao() {
         try {
             console.log('Iniciando logout...');
 
-            await removeToken();
+            await logout();
 
-            await AsyncStorage.removeItem('user');
-
-            console.log('Sessão local removida.');
+          
 
             router.replace('/');
 

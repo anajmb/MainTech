@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import {
   ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useAuth } from "@/contexts/authContext";
 
 export default function Login() {
   const [isAgree, setIsAgree] = useState(false);
@@ -15,6 +16,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
+  const {loginUser} = useAuth();
   const toggleSwitch = () => setIsAgree((previous) => !previous);
 
   const handleLogin = async () => {
@@ -36,6 +38,8 @@ export default function Login() {
         res.data?.accessToken ||
         res.data?.access_token ||
         res.data?.accessTokenRaw;
+
+        console.log(token)
 
       if (!token) {
         Alert.alert("Erro", "Resposta de login inválida: " + JSON.stringify(res.data));
@@ -61,7 +65,9 @@ export default function Login() {
 
       // ✅ Salva o usuário no AsyncStorage
       if (user) {
+        loginUser(user);
         await AsyncStorage.setItem("user", JSON.stringify(user));
+         await AsyncStorage.setItem("token", token);
         console.log("Usuário salvo:", user);
       } else {
         console.warn("⚠️ Nenhum usuário retornado. Verifique o backend do login.");
