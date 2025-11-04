@@ -21,7 +21,7 @@
     "axios": "^1.12.2",
     "buffer": "^6.0.3",
     "chart.js": "^4.5.0",
-    "expo": "^54.0.19",
+    "expo": "^54.0.21",
     "expo-blur": "~14.1.5",
     "expo-camera": "~17.0.8",
     "expo-constants": "~17.1.7",

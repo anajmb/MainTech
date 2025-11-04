@@ -145,9 +145,6 @@ export default function InfosMaquina() {
             <Text style={styles.fieldsTitle}>Descrição:</Text>
             <Text style={styles.fieldsContent}>{machineData.description}</Text>
 
-            <Text style={styles.fieldsTitle}>Localização:</Text>
-            <Text style={styles.fieldsContent}>{machineData.location}</Text>
-
             <Text style={styles.fieldsTitle}>Temperatura:</Text>
             <Text style={styles.fieldsContent}>{machineData.temperature}</Text>
 
