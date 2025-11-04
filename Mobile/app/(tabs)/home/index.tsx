@@ -241,7 +241,13 @@ function UsersHome() {
             </TouchableOpacity>
           </Link>
 
-          <Link href="/(tabs)/home/verEquipe" asChild>
+          <Link
+            href={{
+              pathname: "/(tabs)/home/verEquipe",
+              params: { userId: user?.id }
+            }}
+            asChild
+          >
             <TouchableOpacity style={styles.acaoCard}>
               <Users color={'#11C463'} size={35} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Minha equipe</Text>
