@@ -7,6 +7,10 @@ import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, Loc
 import { useEffect, useState, useCallback } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/contexts/authContext";
+import { api } from '@/lib/axios';
+import { removeToken } from '@/lib/auth';
+
+const router = useRouter();
 
 
 // add switch buttons na notificação e na acessibilidade -> FEITO
@@ -20,8 +24,27 @@ export default function Configuracao() {
     const { user } = useAuth();
     const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(false);
 
-
     const [_, setForceUpdate] = useState(0);
+
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            console.log('Iniciando logout...');
+
+            await removeToken();
+
+            await AsyncStorage.removeItem('user');
+
+            console.log('Sessão local removida.');
+
+            router.replace('/');
+
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+            Alert.alert('Erro', 'Não foi possível sair, tente novamente.');
+        }
+    };
 
     if (!user) {
         return (
@@ -187,19 +210,15 @@ export default function Configuracao() {
 
                     <View style={styles.card}>
 
-                        <Link href={"/"} asChild>
-                            <TouchableOpacity style={styles.opcao}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <LogOut color={'#F24040'} />
-
-                                    <View style={styles.infoCard}>
-                                        <Text style={styles.tituloOpcaoSair}>Sair</Text>
-                                        <Text style={styles.subtitulo}>Desconectar da conta</Text>
-                                    </View>
+                        <TouchableOpacity style={styles.opcao} onPress={handleLogout}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <LogOut color={'#F24040'} />
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.tituloOpcaoSair}>Sair</Text>
+                                    <Text style={styles.subtitulo}>Desconectar da conta</Text>
                                 </View>
-                            </TouchableOpacity>
-
-                        </Link>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
 
