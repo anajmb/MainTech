@@ -29,7 +29,7 @@ export default function RecuperarCodigo() {
       if (res.data.valid) {
         Alert.alert("Sucesso", "Código verificado!");
         router.push({
-          pathname: "/index/redefinirsenha",
+          pathname: "/redefinirsenha",
           params: { email },
         });
       } else {

@@ -21,7 +21,7 @@ export default function RedefinirSenha() {
     try {
       await api.post("/auth/reset-password", { email, newPassword: password });
       Alert.alert("Sucesso", "Senha redefinida com sucesso!");
-      router.push("/(tabs)/home");
+      router.push("/");
     } catch (error: any) {
       Alert.alert("Erro", error.response?.data?.error || "Falha ao redefinir senha");
     }

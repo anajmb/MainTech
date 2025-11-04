@@ -1,12 +1,12 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
-import { api } from "@/lib/axios"; // ✅ importa sua API
+import { api } from "@/lib/axios"; 
 
 export default function RedefinirSenha() {
 
-    const [email, setEmail] = useState(""); // ✅ adiciona estado do e-mail
+    const [email, setEmail] = useState(""); 
     const [isAgree, setIsAgree] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -17,8 +17,10 @@ export default function RedefinirSenha() {
                 return;
             }
 
-            await api.post("/auth/send-code", { email }); // ✅ envia pro back-end
+            await api.post("/auth/send-code", { email }); 
             Alert.alert("Sucesso", "Código enviado para seu e-mail!");
+            router.push({ pathname: "/recuperarCodigo", params: { email } });
+
         } catch (error) {
             console.log(error);
             Alert.alert("Erro", "Não foi possível enviar o código.");

@@ -76,7 +76,7 @@ export default function Configuracao() {
         }
     };
 
-    console.log("user (configuracao):", user?.photo); // Agora deve logar o valor atualizado
+    console.log("Usuário no Configuração:", user);
 
     return (
         // 🔥 7. Corrigido o problema do Scroll (aumentado padding)
