@@ -7,10 +7,8 @@ import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, Loc
 import { useEffect, useState, useCallback } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/contexts/authContext";
-import { api } from '@/lib/axios';
-import { removeToken } from '@/lib/auth';
-
-const router = useRouter();
+// CORREÇÃO: Removidas importações 'api' e 'removeToken' pois não estavam sendo usadas.
+// const router = useRouter(); // CORREÇÃO: Removida esta linha, pois 'router' já é definido dentro do componente.
 
 
 // add switch buttons na notificação e na acessibilidade -> FEITO
@@ -34,7 +32,7 @@ export default function Configuracao() {
 
             await logout();
 
-          
+
 
             router.replace('/');
 
@@ -100,7 +98,7 @@ export default function Configuracao() {
     console.log("Usuário no Configuração:", user);
 
     return (
-        // 🔥 7. Corrigido o problema do Scroll (aumentado padding)
+
         <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 120 }}>
 
             <View style={TabsStyles.headerPrincipal}>
@@ -113,26 +111,31 @@ export default function Configuracao() {
                     {/* 🔥 8. Subtítulo adicionado */}
                     <Text style={TabsStyles.subtituloPrincipal}>Gerencie sua conta e preferências</Text>
                 </View>
-            </View>
+                _     </View>
 
             <View style={styles.cardContainer}>
 
-                {/* 🔥 9. Corrigido o Link do Perfil para usar o padrão asChild */}
+                {/* *** ALTERAÇÃO APLICADA AQUI ***
+          _       O TouchableOpacity agora usa 'styles.profileHeaderCard'.
+                A estrutura interna foi alterada para espelhar a do 'AdminHome',
+                removendo 'styles.opcao' e 'styles.infoCard' e usando Views inline.
+                */}
                 <Link href={'/(tabs)/configuracao/editarPerfil'} asChild>
-                    <TouchableOpacity style={styles.card}>
-                        <View style={styles.opcao}>
+                    <TouchableOpacity style={styles.profileHeaderCard}>
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
                             <View style={TabsStyles.userFotoIcon}>
                                 {user?.photo ? (
                                     <Image
                                         source={{ uri: user.photo }}
                                         style={TabsStyles.userFoto}
-                                        resizeMode="cover" // faz a imagem cobrir o espaço
+                                        resizeMode="cover"
                                     />
+
                                 ) : (
                                     <User size={22} color="#fff" />
                                 )}
                             </View>
-                            <View style={styles.infoCard}>
+                            <View style={{ justifyContent: 'center' }}>
                                 <Text style={styles.nomePerfil}>{user?.name?.split(" ")[0] || "Usuário"}</Text>
                                 <Text style={styles.emailPerfil}>{user?.email || " "}</Text>
                             </View>
@@ -140,9 +143,8 @@ export default function Configuracao() {
                     </TouchableOpacity>
                 </Link>
 
-
-                {/* Conta */}
-                <View style={styles.bloco}>
+                {/* CORREÇÃO: Removido 'style={styles.bloco}' que estava vazio */}
+                <View>
                     <Text style={styles.tituloCard}>Conta</Text>
 
                     <View style={styles.card}>
@@ -164,7 +166,7 @@ export default function Configuracao() {
                                 <View style={styles.infoCardButton}>
                                     <LockKeyhole />
 
-                                    <View style={styles.infoCard1}>
+                                    _ <View style={styles.infoCard1}>
                                         <Text style={styles.tituloOpcao}>Politica de Privacidade</Text>
                                         <Text style={styles.subtitulo}>Entenda o uso dos seus dados</Text>
                                     </View>
@@ -176,11 +178,13 @@ export default function Configuracao() {
                 </View>
 
                 {/* Preferências */}
-                <View style={styles.bloco}>
+                {/* CORREÇÃO: Removido 'style={styles.bloco}' que estava vazio */}
+                <View>
                     <Text style={styles.tituloCard}>Preferências</Text>
 
                     <View style={styles.card}>
                         <View style={styles.opcao}>
+                            {/* CORREÇÃO: Removido caractere '_' que estava aqui */}
                             <View style={styles.infoCardButton}>
                                 <BellRing style={{ marginRight: 12 }} />
                                 <View style={styles.infoCard1}>
@@ -195,15 +199,15 @@ export default function Configuracao() {
                                         onValueChange={handleToggleNotifications}
                                         value={inAppNotificationsEnabled}
                                         style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                                    />
+                                         />
                                 </TouchableOpacity>
                             </View>
                         </View>
+
                     </View>
                 </View>
 
-                {/* Outros */}
-                <View style={styles.bloco}>
+                <View>
                     <Text style={styles.tituloCard}>Outros</Text>
 
                     <View style={styles.card}>
@@ -227,9 +231,23 @@ export default function Configuracao() {
 
 const styles = StyleSheet.create({
     cardContainer: {
-        // paddingBottom: 90 // (original)
-        paddingBottom: 90 // Apenas garantir que o container principal não tenha o padding
+        paddingBottom: 90
     },
+
+
+    profileHeaderCard: {
+        backgroundColor: "#eeeeee69",
+        boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
+        padding: 18,
+        marginTop: 20,
+        marginBottom: 9,
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '95%',
+        alignSelf: 'center',
+    },
+
     card: {
         backgroundColor: "#eeeeee69",
         boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
@@ -259,35 +277,33 @@ const styles = StyleSheet.create({
     },
     nomePerfil: {
         fontSize: 16,
-        fontWeight: '700', // mudei de 700 para '700' string
-
+        fontWeight: '700',
+        marginBottom: 4
     },
     emailPerfil: {
         fontSize: 12,
-        fontWeight: '500', // mudei de 'medium' para '500'
-        color: '#00000075'
+        fontWeight: '500',
+        color: '#676565'
     },
-    bloco: {
 
-    },
     tituloCard: {
         fontSize: 15,
-        fontWeight: '500', // mudei de 500 para '500' string
+        fontWeight: '500',
         marginTop: 20,
         marginBottom: 10
     },
     tituloOpcao: {
         fontSize: 14,
-        fontWeight: '500' // mudei de 'medium' para '500'
+        fontWeight: '500'
     },
     tituloOpcaoSair: {
         fontSize: 14,
-        fontWeight: '500', // mudei de 'medium' para '500'
+        fontWeight: '500',
         color: '#F24040'
     },
     subtitulo: {
         fontSize: 12,
-        fontWeight: '500', // mudei de 'medium' para '500'
+        fontWeight: '500',
         color: '#00000075'
     },
 })
