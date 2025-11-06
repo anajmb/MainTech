@@ -60,16 +60,19 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 4,
         marginBottom: 20,
+        paddingHorizontal: 25,
+        paddingVertical: -10,
     },
     title: {
         fontSize: 17,
-        fontWeight: 500,
+        fontWeight: "400",
         marginBottom: 10,
+        marginTop: 15,
     },
     description: {
         color: '#858585',
         fontSize: 16,
-        marginBottom: 20,
+        marginBottom: 2,
     },
     id: {
         fontSize: 14,
@@ -78,7 +81,8 @@ const styles = StyleSheet.create({
         fontSize: 13,
         alignItems: 'center',
         color: '#00000077',
-        gap: 5
+        gap: 5,
+        marginLeft: 3,
 
     },
     statusPendente: {
