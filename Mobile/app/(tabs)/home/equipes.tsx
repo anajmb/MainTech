@@ -41,17 +41,17 @@ export default function Equipes() {
     const [employeeItems, setEmployeeItems] = useState<{ label: string; value: number }[]>([]);
     const [feedback, setFeedback] = useState<string>("");
 
-     async function fetchTeams() {
-            try {
-                const res = await api.get('/team/get');
-                setTeamData(res.data);
-            } catch (error) {
-                console.log(error);
-            }
+    async function fetchTeams() {
+        try {
+            const res = await api.get('/team/get');
+            setTeamData(res.data);
+        } catch (error) {
+            console.log(error);
         }
+    }
 
     useEffect(() => {
-       fetchTeams();
+        fetchTeams();
         async function fetchEmployees() {
             try {
                 const res = await api.get('/employees/get');
@@ -64,12 +64,12 @@ export default function Equipes() {
         fetchEmployees();
     }, []);
 
-    
+
     useEffect(() => {
         setTeamItems(TeamData.map(t => ({ label: t.name, value: t.id })));
     }, [TeamData]);
 
-    
+
     useEffect(() => {
         setEmployeeItems(employeesData.map(e => ({ label: `${e.name} (${e.email})`, value: e.id })));
     }, [employeesData]);
@@ -84,7 +84,7 @@ export default function Equipes() {
         }
     }, [teamValue, TeamData]);
 
-  
+
     useEffect(() => {
         if (employeeValue != null) {
             const found = employeesData.find(e => e.id === employeeValue) || null;
@@ -122,7 +122,7 @@ export default function Equipes() {
         }
 
     }
-    
+
 
     return (
         <ScrollView style={TabsStyles.container} >
@@ -137,20 +137,19 @@ export default function Equipes() {
 
                         <View style={style.buttonEquipes}>
 
-                            <TouchableOpacity style={style.iconeAcao}>
-                                <Link href={'/home/cadastrarUsuario'}>
+                            <Link href={'/home/cadastrarUsuario'}>
+                                <TouchableOpacity style={style.iconeAcao}>
                                     <View>
                                         <UserPlus color="#fff" size={17} style={{ alignItems: "center" }} />
-                                        
                                     </View >
-                                </Link>
-                            </TouchableOpacity>
+                                </TouchableOpacity>
+                            </Link>
 
-                            <TouchableOpacity style={style.iconeAcao}>
-                                <Link href={'/home/criarEquipe'}>
+                            <Link href={'/home/criarEquipe'}>
+                                <TouchableOpacity style={style.iconeAcao}>
                                     <Users color="#fff" size={17} />
-                                </Link>
-                            </TouchableOpacity>
+                                </TouchableOpacity>
+                            </Link>
                         </View>
                     </View>
                     <Text style={TabsStyles.subtituloPrincipal}>Gerencie suas equipes e membros</Text>
@@ -170,15 +169,15 @@ export default function Equipes() {
                     {TeamData.map((team) => (
                         <View key={team.id} style={{ marginTop: 20 }}>
                             <View style={style.groupEqui}>
-                              
+
                                 <View style={style.iconeEquipe}>
                                     <Wrench color="white" />
                                 </View>
-                                
+
                                 <View style={style.infoEqui}>
                                     <Text style={style.tituloEqui}>{team.name}</Text>
                                     <Text style={style.descricaoEqui}>{team.description}</Text>
-                                   
+
                                 </View>
                             </View>
 
@@ -220,10 +219,11 @@ export default function Equipes() {
                         setValue={setTeamValue}
                         setItems={setTeamItems}
                         placeholder="Selecione a equipe"
-                        style={style.inputAdicionar}
-                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
-                        placeholderStyle={{ color: '#8B8686' }}
-                        textStyle={{ color: teamValue ? '#000' : '#8B8686' }}
+                        style={[style.inputAdicionar, {borderWidth: 0, borderColor: '#e6e6e6' }]}
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent' }}
+                        placeholderStyle={{ color: '#6c6c6c' }}
+                        disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                        textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
                     />
                 </View>
                 <View style={{ marginTop: 12 }}>
@@ -236,9 +236,10 @@ export default function Equipes() {
                         setValue={setEmployeeValue}
                         setItems={setEmployeeItems}
                         placeholder="Selecione o membro"
-                        style={style.inputAdicionar}
-                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
-                        placeholderStyle={{ color: '#8B8686' }}
+                        style={[style.inputAdicionar, {borderWidth: 0, borderColor: 'transparent' }]}
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent'}}
+                        placeholderStyle={{ color: '#6c6c6c' }}
+                        disabledItemLabelStyle={{ color: '#6c6c6c' }}
                         textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}
                     />
                 </View>
@@ -285,7 +286,7 @@ const style = StyleSheet.create({
         elevation: 3,
 
     },
-    cardTitle:{
+    cardTitle: {
         fontSize: 18,
         fontWeight: "500",
         color: "#222",
@@ -379,17 +380,18 @@ const style = StyleSheet.create({
         fontWeight: "400",
     },
     inputAdicionar: {
-        borderRadius: 10,
-        backgroundColor: '#e6e6e6',
-        padding: 10,
-        borderColor: 'transparent',
+        backgroundColor: "#F5F5F5",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        justifyContent: "center",
     },
     inputTextAdicionar: {
         color: "#8B8686",
         fontSize: 14,
     },
     botaoAdicionar: {
-         backgroundColor: "#A50702",
+        backgroundColor: "#A50702",
         color: "#fff",
         borderRadius: 10,
         paddingVertical: 12,
@@ -399,7 +401,7 @@ const style = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center"
-        
+
     },
     textoBotaoAdicionar: {
         color: "#fff",
@@ -415,5 +417,5 @@ const style = StyleSheet.create({
         justifyContent: "center",
 
     },
-    /* removed custom inline dropdown styles (using DropDownPicker now) */
+    
 })
