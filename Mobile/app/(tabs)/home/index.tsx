@@ -1,5 +1,6 @@
+// ...existing code...
 import { Link } from "expo-router";
-import { Bell, BellOff, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus, History } from "lucide-react-native";
+import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus, History } from "lucide-react-native";
 import { ActivityIndicator, Image, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
 import { useCallback, useState } from "react";
@@ -9,8 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "expo-router";
 import Logo from "@/components/logo";
 import { useAuth } from "@/contexts/authContext";
-
-
 
 function AdminHome() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
@@ -50,7 +49,6 @@ function AdminHome() {
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
 
-
             <View style={TabsStyles.userFotoIcon}>
               {user?.photo ? (
                 <Image
@@ -64,20 +62,26 @@ function AdminHome() {
               )}
             </View>
 
-
-            <View>
+            {/* CORREÇÃO: Adicionado justifyContent: 'center' para centralizar verticalmente */}
+            <View style={{ justifyContent: 'center' }}>
               <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
               <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
             </View>
           </View>
 
           {notificationsEnabled ? (
-            <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
-              <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            <TouchableOpacity
+              onPress={() => setNotificacoesVisible(true)}
+              accessibilityLabel="Abrir notificações"
+              accessibilityRole="button"
+            >
+              {/* Sino vibrante vermelho (#CE221E) — sem opacidade */}
+              <Bell color="#CE221E" size={24} strokeWidth={2} style={{ right: 2 }} />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={() => { }}>
-              <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            <TouchableOpacity onPress={() => { }} accessibilityLabel="Notificações desativadas">
+              {/* Sino vibrante mesmo quando "desativado" (sem aparência apagada) */}
+              <Bell color="#CE221E" size={24} strokeWidth={2} style={{ right: 2 }} />
             </TouchableOpacity>
           )}
 
@@ -139,9 +143,7 @@ function AdminHome() {
             </View>
           </View>
         </View>
-
       </View>
-
     </ScrollView>
   )
 }
@@ -192,25 +194,29 @@ function UsersHome() {
                   resizeMode="cover"
                 />
               ) : (
-                // Caso contrário, exiba o ícone padrão
                 <User color={'#fff'} size={22} />
               )}
             </View>
 
-
-            <View>
+            <View style={{ justifyContent: 'center' }}>
               <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
               <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
             </View>
           </View>
 
           {notificationsEnabled ? (
-            <TouchableOpacity onPress={() => setNotificacoesVisible(true)}>
-              <Bell color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            <TouchableOpacity
+              onPress={() => setNotificacoesVisible(true)}
+              accessibilityLabel="Abrir notificações"
+              accessibilityRole="button"
+            >
+              {/* Sino vibrante vermelho (#CE221E) */}
+              <Bell color="#CE221E" size={24} strokeWidth={2} style={{ right: 2 }} />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={() => { }}>
-              <BellOff color={"#D6231C"} fill={"#D6231C"} size={23} style={{ right: 2 }} />
+            <TouchableOpacity onPress={() => { }} accessibilityLabel="Notificações desativadas">
+              {/* Sino vibrante sem aparência apagada */}
+              <Bell color="#CE221E" size={24} strokeWidth={2} style={{ right: 2 }} />
             </TouchableOpacity>
           )}
 
@@ -278,9 +284,7 @@ function UsersHome() {
             </View>
           </View>
         </View>
-
       </View>
-
     </ScrollView>
   )
 }
@@ -299,17 +303,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#eeeeee69",
     boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
     padding: 18,
-    margin: 9,
+    marginTop: 20,
+    marginBottom: 9,
     borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
     width: '95%',
+    alignSelf: 'center',
     justifyContent: 'space-between',
   },
   tituloHeader: {
     fontSize: 16,
-    fontWeight: 700
+    fontWeight: 700,
+    marginBottom: 4
   },
   subtitulo: {
     color: '#676565'
@@ -373,7 +379,7 @@ const styles = StyleSheet.create({
     fontSize: 11
   },
 
-  // modal styles
+
   modalOverlay: {
     flex: 1,
 
@@ -434,5 +440,4 @@ const styles = StyleSheet.create({
     color: '#aaa',
     margin: 4
   }
-
-})
+});
