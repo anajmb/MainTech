@@ -171,7 +171,7 @@ export default function FazerTarefa() {
         // 2. Envia para o backend
         try {
             // ATENÇÃO: Verifique o endpoint da sua API
-            const res = await api.post("/machines/submit-subsets", {
+            const res = await api.post("/serviceOrders/create", {
                 machineId: machineData.id,
                 priority: selectedPrioridade,
                 payload: result,

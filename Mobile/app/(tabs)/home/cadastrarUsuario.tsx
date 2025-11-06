@@ -84,7 +84,7 @@ export default function CadastrarUsuario() {
             setName('');
             setCpfData('');
             setCargo('');
-            fetchEmployees(); 
+            fetchEmployees();
         } catch (error: any) {
             if (error.response?.data?.msg) {
                 alert(error.response.data.msg);
@@ -114,7 +114,7 @@ export default function CadastrarUsuario() {
                     <TextInput
                         style={style.input}
                         placeholder="Nome do Usuário"
-                        placeholderTextColor="#C4C4C4"
+                        placeholderTextColor="#8B8686"
                         value={name}
                         onChangeText={setName}
                     />
@@ -124,7 +124,7 @@ export default function CadastrarUsuario() {
                     <TextInput
                         style={style.input}
                         placeholder="Digite o CPF"
-                        placeholderTextColor="#C4C4C4"
+                        placeholderTextColor="#8B8686"
                         value={cpfData}
                         onChangeText={setCpfData}
                     />
@@ -139,8 +139,8 @@ export default function CadastrarUsuario() {
                         setValue={setCargo}
                         setItems={setCargos}
                         placeholder="Selecione"
-                        style={style.input}
-                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
+                        style={[style.input, { borderWidth: 0, borderColor: 'transparent' }]}
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent' }}
                         placeholderStyle={{ color: '#6c6c6c' }}
                         disabledItemLabelStyle={{ color: '#6c6c6c' }}
                         textStyle={{ color: cargo ? '#000' : '#6c6c6c' }}
@@ -232,10 +232,9 @@ const style = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 10,
         justifyContent: "center",
-        marginTop: 4,
     },
     inputText: {
-        color: "#C4C4C4",
+        color: "#8B8686",
         fontSize: 14,
     },
     botaoCadastro: {

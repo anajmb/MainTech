@@ -13,7 +13,7 @@ export interface Team {
     members: any[];
 }
 
-// tirar icone de equipes cadastradas  mesma coisa de "equipes"
+// tirar icone de equipes cadastradas  mesma coisa de "equipes fazer"
 
 export default function CriarEquipe() {
 
@@ -53,13 +53,13 @@ export default function CriarEquipe() {
                 <TextInput
                     style={style.input}
                     placeholder="Nome da Equipe"
-                    placeholderTextColor="#C4C4C4"
+                    placeholderTextColor="#8B8686"
                 />
                 <Text style={style.labelDescrição}>Descrição</Text>
                 <TextInput
                     style={style.inputDescrição}
                     placeholder="Descreva os detalhes"
-                    placeholderTextColor="#C4C4C4"
+                    placeholderTextColor="#8B8686"
                     multiline={true}
                     numberOfLines={8}
                 />
@@ -67,14 +67,14 @@ export default function CriarEquipe() {
                 <TextInput
                     style={style.input}
                     placeholder="Escreva o e-mail"
-                    placeholderTextColor="#C4C4C4"
+                    placeholderTextColor="#8B8686"
                 />
                 <TouchableOpacity style={style.botaoCriarEquipe}>
                     <Text style={style.textoBotaoCriarEquipe}>Criar Equipe</Text>
                 </TouchableOpacity>
             </View>
 
-            // card equipes cadastradas
+            
             <View style={style.cardEquipesCadastradas}>
                 <Text style={style.tituloCadastradas}>Equipes cadastradas</Text>
 
