@@ -1,13 +1,35 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+
+interface Machines {
+    id: number;
+    name: string;
+    location: string;
+    qrCode: string
+}
 
 // ...existing imports...
 export default function NovaTarefa() {
+    const [machines, setMachines] = useState<Machines[]>([]);
     const [idInput, setIdInput] = useState("");
     const router = useRouter();
+
+    useEffect(() => {
+        async function fetchMachines() {
+            try {
+                const response = await fetch('https://maintech-backend-r6yk.onrender.com/machines/get');
+                const data = await response.json();
+                setMachines(data);
+            } catch (error) {
+                console.error('Error fetching machines:', error);
+            }
+        }
+
+        fetchMachines();
+    }, []);
 
     return (
         <ScrollView style={TabsStyles.container}>
@@ -56,19 +78,27 @@ export default function NovaTarefa() {
                     </View>
                 </View>
 
-                <View style={styles.card}>
-                    <View>
-                        <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
-                        <View style={styles.subCard}>
-                            <Text>QRCode</Text>
-                        </View>
+
+                {machines.map((machine) =>
+                    <View style={styles.card}>
                         <View>
+                            <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
                             <View style={styles.subCard}>
-                                <Text>QRCode</Text>
+
+                                <Image
+                                    style={styles.image}
+                                    source={{ uri: `${machine.qrCode}` }}
+                                />
+                                <View style={styles.cardContent}>
+                                <Text style={styles.maqTitle}>{machine.name}</Text>
+                                <Text style={styles.maqSubTitle}>{machine.location}</Text>
+                                <Text style={styles.maqId}>ID: {machine.id}</Text>
                             </View>
+                            </View>
+                           
                         </View>
                     </View>
-                </View>
+                )}
             </View>
         </ScrollView>
     )
@@ -115,9 +145,10 @@ const styles = StyleSheet.create({
     },
     subCard: {
         backgroundColor: "#fff",
-        padding: 40,
+        padding: 20,
         borderRadius: 10,
-        marginBottom: 15
+        marginBottom: 15,
+        flexDirection: "row",
     },
     confirmBtn: {
         backgroundColor: "#A50702",
@@ -130,5 +161,34 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center"
+    },
+    image: {
+        width: 100,
+        height: 100,
+        resizeMode: 'contain',
+        marginRight: 20,
+    },
+
+    cardContent: {
+        flex: 1,
+        flexShrink: 1,
+    },
+    maqTitle: {
+        fontSize: 18,
+        color: "#000000",
+        flexWrap: "wrap",
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    maqSubTitle: {
+
+        marginTop: 4,
+        fontSize: 13,
+        color: "#5e5e5eff",
+
+    },
+    maqId: {
+        marginTop: 3,
+        fontSize: 12,
     },
 });

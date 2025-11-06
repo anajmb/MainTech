@@ -135,7 +135,7 @@ export default function Maquinas() {
 
                             <View style={styles.cardContent}>
                                 <Text style={styles.maqTitle}>{machine.name}</Text>
-                                <Text style={styles.maqSubTitle}>Oficina Mecânica</Text>
+                                <Text style={styles.maqSubTitle}>{machine.location}</Text>
                                 <Text style={styles.maqId}>ID: {machine.id}</Text>
                             </View>
 
