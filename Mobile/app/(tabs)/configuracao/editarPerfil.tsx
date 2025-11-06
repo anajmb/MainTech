@@ -17,6 +17,7 @@ import { Calendar, Camera, IdCard, Mail, Phone, User } from "lucide-react-native
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useAuth } from "@/contexts/authContext";
+
 import { api } from "@/lib/axios";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 
@@ -432,10 +433,21 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   disabledBotao: {
-    backgroundColor: "#D8D8D8",
+      backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 30,
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center"
   },
   disabledBotaoText: {
-    color: "#888",
+    color: "#fff",
+        fontSize: 15,
+        fontWeight: "400"
   },
   errorText: {
     color: "#CE221E",
