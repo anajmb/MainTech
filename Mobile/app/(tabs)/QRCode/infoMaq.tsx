@@ -2,6 +2,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../../lib/axios";
+import { useAuth } from "@/contexts/authContext";
 
 
 interface MachineTask {
@@ -38,6 +39,7 @@ interface Machines {
 }
 
 export default function InfosMaquina() {
+  const { user } = useAuth();
   const { codigo } = useLocalSearchParams();
   const info = codigo ? JSON.parse(codigo as string) : {};
 
@@ -135,7 +137,7 @@ export default function InfosMaquina() {
                       >
                         <Text style={{ color: "#fff" }}>Fechar</Text>
                       </TouchableOpacity>
-                    </View>
+                    </View> 
                   </View>
                 </Modal>
               </View>
@@ -146,7 +148,8 @@ export default function InfosMaquina() {
             <Text style={styles.fieldsContent}>{machineData.description}</Text>
 
             <Text style={styles.fieldsTitle}>Temperatura:</Text>
-            <Text style={styles.fieldsContent}>{machineData.temperature}</Text>
+            <Text style={styles.fieldsContent}>{machineData.temperature} °C</Text>
+
 
 
             {machineData.tasks && machineData.tasks.length > 0 ? (
@@ -156,24 +159,24 @@ export default function InfosMaquina() {
                 <Link
                   href={{
                     pathname: '/(tabs)/tarefas/fazerTarefaInspe',
-                    params: { codigo: codigo } 
+                    params: { codigo: codigo }
                   }}
                   asChild
                 >
                   <TouchableOpacity >
 
                     <Text style={styles.fieldsContent}>
-                      {`clique para realizar ${machineData.tasks.length} ${machineData.tasks.length > 1 ? "tarefas" : "tarefa"
+                      {`clique para realizar ${machineData.tasks.length > 1 ? "tarefas" : "tarefa"
                         }`}
                     </Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> 
                 </Link>
               </>
             ) : (
-              <>  
-              <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
+              <>
+                <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
               </>
-            )}
+            )} 
           </View>
 
         </>
