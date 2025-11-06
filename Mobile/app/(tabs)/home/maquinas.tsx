@@ -12,8 +12,6 @@ interface Machines {
     qrCode: string
 }
 
-// arrumar layout maquinas cadastradas
-
 export default function Maquinas() {
     const [machines, setMachines] = useState<Machines[]>([]);
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
@@ -54,8 +52,6 @@ export default function Maquinas() {
 
     return (
         <ScrollView style={TabsStyles.container}>
-
-            {/* Header */}
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -63,7 +59,6 @@ export default function Maquinas() {
                 </View>
             </View>
 
-            {/* Formulário de Cadastro */}
             <View style={styles.todosCard}>
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Informe os dados para cadastrar</Text>
@@ -119,30 +114,27 @@ export default function Maquinas() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Máquinas cadastradas */}
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Máquinas Cadastradas</Text>
 
                     {machines.map((machine) => (
                         <View key={machine.id} style={styles.cardMaq}>
                             <View style={styles.leftIcon}>
-                                <Wrench color="#1E9FCE" size={28} />
+                                <Wrench color="#1E9FCE" size={24} />
                             </View>
 
-                            <View style={styles.cardContent} >
+                            <View style={styles.cardContent}>
                                 <Text style={styles.maqTitle}>{machine.name}</Text>
-                                <Text style={styles.maqSubTitle}>{machine.location}</Text>
+                                <Text style={styles.maqSubTitle}>Oficina Mecânica</Text>
                                 <Text style={styles.maqId}>ID: {machine.id}</Text>
-                                <Image
-                                    style={styles.image}
-                                    source={{ uri: `${machine.qrCode}` }}
-                                />
                             </View>
 
                             <View style={styles.editIcons}>
-                                <Pencil size={18} style={{ marginRight: 10 }} />
+                                <TouchableOpacity>
+                                    <Pencil size={18} color="#666" style={{ marginRight: 8 }} />
+                                </TouchableOpacity>
                                 <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                    <Trash2 size={18} color={'#e00000ff'} />
+                                    <Trash2 size={18} color="#dc0606ff" />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -150,13 +142,12 @@ export default function Maquinas() {
                 </View>
             </View>
 
-            {/* Modal de confirmação de deleção */}
             <Modal visible={modalVisible} transparent animationType="fade">
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
                     <View style={{ backgroundColor: '#fff', padding: 40, borderRadius: 20, alignItems: 'center' }}>
                         <Text style={{ fontSize: 22 }}>Deseja realmente deletar?</Text>
                         <View style={{ flexDirection: 'row', marginTop: 24 }}>
-                            <TouchableOpacity onPress={() => { /* ação de deletar */ setModalVisible(true); }}>
+                            <TouchableOpacity onPress={() => { setModalVisible(true); }}>
                                 <Text style={{ color: 'red', marginRight: 16, fontSize: 18 }}>Deletar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => setModalVisible(false)}>
@@ -166,12 +157,8 @@ export default function Maquinas() {
                     </View>
                 </View>
             </Modal>
-
-
         </ScrollView>
-
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -220,57 +207,43 @@ const styles = StyleSheet.create({
     },
     cardMaq: {
         flexDirection: "row",
-
-        justifyContent: "space-between",
-        backgroundColor: "#f1f1f1",
-        borderRadius: 12,
-        padding: 12,
+        alignItems: "center",
+        backgroundColor: "#fff",
+        borderRadius: 8,
+        padding: 16,
         marginVertical: 8,
         elevation: 2,
         shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
     },
     leftIcon: {
-
         marginRight: 12,
-        justifyContent: "center"
     },
     cardContent: {
         flex: 1,
-        flexShrink: 1,
     },
     maqTitle: {
-        fontSize: 18,
-        color: "#000000",
-        flexWrap: "wrap",
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
+        fontSize: 16,
+        fontWeight: "500",
+        color: "#000",
     },
     maqSubTitle: {
-
-        marginTop: 4,
-        fontSize: 13,
-        color: "#5e5e5eff",
-
+        fontSize: 14,
+        color: "#666",
+        marginTop: 2,
     },
     maqId: {
-        marginTop: 3,
         fontSize: 12,
+        color: "#666",
+        marginTop: 2,
     },
     editIcons: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-end",
-        marginLeft: 10,
-        gap: 5,
-
-
     },
-    image: {
-        width: 200,
-        height: 200,
-        resizeMode: 'contain',
-    },
-
 });
