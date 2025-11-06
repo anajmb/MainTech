@@ -159,7 +159,7 @@ export default function NovaTarefa() {
                         <Calendar size={20} color={'#5C5C5C'} strokeWidth={1.6} style={styles.iconCard} />
                         <Text style={styles.tituloCard}>Data e Hora</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', gap: 100 }}>
+                    <View style={{ flexDirection: 'row', gap: 49, marginLeft: 18 }}>
                         <View style={styles.subtituloData}>
                             <Text style={styles.label}>Data de vencimento</Text>
                             <TouchableOpacity
