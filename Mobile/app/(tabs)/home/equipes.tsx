@@ -64,17 +64,17 @@ export default function Equipes() {
         fetchEmployees();
     }, []);
 
-    // sincroniza itens do DropDownPicker quando os times chegam
+    
     useEffect(() => {
         setTeamItems(TeamData.map(t => ({ label: t.name, value: t.id })));
     }, [TeamData]);
 
-    // sincroniza itens do DropDownPicker de membros quando os dados chegam
+    
     useEffect(() => {
         setEmployeeItems(employeesData.map(e => ({ label: `${e.name} (${e.email})`, value: e.id })));
     }, [employeesData]);
 
-    // quando o valor do dropdown muda, atualiza selectedTeam
+
     useEffect(() => {
         if (teamValue != null) {
             const found = TeamData.find(t => t.id === teamValue) || null;
@@ -84,7 +84,7 @@ export default function Equipes() {
         }
     }, [teamValue, TeamData]);
 
-    // quando o valor do dropdown de membro muda, atualiza selectedEmployee
+  
     useEffect(() => {
         if (employeeValue != null) {
             const found = employeesData.find(e => e.id === employeeValue) || null;
@@ -222,8 +222,8 @@ export default function Equipes() {
                         placeholder="Selecione a equipe"
                         style={style.inputAdicionar}
                         dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
-                        placeholderStyle={{ color: '#6c6c6c' }}
-                        textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
+                        placeholderStyle={{ color: '#8B8686' }}
+                        textStyle={{ color: teamValue ? '#000' : '#8B8686' }}
                     />
                 </View>
                 <View style={{ marginTop: 12 }}>
@@ -238,7 +238,7 @@ export default function Equipes() {
                         placeholder="Selecione o membro"
                         style={style.inputAdicionar}
                         dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
-                        placeholderStyle={{ color: '#6c6c6c' }}
+                        placeholderStyle={{ color: '#8B8686' }}
                         textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}
                     />
                 </View>
