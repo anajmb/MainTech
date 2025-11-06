@@ -4,7 +4,8 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { Wrench, UserPlus, Users } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from "react-native";
+import DropDownPicker from 'react-native-dropdown-picker';
+import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 
 // mudar ou tirar icone dos times, pq esta vindo os mesmos para todas as equipes
 
@@ -28,8 +29,16 @@ export default function Equipes() {
     const [employeesData, setEmployeesData] = useState<Employees[]>([]);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [selectedEmployee, setSelectedEmployee] = useState<Employees | null>(null);
-    const [modalTeamVisible, setModalTeamVisible] = useState(false);
+    // state antigo do Modal de equipe removido em favor do dropdown inline
     const [modalEmployeeVisible, setModalEmployeeVisible] = useState(false);
+    // seleção de equipe usando DropDownPicker
+    const [teamOpen, setTeamOpen] = useState(false);
+    const [teamValue, setTeamValue] = useState<number | null>(null);
+    const [teamItems, setTeamItems] = useState<{ label: string; value: number }[]>([]);
+    // seleção de membro usando DropDownPicker (para ficar igual à página de máquinas)
+    const [employeeOpen, setEmployeeOpen] = useState(false);
+    const [employeeValue, setEmployeeValue] = useState<number | null>(null);
+    const [employeeItems, setEmployeeItems] = useState<{ label: string; value: number }[]>([]);
     const [feedback, setFeedback] = useState<string>("");
 
      async function fetchTeams() {
@@ -54,6 +63,36 @@ export default function Equipes() {
         fetchTeams();
         fetchEmployees();
     }, []);
+
+    // sincroniza itens do DropDownPicker quando os times chegam
+    useEffect(() => {
+        setTeamItems(TeamData.map(t => ({ label: t.name, value: t.id })));
+    }, [TeamData]);
+
+    // sincroniza itens do DropDownPicker de membros quando os dados chegam
+    useEffect(() => {
+        setEmployeeItems(employeesData.map(e => ({ label: `${e.name} (${e.email})`, value: e.id })));
+    }, [employeesData]);
+
+    // quando o valor do dropdown muda, atualiza selectedTeam
+    useEffect(() => {
+        if (teamValue != null) {
+            const found = TeamData.find(t => t.id === teamValue) || null;
+            setSelectedTeam(found);
+        } else {
+            setSelectedTeam(null);
+        }
+    }, [teamValue, TeamData]);
+
+    // quando o valor do dropdown de membro muda, atualiza selectedEmployee
+    useEffect(() => {
+        if (employeeValue != null) {
+            const found = employeesData.find(e => e.id === employeeValue) || null;
+            setSelectedEmployee(found);
+        } else {
+            setSelectedEmployee(null);
+        }
+    }, [employeeValue, employeesData]);
 
     async function handleAddMember() {
         if (!selectedTeam || !selectedEmployee) {
@@ -102,6 +141,7 @@ export default function Equipes() {
                                 <Link href={'/home/cadastrarUsuario'}>
                                     <View>
                                         <UserPlus color="#fff" size={17} style={{ alignItems: "center" }} />
+                                        
                                     </View >
                                 </Link>
                             </TouchableOpacity>
@@ -123,14 +163,18 @@ export default function Equipes() {
 
             <View style={style.card}>
                 <ScrollView>
+                    <View>
+                        <Text style={style.cardTitle}>Minha equipe</Text>
+                    </View>
 
                     {TeamData.map((team) => (
                         <View key={team.id} style={{ marginTop: 20 }}>
                             <View style={style.groupEqui}>
-          
+                              
                                 <View style={style.iconeEquipe}>
                                     <Wrench color="white" />
                                 </View>
+                                
                                 <View style={style.infoEqui}>
                                     <Text style={style.tituloEqui}>{team.name}</Text>
                                     <Text style={style.descricaoEqui}>{team.description}</Text>
@@ -168,105 +212,35 @@ export default function Equipes() {
                 <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
                 <View style={{ marginTop: 12 }}>
                     <Text style={style.labelAdicionar}>Nome da equipe:</Text>
-                    <TouchableOpacity
+                    <DropDownPicker
+                        open={teamOpen}
+                        value={teamValue}
+                        items={teamItems}
+                        setOpen={setTeamOpen}
+                        setValue={setTeamValue}
+                        setItems={setTeamItems}
+                        placeholder="Selecione a equipe"
                         style={style.inputAdicionar}
-                        onPress={() => setModalTeamVisible(true)}
-                    >
-                        <Text style={style.inputTextAdicionar}>
-                            {selectedTeam ? selectedTeam.name : "Selecione a equipe"}
-                        </Text>
-                    </TouchableOpacity>
-                    <Modal
-                        visible={modalTeamVisible}
-                        transparent
-                        animationType="fade"
-                        onRequestClose={() => setModalTeamVisible(false)}
-                    >
-                        <View style={{
-                            flex: 1,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "rgba(0,0,0,0.3)"
-                        }}>
-                            <View style={{
-                                backgroundColor: "#fff",
-                                borderRadius: 10,
-                                padding: 20,
-                                minWidth: 250,
-                                maxHeight: 300
-                            }}>
-                                {TeamData.map(team => (
-                                    <TouchableOpacity
-                                        key={team.id}
-                                        style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: "#eee" }}
-                                        onPress={() => {
-                                            setSelectedTeam(team);
-                                            setModalTeamVisible(false);
-                                        }}
-                                    >
-                                        <Text>{team.name}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                                <TouchableOpacity
-                                    style={{ marginTop: 10, alignSelf: "flex-end" }}
-                                    onPress={() => setModalTeamVisible(false)}
-                                >
-                                    <Text style={{ color: "blue" }}>Cancelar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
+                        placeholderStyle={{ color: '#6c6c6c' }}
+                        textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
+                    />
                 </View>
                 <View style={{ marginTop: 12 }}>
                     <Text style={style.labelAdicionar}>Membro:</Text>
-                    <TouchableOpacity
+                    <DropDownPicker
+                        open={employeeOpen}
+                        value={employeeValue}
+                        items={employeeItems}
+                        setOpen={setEmployeeOpen}
+                        setValue={setEmployeeValue}
+                        setItems={setEmployeeItems}
+                        placeholder="Selecione o membro"
                         style={style.inputAdicionar}
-                        onPress={() => setModalEmployeeVisible(true)}
-                    >
-                        <Text style={style.inputTextAdicionar}>
-                            {selectedEmployee ? selectedEmployee.name : "Selecione o membro"}
-                        </Text>
-                    </TouchableOpacity>
-                    <Modal
-                        visible={modalEmployeeVisible}
-                        transparent
-                        animationType="fade"
-                        onRequestClose={() => setModalEmployeeVisible(false)}
-                    >
-                        <View style={{
-                            flex: 1,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "rgba(0,0,0,0.3)"
-                        }}>
-                            <View style={{
-                                backgroundColor: "#fff",
-                                borderRadius: 10,
-                                padding: 20,
-                                minWidth: 250,
-                                maxHeight: 300
-                            }}>
-                                {employeesData.map(emp => (
-                                    <TouchableOpacity
-                                        key={emp.id}
-                                        style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: "#eee" }}
-                                        onPress={() => {
-                                            setSelectedEmployee(emp);
-                                            setModalEmployeeVisible(false);
-                                        }}
-                                    >
-                                        <Text>{emp.name} ({emp.email})</Text>
-                                    </TouchableOpacity>
-                                ))}
-                                <TouchableOpacity
-                                    style={{ marginTop: 10, alignSelf: "flex-end" }}
-                                    onPress={() => setModalEmployeeVisible(false)}
-                                >
-                                    <Text style={{ color: "blue" }}>Cancelar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
+                        placeholderStyle={{ color: '#6c6c6c' }}
+                        textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}
+                    />
                 </View>
                 <TouchableOpacity onPress={handleAddMember}>
                     <View style={{ alignItems: "center", marginTop: 18 }}>
@@ -310,6 +284,13 @@ const style = StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
 
+    },
+    cardTitle:{
+        fontSize: 18,
+        fontWeight: "500",
+        color: "#222",
+
+        textAlign: "center",
     },
     groupEqui: {
         flexDirection: "row",
@@ -398,11 +379,10 @@ const style = StyleSheet.create({
         fontWeight: "400",
     },
     inputAdicionar: {
-        backgroundColor: "#F5F5F5",
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        justifyContent: "center",
+        borderRadius: 10,
+        backgroundColor: '#e6e6e6',
+        padding: 10,
+        borderColor: 'transparent',
     },
     inputTextAdicionar: {
         color: "#8B8686",
@@ -435,4 +415,5 @@ const style = StyleSheet.create({
         justifyContent: "center",
 
     },
+    /* removed custom inline dropdown styles (using DropDownPicker now) */
 })
