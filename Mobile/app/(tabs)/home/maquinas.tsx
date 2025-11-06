@@ -12,6 +12,8 @@ interface Machines {
     qrCode: string
 }
 
+// arrumar layout maquinas cadastradas
+
 export default function Maquinas() {
     const [machines, setMachines] = useState<Machines[]>([]);
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
@@ -52,6 +54,8 @@ export default function Maquinas() {
 
     return (
         <ScrollView style={TabsStyles.container}>
+
+            {/* Header */}
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -73,7 +77,7 @@ export default function Maquinas() {
                         <TextInput placeholder="_ _ _ _ _ _" placeholderTextColor={"#6c6c6c"} style={styles.input} />
                     </View>
 
-                    <View style={{ marginBottom: 20, marginTop: 10 }}>
+                    <View style={{ marginBottom: 20, marginTop: 10, zIndex: 2000 }}>
                         <Text style={styles.label}>Oficina:</Text>
                         <DropDownPicker
                             open={open}
@@ -84,14 +88,19 @@ export default function Maquinas() {
                             setItems={setOficinas}
                             placeholder="Selecione"
                             style={styles.input}
-                            dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
+                            dropDownContainerStyle={{ 
+                                backgroundColor: '#e6e6e6', 
+                                borderRadius: 10, 
+                                borderColor: '#e6e6e6',
+                                maxHeight: 200 
+                            }}
                             placeholderStyle={{ color: '#6c6c6c' }}
                             textStyle={{ color: oficinaSelecionada ? '#000' : '#6c6c6c' }}
                             disabledItemLabelStyle={{ color: '#6c6c6c' }}
                         />
                     </View>
 
-                    <View style={{ marginBottom: 20, marginTop: 10 }}>
+                    <View style={{ marginBottom: 20, marginTop: 10, zIndex: 1000 }}>
                         <Text style={styles.label}>Conjuntos:</Text>
                         <DropDownPicker
                             open={openConjunto}
@@ -114,6 +123,7 @@ export default function Maquinas() {
                     </TouchableOpacity>
                 </View>
 
+                {/* Máquinas cadastradas */}
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Máquinas Cadastradas</Text>
 
@@ -200,7 +210,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         width: "62%",
         marginTop: 10,
-        marginBottom: 30,
+        marginBottom: 50,
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center"
