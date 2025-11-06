@@ -1,4 +1,4 @@
-// ...existing code...
+
 import { Link } from "expo-router";
 import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus, History } from "lucide-react-native";
 import { ActivityIndicator, Image, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -10,14 +10,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "expo-router";
 import Logo from "@/components/logo";
 import { useAuth } from "@/contexts/authContext";
-
 function AdminHome() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-
   const { user } = useAuth();
-
   useFocusEffect(
     useCallback(() => {
       const loadPreference = async () => {
@@ -27,7 +24,6 @@ function AdminHome() {
       loadPreference();
     }, [])
   );
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     console.log("Recarregando dados da página Home...");
@@ -35,7 +31,6 @@ function AdminHome() {
       setRefreshing(false);
     }, 2000);
   }, []);
-
   return (
     <ScrollView
       style={TabsStyles.container}
@@ -44,11 +39,9 @@ function AdminHome() {
       }
     >
       <Logo />
-
       <View>
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-
             <View style={TabsStyles.userFotoIcon}>
               {user?.photo ? (
                 <Image
@@ -61,14 +54,12 @@ function AdminHome() {
                 <User color={'#fff'} size={22} />
               )}
             </View>
-
             {/* CORREÇÃO: Adicionado justifyContent: 'center' para centralizar verticalmente */}
             <View style={{ justifyContent: 'center' }}>
               <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
               <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
             </View>
           </View>
-
           {notificationsEnabled ? (
             <TouchableOpacity
               onPress={() => setNotificacoesVisible(true)}
@@ -84,59 +75,47 @@ function AdminHome() {
               <Bell color="#CE221E" size={24} strokeWidth={2} style={{ right: 2 }} />
             </TouchableOpacity>
           )}
-
           <NotificationDropdown
             visible={isNotificacoesVisible}
             onClose={() => setNotificacoesVisible(false)}
           />
         </View>
       </View>
-
       {/* Ações rápidas */}
       <View>
         <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
-
         <View style={styles.cardsAcoes} >
-
           <Link href="/(tabs)/home/maquinas" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Máquinas</Text>
             </TouchableOpacity>
           </Link>
-
           <Link href="/(tabs)/home/calendario" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Agenda</Text>
             </TouchableOpacity>
           </Link>
-
           <Link href="/(tabs)/home/equipes" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <Users color={'#11C463'} size={35} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Equipes</Text>
             </TouchableOpacity>
           </Link>
-
           <Link href="/(tabs)/home/dashboard" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Dashboard</Text>
             </TouchableOpacity>
           </Link>
-
         </View>
-
         <View style={styles.ativRecente}>
           <Text style={styles.titulo}>Atividades Recentes</Text>
-
           <View style={styles.ativRecenteCard}>
-
             <View style={styles.iconAtivRecente}>
               <CheckCircle color={'#51C385'} size={22} />
             </View>
-
             <View style={styles.ativInfo}>
               <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
               <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
@@ -147,14 +126,11 @@ function AdminHome() {
     </ScrollView>
   )
 }
-
 function UsersHome() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-
   const { user } = useAuth();
-
   useFocusEffect(
     useCallback(() => {
       const loadPreference = async () => {
@@ -164,7 +140,6 @@ function UsersHome() {
       loadPreference();
     }, [])
   );
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     console.log("Recarregando dados da página Home (Users)...");
@@ -172,7 +147,6 @@ function UsersHome() {
       setRefreshing(false);
     }, 2000);
   }, []);
-
   return (
     <ScrollView
       style={TabsStyles.container}
@@ -181,11 +155,9 @@ function UsersHome() {
       }
     >
       <Logo />
-
       <View>
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-
             <View style={TabsStyles.userFotoIcon}>
               {user?.photo ? (
                 <Image
@@ -197,13 +169,11 @@ function UsersHome() {
                 <User color={'#fff'} size={22} />
               )}
             </View>
-
             <View style={{ justifyContent: 'center' }}>
               <Text style={styles.tituloHeader}>Olá, {user?.name?.split(" ")[0] || "Usuário"}</Text>
               <Text style={styles.subtitulo}>Bem-vindo de volta</Text>
             </View>
           </View>
-
           {notificationsEnabled ? (
             <TouchableOpacity
               onPress={() => setNotificacoesVisible(true)}
@@ -219,34 +189,28 @@ function UsersHome() {
               <Bell color="#CE221E" size={24} strokeWidth={2} style={{ right: 2 }} />
             </TouchableOpacity>
           )}
-
           <NotificationDropdown
             visible={isNotificacoesVisible}
             onClose={() => setNotificacoesVisible(false)}
           />
         </View>
       </View>
-
       {/* Ações rápidas para Inspetor/Manutentor: Máquinas -> Históricos, Equipes -> Minha equipe */}
       <View>
         <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
-
         <View style={styles.cardsAcoes} >
-
           <Link href="/(tabs)/historico" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <History color={"#FF9705"} size={33} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Histórico</Text>
             </TouchableOpacity>
           </Link>
-
           <Link href="/(tabs)/home/calendario" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Agenda</Text>
             </TouchableOpacity>
           </Link>
-
           <Link
             href={{
               pathname: "/(tabs)/home/verEquipe",
@@ -259,25 +223,19 @@ function UsersHome() {
               <Text style={styles.tituloAcao}>Minha equipe</Text>
             </TouchableOpacity>
           </Link>
-
           <Link href="/(tabs)/home/dashboard" asChild>
             <TouchableOpacity style={styles.acaoCard}>
               <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
               <Text style={styles.tituloAcao}>Dashboard</Text>
             </TouchableOpacity>
           </Link>
-
         </View>
-
         <View style={styles.ativRecente}>
           <Text style={styles.titulo}>Atividades Recentes</Text>
-
           <View style={styles.ativRecenteCard}>
-
             <View style={styles.iconAtivRecente}>
               <CheckCircle color={'#51C385'} size={22} />
             </View>
-
             <View style={styles.ativInfo}>
               <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
               <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
@@ -288,17 +246,12 @@ function UsersHome() {
     </ScrollView>
   )
 }
-
 export default function Home() {
   const { user } = useAuth();
-
   if (!user) return <ActivityIndicator size="large" />;
-
   return user.role === "ADMIN" ? <AdminHome /> : <UsersHome />;
 }
-
 const styles = StyleSheet.create({
-
   header: {
     backgroundColor: "#eeeeee69",
     boxShadow: '1px 5px 10px rgba(0, 0, 0, 0.25)',
@@ -348,10 +301,8 @@ const styles = StyleSheet.create({
     fontWeight: 400,
   },
   iconAcao: {
-
   },
   ativRecente: {
-
   },
   ativRecenteCard: {
     flexDirection: 'row',
@@ -378,11 +329,8 @@ const styles = StyleSheet.create({
     color: '#848484',
     fontSize: 11
   },
-
-
   modalOverlay: {
     flex: 1,
-
   },
   dropdownContainer: {
     position: 'absolute',
@@ -441,3 +389,4 @@ const styles = StyleSheet.create({
     margin: 4
   }
 });
+
