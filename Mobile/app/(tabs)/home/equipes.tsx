@@ -220,7 +220,7 @@ export default function Equipes() {
                         setItems={setTeamItems}
                         placeholder="Selecione a equipe"
                         style={[style.inputAdicionar, {borderWidth: 0, borderColor: '#e6e6e6' }]}
-                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent' }}
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent', maxHeight: 200 }}
                         placeholderStyle={{ color: '#6c6c6c' }}
                         disabledItemLabelStyle={{ color: '#6c6c6c' }}
                         textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
