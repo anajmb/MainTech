@@ -127,7 +127,7 @@ export default function NovaTarefa() {
                     <View>
                         <Text style={styles.label}>Titulo</Text>
                         <TextInput placeholder="Digite o título da tarefa"
-                            placeholderTextColor={'#C4C4C4'}
+                            placeholderTextColor={'#8B8686'}
                             style={styles.input}
                             value={title}
                             onChangeText={setTitle} />
@@ -136,7 +136,7 @@ export default function NovaTarefa() {
                         <Text style={styles.label}>Descrição</Text>
                         <TextInput style={styles.inputDescreva}
                             placeholder="Descreva os detalhes"
-                            placeholderTextColor="#C4C4C4"
+                            placeholderTextColor="#8B8686"
                             multiline={true}
                             numberOfLines={8}
                             value={description}
@@ -146,7 +146,7 @@ export default function NovaTarefa() {
                     <View>
                         <Text style={styles.label}>Máquina</Text>
                         <TextInput placeholder="Digite o ID da máquina"
-                            placeholderTextColor={'#C4C4C4'}
+                            placeholderTextColor={'#8B8686'}
                             style={styles.inputDescricao}
                             value={machines}
                             onChangeText={setMachines}
@@ -167,7 +167,7 @@ export default function NovaTarefa() {
                                 onPress={showDatePicker}
                                 activeOpacity={0.7}
                             >
-                                <Text style={{ color: date ? "#000" : "#B9B9B9" }}>
+                                <Text style={{ color: date ? "#000" : "#8B8686" }}>
                                     {date ? date.toLocaleDateString("pt-BR") : "DD/MM/AA"}
                                 </Text>
                             </TouchableOpacity>
@@ -189,7 +189,7 @@ export default function NovaTarefa() {
                                 activeOpacity={0.7}
                                 disabled={!date}
                             >
-                                <Text style={{ color: time ? "#000" : "#B9B9B9" }}>
+                                <Text style={{ color: time ? "#000" : "#8B8686" }}>
                                     {time ? time.toLocaleTimeString("pt-BR", { hour: '2-digit', minute: '2-digit' }) : "HH:MM"}
                                 </Text>
                             </TouchableOpacity>
@@ -214,7 +214,7 @@ export default function NovaTarefa() {
                     </View>
                     <TextInput placeholder="Atribuir a..."
                         style={styles.inputDescricao}
-                        placeholderTextColor={'#C4C4C4'}
+                        placeholderTextColor={'#8B8686'}
                         value={inspectorId}
                         onChangeText={setInspectorId}
                     />
@@ -316,6 +316,6 @@ const styles = StyleSheet.create({
         textAlignVertical: "top",
         paddingHorizontal: 12,
         paddingVertical: 10,
-        height: 95,
+        height: 65,
     }
 })
