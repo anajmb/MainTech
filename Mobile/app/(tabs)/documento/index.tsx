@@ -3,24 +3,60 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { Download, FileText } from "lucide-react-native";
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { api } from "../../../lib/axios"; 
 
-// ...existing code...
+
+interface OrdemServico {
+  id: number;
+  machineId: number;
+  priority: 'low' | 'medium' | 'high';
+  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'; 
+  payload: any; 
+  createdAt: string; 
+}
+
+// --- NOVO --- Função simples para formatar a data
+function formatarData(isoString: string) {
+  try {
+    const data = new Date(isoString);
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+  } catch (e) {
+    return "Data inválida";
+  }
+}
+
 export default function Documento() {
   const [filtro, setFiltro] = useState("todas");
 
-  // Exemplo de dados
-  const documentos = [
-    { id: 1, nome: "Documento A", status: "analise" },
-    { id: 2, nome: "Documento B", status: "concluida" },
-    { id: 3, nome: "Documento C", status: "analise" },
-  ];
+  const [ordens, setOrdens] = useState<OrdemServico[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const documentosFiltrados = documentos.filter((doc) => {
+  useEffect(() => {
+    async function fetchOrdens() {
+      try {
+        setLoading(true);
+        const response = await api.get("/serviceOrders/get"); 
+        setOrdens(response.data || []);
+      } catch (error) {
+        console.log("Erro ao buscar ordens:", error);
+        Alert.alert("Erro", "Não foi possível carregar as ordens de serviço.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchOrdens();
+  }, []); 
+
+  const ordensFiltradas = ordens.filter((doc) => {
     if (filtro === "todas") return true;
-    if (filtro === "analise") return doc.status === "analise";
-    if (filtro === "concluida") return doc.status === "concluida";
+    if (filtro === "analise") return doc.status === "PENDING" || doc.status === "IN_PROGRESS";
+    if (filtro === "concluida") return doc.status === "COMPLETED";
     return true;
   });
 
@@ -30,7 +66,6 @@ export default function Documento() {
 
       <View style={TabsStyles.headerPrincipal}>
         <SetaVoltar />
-
         <View style={TabsStyles.conjHeaderPrincipal}>
           <Text style={TabsStyles.tituloPrincipal}>Documentos</Text>
           <Text style={TabsStyles.subtituloPrincipal}>Veja as O.S.</Text>
@@ -50,68 +85,43 @@ export default function Documento() {
       </View>
 
       <View style={styles.documentosList}>
-        {/* primeiro item agora usa a mesma estrutura / estilização dos demais */}
-        <Link href="/(tabs)/documento/ordemServicoManu" asChild>
-          <TouchableOpacity style={styles.infosDocumentos}>
-            <View style={{ flexDirection: "row", gap: 15 }}>
-              <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", marginTop: 3 }}>
-                <FileText color={"#fff"} />
-              </View>
-              <Text style={styles.documentosNome}>Ordem de serviço 100</Text>
-            </View>
-            <Text style={styles.documentosDescricao}>3,4 MB • 19/09/2025</Text>
-            <Download style={styles.downloadIcon} />
-          </TouchableOpacity>
-        </Link>
+        {loading ? (
+          <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 30 }} />
+        ) : ordensFiltradas.length === 0 ? (
+          <Text style={styles.textoVazio}>Nenhuma ordem de serviço encontrada para este filtro.</Text>
+        ) : (
+          ordensFiltradas.map((ordem) => (
+            <Link
+              key={ordem.id}
+              href={{
+                pathname: "/(tabs)/documento/ordemServicoManu",
 
-        <View style={styles.infosDocumentos}>
-          <View style={{ flexDirection: "row", gap: 15 }}>
-            <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", marginTop: 3 }}>
-              <FileText color={"#fff"} />
-            </View>
-            <Text style={styles.documentosNome}>Ordem de serviço 99</Text>
-          </View>
-          <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-          <Download style={styles.downloadIcon} />
-        </View>
-
-        <View style={styles.infosDocumentos}>
-          <View style={{ flexDirection: "row", gap: 15 }}>
-            <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", marginTop: 3 }}>
-              <FileText color={"#fff"} />
-            </View>
-            <Text style={styles.documentosNome}>Ordem de serviço 98</Text>
-          </View>
-          <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-          <Download style={styles.downloadIcon} />
-        </View>
-
-        <View style={styles.infosDocumentos}>
-          <View style={{ flexDirection: "row", gap: 15 }}>
-            <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", marginTop: 3 }}>
-              <FileText color={"#fff"} />
-            </View>
-            <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
-          </View>
-          <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-          <Download style={styles.downloadIcon} />
-        </View>
-
-        <View style={styles.infosDocumentos}>
-          <View style={{ flexDirection: "row", gap: 15 }}>
-            <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", marginTop: 3 }}>
-              <FileText color={"#fff"} />
-            </View>
-            <Text style={styles.documentosNome}>Ordem de serviço 97</Text>
-          </View>
-          <Text style={styles.documentosDescricao}>3,4 MB • 17/09/2025</Text>
-          <Download style={styles.downloadIcon} />
-        </View>
+                params: { id: ordem.id.toString() }, 
+              }}
+              asChild
+            >
+              <TouchableOpacity style={styles.infosDocumentos}>
+                <View style={{ flexDirection: "row", gap: 15 }}>
+                  <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", marginTop: 3 }}>
+                    <FileText color={"#fff"} />
+                  </View>
+                  {/* --- MODIFICADO --- Usando dados reais */}
+                  <Text style={styles.documentosNome}>Ordem de serviço {ordem.id}</Text>
+                </View>
+                {/* --- MODIFICADO --- Usando dados reais */}
+                <Text style={styles.documentosDescricao}>
+                  Criada em: {formatarData(ordem.createdAt)}
+                </Text>
+                <Download style={styles.downloadIcon} />
+              </TouchableOpacity>
+            </Link>
+          ))
+        )}
       </View>
     </ScrollView>
   );
 }
-// ...existing code...
+
 const styles = StyleSheet.create({
   input: {
     backgroundColor: "transparent",
@@ -157,10 +167,17 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#666",
     marginTop: 8,
-    marginLeft: 55,
+    marginLeft: 55, 
   },
   downloadIcon: {
     color: "#333",
     marginLeft: "auto",
   },
+
+  textoVazio: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: '#666',
+  }
 });
