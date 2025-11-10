@@ -1,9 +1,10 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useEffect, useState } from 'react';
 import { Pencil, Trash2, Wrench } from "lucide-react-native";
+import { api } from "../../../lib/axios"; // É uma boa prática usar a instância do Axios se você a tiver
 
 interface Machines {
     id: number;
@@ -12,21 +13,35 @@ interface Machines {
     qrCode: string
 }
 
-// arrumar layout maquinas cadastradas
+// Interface para os dados vindos da API /sets/get
+interface SetFromAPI {
+    id: number;
+    name: string;
+}
 
 export default function Maquinas() {
     const [machines, setMachines] = useState<Machines[]>([]);
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
     const [open, setOpen] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const [conjuntoSelecionado, setConjuntoSelecionado] = useState("");
+    
+    // --- MODIFICADO ---
+    // 1. O estado agora é um array de strings (para IDs) para permitir múltipla seleção
+    const [conjuntoSelecionado, setConjuntoSelecionado] = useState<string[]>([]);
     const [openConjunto, setOpenConjunto] = useState(false);
 
+    // 2. O estado inicial agora é 'Carregando...'
     const [conjuntos, setConjuntos] = useState([
-        { label: 'Selecione', value: '', disabled: true },
-        { label: 'Conjunto 1', value: 'conjunto1' },
-        { label: 'Conjunto 2', value: 'conjunto2' },
-    ])
+        { label: 'Carregando...', value: '', disabled: true },
+    ]);
+    // --- FIM DA MODIFICAÇÃO ---
+    
+    // --- NOVOS ESTADOS PARA O FORMULÁRIO ---
+    const [nome, setNome] = useState("");
+    const [descricao, setDescricao] = useState("");
+    const [loadingSubmit, setLoadingSubmit] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0); // Para atualizar a lista
+    // --- FIM DOS NOVOS ESTADOS ---
 
     const [oficinas, setOficinas] = useState([
         { label: 'Selecione', value: '', disabled: true },
@@ -41,16 +56,98 @@ export default function Maquinas() {
     useEffect(() => {
         async function fetchMachines() {
             try {
-                const response = await fetch('https://maintech-backend-r6yk.onrender.com/machines/get');
-                const data = await response.json();
-                setMachines(data);
+                // Usando a instância 'api' se ela estiver configurada com a baseURL
+                const response = await api.get('/machines/get');
+                setMachines(response.data);
             } catch (error) {
                 console.error('Error fetching machines:', error);
             }
         }
 
+        // --- NOVO ---
+        // 3. Função para buscar os conjuntos (sets)
+        async function fetchSets() {
+            try {
+                const response = await api.get('/sets/get');
+                const data: SetFromAPI[] = response.data; // Tipamos a resposta
+
+                // 4. Transformamos os dados da API (ex: {id: 1, name: 'Conjunto 1'})
+                //    para o formato do DropDownPicker (ex: {label: 'Conjunto 1', value: '1'})
+                const formattedSets = data.map(set => ({
+                    label: set.name,
+                    value: set.id.toString() // Convertemos o ID para string
+                }));
+
+                // 5. Atualizamos o estado dos conjuntos
+                setConjuntos([
+                    { label: 'Selecione', value: '', disabled: true },
+                    ...formattedSets
+                ]);
+
+            } catch (error) {
+                console.error('Error fetching sets:', error);
+                setConjuntos([
+                    { label: 'Falha ao carregar', value: '', disabled: true }
+                ]);
+            }
+        }
+        // --- FIM DO NOVO ---
+
         fetchMachines();
-    }, []);
+        fetchSets(); // 6. Chamamos a nova função
+    }, [refreshKey]); // <-- MODIFICADO: Adiciona refreshKey para recarregar a lista
+
+    // --- CORREÇÃO DE BUG ---
+    // Lógica para o botão de deletar no modal
+    function handleDelete() {
+        // Coloque sua lógica de API delete aqui
+        console.log("Deletando...");
+        setModalVisible(false); // Fecha o modal após a ação
+    }
+
+    // --- NOVA FUNÇÃO PARA CADASTRAR A MÁQUINA ---
+    async function handleCadastro() {
+        // 1. Validação
+        if (!nome.trim() || !descricao.trim() || !oficinaSelecionada || conjuntoSelecionado.length === 0) {
+            Alert.alert("Erro", "Por favor, preencha todos os campos.");
+            return;
+        }
+
+        setLoadingSubmit(true);
+
+        // 2. Encontra o 'label' da oficina (ex: "Oficina de Manutenção")
+        const oficinaLabel = oficinas.find(o => o.value === oficinaSelecionada)?.label;
+
+        // 3. Montar Payload
+        const payload = {
+            name: nome,
+            description: descricao,
+            location: oficinaLabel, // Envia o nome da oficina
+            sets: conjuntoSelecionado.map(Number) // Converte o array de strings (IDs) para números
+        };
+
+        console.log("Enviando cadastro de máquina:", payload);
+
+        // 4. Chamar API
+        try {
+            await api.post('/machines/create', payload);
+            Alert.alert("Sucesso", "Máquina cadastrada com sucesso!");
+
+            // 5. Limpar formulário e recarregar lista
+            setNome("");
+            setDescricao("");
+            setOficinaSelecionada("");
+            setConjuntoSelecionado([]);
+            setRefreshKey(key => key + 1); // Dispara o useEffect para recarregar
+
+        } catch (error: any) {
+            console.error("Erro ao cadastrar máquina:", error.response?.data || error.message);
+            Alert.alert("Erro", "Não foi possível cadastrar a máquina.");
+        } finally {
+            setLoadingSubmit(false);
+        }
+    }
+    // --- FIM DA NOVA FUNÇÃO ---
 
     return (
         <ScrollView style={TabsStyles.container}>
@@ -67,16 +164,31 @@ export default function Maquinas() {
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Informe os dados para cadastrar</Text>
 
+                    {/* Input Nome */}
                     <View style={{ marginBottom: 20, marginTop: 30 }}>
                         <Text style={styles.label}>Nome da Máquina:</Text>
-                        <TextInput placeholder="Digite o nome da máquina" placeholderTextColor={"#6c6c6c"} style={styles.input} />
+                        <TextInput 
+                            placeholder="Digite o nome da máquina" 
+                            placeholderTextColor={"#6c6c6c"} 
+                            style={styles.input} 
+                            value={nome}
+                            onChangeText={setNome}
+                        />
                     </View>
 
+                    {/* Input Descrição */}
                     <View style={{ marginBottom: 20, marginTop: 10 }}>
-                        <Text style={styles.label}>ID da Máquina:</Text>
-                        <TextInput placeholder="_ _ _ _ _ _" placeholderTextColor={"#6c6c6c"} style={styles.input} />
+                        <Text style={styles.label}>Descrição da Máquina:</Text>
+                        <TextInput 
+                            placeholder="Escreva uma descrição para a máquina" 
+                            placeholderTextColor={"#6c6c6c"} 
+                            style={styles.input} 
+                            value={descricao}
+                            onChangeText={setDescricao}
+                        />
                     </View>
 
+                    {/* Dropdown Oficina */}
                     <View style={{ marginBottom: 20, marginTop: 10, zIndex: 2000 }}>
                         <Text style={styles.label}>Oficina:</Text>
                         <DropDownPicker
@@ -97,29 +209,42 @@ export default function Maquinas() {
                             placeholderStyle={{ color: '#6c6c6c' }}
                             textStyle={{ color: oficinaSelecionada ? '#000' : '#6c6c6c' }}
                             disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                            listMode="SCROLLVIEW" // Adicionado para melhor performance
                         />
                     </View>
 
+                    {/* Dropdown Conjuntos */}
                     <View style={{ marginBottom: 20, marginTop: 10, zIndex: 1000 }}>
                         <Text style={styles.label}>Conjuntos:</Text>
                         <DropDownPicker
                             open={openConjunto}
-                            value={conjuntoSelecionado}
+                            value={conjuntoSelecionado} // Agora é um array: ['1', '2']
                             items={conjuntos}
                             setOpen={setOpenConjunto}
                             setValue={setConjuntoSelecionado}
                             setItems={setConjuntos}
+                            
+                            multiple={true} // Permite selecionar múltiplos
+                            mode="BADGE" // Mostra os itens selecionados como "badges"
+                            
                             placeholder="Selecione"
                             style={styles.input}
                             dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
                             placeholderStyle={{ color: '#6c6c6c' }}
-                            textStyle={{ color: conjuntoSelecionado ? '#000' : '#6c6c6c' }}
+                            textStyle={{ color: conjuntoSelecionado.length > 0 ? '#000' : '#6c6c6c' }}
                             disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                            listMode="SCROLLVIEW" // Adicionado para melhor performance
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.botaoCad}>
-                        <Text style={{ color: '#fff' }}>Cadastrar Máquina</Text>
+                    <TouchableOpacity 
+                        style={styles.botaoCad} 
+                        onPress={handleCadastro}
+                        disabled={loadingSubmit}
+                    >
+                        <Text style={{ color: '#fff' }}>
+                            {loadingSubmit ? "Cadastrando..." : "Cadastrar Máquina"}
+                        </Text>
                     </TouchableOpacity>
                 </View>
 
@@ -152,14 +277,17 @@ export default function Maquinas() {
                 </View>
             </View>
 
+            {/* Modal de Confirmação (com bug corrigido) */}
             <Modal visible={modalVisible} transparent animationType="fade">
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
                     <View style={{ backgroundColor: '#fff', padding: 40, borderRadius: 20, alignItems: 'center' }}>
                         <Text style={{ fontSize: 22 }}>Deseja realmente deletar?</Text>
                         <View style={{ flexDirection: 'row', marginTop: 24 }}>
-                            <TouchableOpacity onPress={() => { setModalVisible(true); }}>
+                            
+                            <TouchableOpacity onPress={handleDelete}>
                                 <Text style={{ color: 'red', marginRight: 16, fontSize: 18 }}>Deletar</Text>
                             </TouchableOpacity>
+                            
                             <TouchableOpacity onPress={() => setModalVisible(false)}>
                                 <Text style={{ fontSize: 18 }}>Cancelar</Text>
                             </TouchableOpacity>
@@ -173,6 +301,8 @@ export default function Maquinas() {
 
 const styles = StyleSheet.create({
     todosCard: {
+        width: '90%', // Adicionado para centralizar
+        alignSelf: 'center', // Adicionado para centralizar
         gap: 30,
         paddingBottom: 90,
     },
@@ -201,7 +331,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#e6e6e6',
         padding: 10,
-        borderColor: 'transparent',
+        borderColor: '#e6e6e6', // Garante que a borda tenha a mesma cor
+        borderWidth: 1,
     },
     botaoCad: {
         backgroundColor: "#A50702",
