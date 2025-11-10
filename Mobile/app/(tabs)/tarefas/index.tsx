@@ -66,7 +66,7 @@ export default function Tarefas() {
 
     return (
         <ScrollView style={TabsStyles.container}>
-            <Logo/>
+            <Logo />
 
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
@@ -77,11 +77,11 @@ export default function Tarefas() {
 
                 {/* botão + apenas para ADMIN */}
                 {user.role === "ADMIN" && (
-                  <Link href={'/tarefas/novaTarefa'}>
-                    <View style={styles.plusButton}>
-                        <Plus color={"#fff"} strokeWidth={1.8} size={30} />
-                    </View>
-                  </Link>
+                    <Link href={'/tarefas/novaTarefa'}>
+                        <View style={styles.plusButton}>
+                            <Plus color={"#fff"} strokeWidth={1.8} size={30} />
+                        </View>
+                    </Link>
                 )}
             </View>
 
@@ -105,43 +105,45 @@ export default function Tarefas() {
 
             <ScrollView>
 
-            {loading ? (
-                <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 50 }} />
-            ) : (
-                <FlatList
-                data={tasks}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    // se for INSPECTOR, ao clicar vai para fazerTarefa; admin não tem navegação ao clicar
-                    <TouchableOpacity
-                      onPress={() => {
-                        if (user.role === "INSPECTOR") {
-                          router.push({
-                            pathname: "../tarefas/fazerTarefaInspe",
-                            params: { id: String(item.id) }
-                          });
+                {loading ? (
+                    <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 50 }} />
+                ) : (
+                    <FlatList
+                        data={tasks}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => (
+                            // se for INSPECTOR, ao clicar vai para fazerTarefa; admin não tem navegação ao clicar
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (user.role === "INSPECTOR") {
+                                        const paramsParaEnviar = { id: item.machineId };
+
+                                        router.push({
+                                            pathname: "/tarefas/fazerTarefaInspe",
+                                            params: { codigo: JSON.stringify(paramsParaEnviar) }
+                                        });
+                                    }
+                                }}
+                                activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
+                            >
+                                <TasksCards
+                                    id={item.id}
+                                    title={item.title}
+                                    description={item.description}
+                                    updateDate={item.updateDate}
+                                    status={item.status}
+                                />
+                            </TouchableOpacity>
+                        )}
+                        contentContainerStyle={{ paddingBottom: 20 }}
+                        ListEmptyComponent={
+                            <View style={styles.emptyContainer}>
+                                <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
+                            </View>
                         }
-                      }}
-                      activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
-                    >
-                      <TasksCards
-                        id={item.id}
-                        title={item.title}
-                        description={item.description}
-                        updateDate={item.updateDate}
-                        status={item.status}
-                      />
-                    </TouchableOpacity>
-                )}
-                contentContainerStyle={{ paddingBottom: 20 }}
-                ListEmptyComponent={
-                    <View style={styles.emptyContainer}>
-                            <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
-                        </View>
-                    }
                     />
                 )}
-                </ScrollView>
+            </ScrollView>
         </ScrollView>
     );
 }
