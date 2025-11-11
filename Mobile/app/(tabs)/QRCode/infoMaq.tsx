@@ -89,10 +89,9 @@ export default function InfosMaquina() {
               <View style={{ alignItems: "center", width: "50%" }}>
                 <Text style={styles.fieldsTitle}>Conjuntos</Text>
                 <TouchableOpacity
-                  style={styles.fieldsContent}
                   onPress={() => setModalVisible(true)}
-                >
-                  <Text style={{ textAlign: "center", color: "rgba(0,0,0,0.44)", }}>
+                  >
+                  <Text style={styles.fieldsContentInspe}>
                     {selectedSet ? selectedSet.name : `Ver conjuntos`}
                   </Text>
                 </TouchableOpacity>
@@ -137,7 +136,7 @@ export default function InfosMaquina() {
                       >
                         <Text style={{ color: "#fff" }}>Fechar</Text>
                       </TouchableOpacity>
-                    </View> 
+                    </View>
                   </View>
                 </Modal>
               </View>
@@ -156,27 +155,37 @@ export default function InfosMaquina() {
               <>
                 <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
 
-                <Link
-                  href={{
-                    pathname: '/(tabs)/tarefas/fazerTarefaInspe',
-                    params: { codigo: codigo }
-                  }}
-                  asChild
-                >
-                  <TouchableOpacity >
-
-                    <Text style={styles.fieldsContent}>
-                      {`clique para realizar ${machineData.tasks.length > 1 ? "tarefas" : "tarefa"
-                        }`}
-                    </Text>
-                  </TouchableOpacity> 
-                </Link>
+                {user?.role === "INSPECTOR" ? (
+                  // 🔹 Inspetor vê o botão e pode clicar
+                  <Link
+                    href={{
+                      pathname: '/(tabs)/tarefas/fazerTarefaInspe',
+                      params: { codigo: codigo }
+                    }}
+                    asChild
+                  >
+                    <TouchableOpacity>
+                      <Text style={styles.fieldsContentInspe}>
+                        Clique aqui para realizar {machineData.tasks.length > 1 ? "tarefas" : "tarefa"}
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
+                ) : (
+                  // 🔸 Admin vê apenas o nome das tarefas
+                  <View style={{ alignItems: "center" }}>
+                    {machineData.tasks.map((task) => (
+                      <Text key={task.id} style={styles.fieldsContent}>
+                        {task.title}
+                      </Text>
+                    ))}
+                  </View>
+                )}
               </>
             ) : (
               <>
                 <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
               </>
-            )} 
+            )}
           </View>
 
         </>
@@ -197,7 +206,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#f1f1f1",
     borderRadius: 9,
-    padding: 12,
+    padding: 10,
+    paddingVertical: 60,
     marginVertical: 8,
     elevation: 2,
     shadowColor: "#000",
@@ -214,6 +224,19 @@ const styles = StyleSheet.create({
     color: "rgba(0,0,0,0.44)",
     padding: 10,
     borderRadius: 8,
+    marginBottom: 12,
+    fontSize: 15,
+    alignSelf: "center",
+    textAlign: "center",
+    width: "80%",
+    flexDirection: "row",
+  },
+
+  fieldsContentInspe: {
+    backgroundColor: "#A50702",
+    color: "#fff",
+    padding: 10,
+    borderRadius: 10,
     marginBottom: 12,
     fontSize: 15,
     alignSelf: "center",
