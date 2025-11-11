@@ -82,47 +82,50 @@ function AdminHome() {
         </View>
       </View>
       {/* Ações rápidas */}
-      <View>
-        <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
-        <View style={styles.cardsAcoes} >
-          <Link href="/(tabs)/home/maquinas" asChild>
-            <TouchableOpacity style={styles.acaoCard}>
-              <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Máquinas</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/(tabs)/home/calendario" asChild>
-            <TouchableOpacity style={styles.acaoCard}>
-              <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Agenda</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/(tabs)/home/equipes" asChild>
-            <TouchableOpacity style={styles.acaoCard}>
-              <Users color={'#11C463'} size={35} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Equipes</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/(tabs)/home/dashboard" asChild>
-            <TouchableOpacity style={styles.acaoCard}>
-              <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Dashboard</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-        <View style={styles.ativRecente}>
-          <Text style={styles.titulo}>Atividades Recentes</Text>
-          <View style={styles.ativRecenteCard}>
-            <View style={styles.iconAtivRecente}>
-              <CheckCircle color={'#51C385'} size={22} />
-            </View>
-            <View style={styles.ativInfo}>
-              <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
-              <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
+      <View style={TabsStyles.todosCard}>
+
+        <View>
+          <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
+          <View style={styles.cardsAcoes} >
+            <Link href="/(tabs)/home/maquinas" asChild>
+              <TouchableOpacity style={styles.acaoCard}>
+                <Grid2X2Plus color={"#CE221E"} size={40} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>Máquinas</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href="/(tabs)/home/calendario" asChild>
+              <TouchableOpacity style={styles.acaoCard}>
+                <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>Agenda</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href="/(tabs)/home/equipes" asChild>
+              <TouchableOpacity style={styles.acaoCard}>
+                <Users color={'#11C463'} size={35} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>Equipes</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href="/(tabs)/home/dashboard" asChild>
+              <TouchableOpacity style={styles.acaoCard}>
+                <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>Dashboard</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+          <View style={styles.ativRecente}>
+            <Text style={styles.titulo}>Atividades Recentes</Text>
+            <View style={styles.ativRecenteCard}>
+              <View style={styles.iconAtivRecente}>
+                <CheckCircle color={'#51C385'} size={22} />
+              </View>
+              <View style={styles.ativInfo}>
+                <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
+                <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
+        </View>
     </ScrollView>
   )
 }

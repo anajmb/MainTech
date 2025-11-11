@@ -41,7 +41,7 @@ export const TabsStyles = StyleSheet.create({
         height: '100%',
     },
     viewBotaoPrincipal: {
-        backgroundColor: '#CE221E',
+        backgroundColor: '#A50702',
         borderRadius: 10,
         width: '50%',
         justifyContent: 'center',
@@ -53,6 +53,8 @@ export const TabsStyles = StyleSheet.create({
         color: '#fff'
     },
     todosCard: {
-        marginBottom: 20,
+        marginBottom: 30,
+        gap: 20,
+        paddingBottom: 80,
     }
 })

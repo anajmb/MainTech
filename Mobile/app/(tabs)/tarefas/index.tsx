@@ -103,47 +103,49 @@ export default function Tarefas() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView>
+            <View style={TabsStyles.todosCard}>
+                <ScrollView>
 
-                {loading ? (
-                    <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 50 }} />
-                ) : (
-                    <FlatList
-                        data={tasks}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => (
-                            // se for INSPECTOR, ao clicar vai para fazerTarefa; admin não tem navegação ao clicar
-                            <TouchableOpacity
-                                onPress={() => {
-                                    if (user.role === "INSPECTOR") {
-                                        const paramsParaEnviar = { id: item.machineId };
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 50 }} />
+                    ) : (
+                        <FlatList
+                            data={tasks}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({ item }) => (
+                                // se for INSPECTOR, ao clicar vai para fazerTarefa; admin não tem navegação ao clicar
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        if (user.role === "INSPECTOR") {
+                                            const paramsParaEnviar = { id: item.machineId };
 
-                                        router.push({
-                                            pathname: "/tarefas/fazerTarefaInspe",
-                                            params: { codigo: JSON.stringify(paramsParaEnviar) }
-                                        });
-                                    }
-                                }}
-                                activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
-                            >
-                                <TasksCards
-                                    id={item.id}
-                                    title={item.title}
-                                    description={item.description}
-                                    updateDate={item.updateDate}
-                                    status={item.status}
-                                />
-                            </TouchableOpacity>
-                        )}
-                        contentContainerStyle={{ paddingBottom: 20 }}
-                        ListEmptyComponent={
-                            <View style={styles.emptyContainer}>
-                                <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
-                            </View>
-                        }
-                    />
-                )}
-            </ScrollView>
+                                            router.push({
+                                                pathname: "/tarefas/fazerTarefaInspe",
+                                                params: { codigo: JSON.stringify(paramsParaEnviar) }
+                                            });
+                                        }
+                                    }}
+                                    activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
+                                >
+                                    <TasksCards
+                                        id={item.id}
+                                        title={item.title}
+                                        description={item.description}
+                                        updateDate={item.updateDate}
+                                        status={item.status}
+                                    />
+                                </TouchableOpacity>
+                            )}
+                            contentContainerStyle={{ paddingBottom: 20 }}
+                            ListEmptyComponent={
+                                <View style={styles.emptyContainer}>
+                                    <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
+                                </View>
+                            }
+                        />
+                    )}
+                </ScrollView>
+            </View>
         </ScrollView>
     );
 }

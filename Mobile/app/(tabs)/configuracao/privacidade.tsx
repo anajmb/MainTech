@@ -56,114 +56,116 @@ export default function Privacidade() {
         </View>
       </View>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <View style={styles.cardIconContainer}>
-            <Shield color="#2E7D32" size={28} />
+      <View style={TabsStyles.todosCard}>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <View style={styles.cardIconContainer}>
+              <Shield color="#2E7D32" size={28} />
+            </View>
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardTitle}>Conta Protegida</Text>
+              <Text style={styles.cardSubtitle}>Seu nível de segurança está alto</Text>
+            </View>
           </View>
-          <View style={styles.cardTextContainer}>
-            <Text style={styles.cardTitle}>Conta Protegida</Text>
-            <Text style={styles.cardSubtitle}>Seu nível de segurança está alto</Text>
+          <View style={styles.separator} />
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>95%</Text>
+              <Text style={styles.statLabel}>Segurança</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>2</Text>
+              <Text style={styles.statLabel}>Fatores</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>24h</Text>
+              <Text style={styles.statLabel}>Ativo</Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.separator} />
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>95%</Text>
-            <Text style={styles.statLabel}>Segurança</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>2</Text>
-            <Text style={styles.statLabel}>Fatores</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>24h</Text>
-            <Text style={styles.statLabel}>Ativo</Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <View style={styles.sectionHeader}>
-          <Lock color="#E53935" size={20} />
-          <Text style={styles.sectionTitle}>Alterar Senha</Text>
         </View>
 
-        <Text style={styles.inputLabel}>Senha atual</Text>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            secureTextEntry={!showCurrent}
-            style={styles.textInput}
-            placeholder=""
-            value={currentPwd}
-            onChangeText={setCurrentPwd}
-          />
+        <View style={styles.card}>
+          <View style={styles.sectionHeader}>
+            <Lock color="#E53935" size={20} />
+            <Text style={styles.sectionTitle}>Alterar Senha</Text>
+          </View>
+
+          <Text style={styles.inputLabel}>Senha atual</Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              secureTextEntry={!showCurrent}
+              style={styles.textInput}
+              placeholder=""
+              value={currentPwd}
+              onChangeText={setCurrentPwd}
+            />
+            <TouchableOpacity
+              style={styles.eyeButton}
+              onPress={() => setShowCurrent(v => !v)}
+              activeOpacity={0.7}
+            >
+              {showCurrent ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.inputLabel}>Nova senha</Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              secureTextEntry={!showNew}
+              style={styles.textInput}
+              placeholder=""
+              value={newPwd}
+              onChangeText={setNewPwd}
+            />
+            <TouchableOpacity
+              style={styles.eyeButton}
+              onPress={() => setShowNew(v => !v)}
+              activeOpacity={0.7}
+            >
+              {showNew ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.inputLabel}>Confirmar nova senha</Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              secureTextEntry={!showConfirm}
+              style={styles.textInput}
+              placeholder=""
+              value={confirmPwd}
+              onChangeText={setConfirmPwd}
+            />
+            <TouchableOpacity
+              style={styles.eyeButton}
+              onPress={() => setShowConfirm(v => !v)}
+              activeOpacity={0.7}
+            >
+              {showConfirm ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity
-            style={styles.eyeButton}
-            onPress={() => setShowCurrent(v => !v)}
-            activeOpacity={0.7}
+            style={[styles.actionButton, !canSubmit && styles.actionButtonDisabled]}
+            onPress={handleChangePassword}
+            activeOpacity={0.8}
+            disabled={!canSubmit}
           >
-            {showCurrent ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
+            <Text style={[styles.buttonText, !canSubmit && styles.buttonTextDisabled]}>Alterar Senha</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.inputLabel}>Nova senha</Text>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            secureTextEntry={!showNew}
-            style={styles.textInput}
-            placeholder=""
-            value={newPwd}
-            onChangeText={setNewPwd}
-          />
-          <TouchableOpacity
-            style={styles.eyeButton}
-            onPress={() => setShowNew(v => !v)}
-            activeOpacity={0.7}
-          >
-            {showNew ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.inputLabel}>Confirmar nova senha</Text>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            secureTextEntry={!showConfirm}
-            style={styles.textInput}
-            placeholder=""
-            value={confirmPwd}
-            onChangeText={setConfirmPwd}
-          />
-          <TouchableOpacity
-            style={styles.eyeButton}
-            onPress={() => setShowConfirm(v => !v)}
-            activeOpacity={0.7}
-          >
-            {showConfirm ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          style={[styles.actionButton, !canSubmit && styles.actionButtonDisabled]}
-          onPress={handleChangePassword}
-          activeOpacity={0.8}
-          disabled={!canSubmit}
-        >
-          <Text style={[styles.buttonText, !canSubmit && styles.buttonTextDisabled]}>Alterar Senha</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.card}>
-        <View style={styles.sectionHeader}>
-          <TriangleAlert color="#FFA000" size={20} />
-          <Text style={styles.sectionTitle}>Dicas de Segurança</Text>
-        </View>
-        {dicasDeSeguranca.map((dica, index) => (
-          <View key={index} style={styles.tipItem}>
-            <Text style={styles.tipBullet}>•</Text>
-            <Text style={styles.tipText}>{dica}</Text>
+        <View style={styles.card}>
+          <View style={styles.sectionHeader}>
+            <TriangleAlert color="#FFA000" size={20} />
+            <Text style={styles.sectionTitle}>Dicas de Segurança</Text>
           </View>
-        ))}
+          {dicasDeSeguranca.map((dica, index) => (
+            <View key={index} style={styles.tipItem}>
+              <Text style={styles.tipBullet}>•</Text>
+              <Text style={styles.tipText}>{dica}</Text>
+            </View>
+          ))}
+        </View>
       </View>
     </ScrollView>
   );
@@ -174,8 +176,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 24,
-    marginTop: 16,
-    marginBottom: 16,
     elevation: 5,
     shadowColor: "#000",
     shadowOpacity: 0.06,
@@ -253,11 +253,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   textInput: {
-     backgroundColor: "#F5F5F5",
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        justifyContent: "center",
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    justifyContent: "center",
   },
   eyeButton: {
     position: 'absolute',

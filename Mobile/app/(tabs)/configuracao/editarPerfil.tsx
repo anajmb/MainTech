@@ -241,7 +241,7 @@ export default function EditarPerfil() {
           </View>
         </View>
 
-        <View style={styles.todosCard}>
+        <View style={TabsStyles.todosCard}>
           <View style={styles.card}>
             <View style={styles.cardFoto}>
               <View>
@@ -377,11 +377,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
     borderRadius: 10,
-  },
-  /* reduz padding interno do container que adicionava espaço extra */
-  todosCard: {
-    gap: 20,
-    paddingBottom: 100,
   },
   opcaoForm: {},
   input: {

@@ -1,5 +1,6 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
+import { Tabs } from "expo-router";
 import { Calendar, User } from "lucide-react-native";
 import { useState } from "react";
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -122,7 +123,7 @@ export default function NovaTarefa() {
                 </View>
             </View>
 
-            <View style={styles.todosCard}>
+            <View style={TabsStyles.todosCard}>
                 <View style={styles.card}>
                     <View>
                         <Text style={styles.label}>Titulo</Text>
@@ -233,10 +234,6 @@ export default function NovaTarefa() {
 }
 
 const styles = StyleSheet.create({
-    todosCard: {
-        gap: 30,
-        paddingBottom: 50,
-    },
     botaoSalvar: {
         backgroundColor: "#A50702",
         color: "#fff",
