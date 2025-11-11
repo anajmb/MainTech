@@ -46,7 +46,7 @@ export default function SplashScreen() {
                     <Text style={styles.logoTexto}>MAINTECH</Text>
                 </View>
 
-                <Text style={styles.subtitulo}>Sistema de Inspeção</Text>
+                <Text style={styles.subtitulo}>Gestão de máquinas</Text>
             </View>
         </View>
     );

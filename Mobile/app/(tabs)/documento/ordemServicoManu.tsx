@@ -94,22 +94,6 @@ export default function OrdemServico() {
                 </View>
             </View>
 
-            <View style={styles.infoCard}>
-                <Text style={styles.infoCardTitulo}>Detalhes da Solicitação</Text>
-                <View style={styles.infoLinha}>
-                    <Text style={styles.infoLabel}>Máquina (ID):</Text>
-                    <Text style={styles.infoValor}>{ordem.machineId}</Text>
-                </View>
-                <View style={styles.infoLinha}>
-                    <Text style={styles.infoLabel}>Status:</Text>
-                    <Text style={styles.infoValor}>{status}</Text>
-                </View>
-                <View style={styles.infoLinha}>
-                    <Text style={styles.infoLabel}>Data de Criação:</Text>
-                    <Text style={styles.infoValor}>{dataCriacao}</Text>
-                </View>
-            </View>
-
             {/* --- CORREÇÃO AQUI ---
                 O componente 'Relatorio' espera a prop 'ordem' (o objeto inteiro),
                 e não a prop 'payload'.

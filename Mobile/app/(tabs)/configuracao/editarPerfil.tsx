@@ -152,209 +152,209 @@ export default function EditarPerfil() {
     });
   }
 
- const savePhotoAutomatically = async (uri: string) => {
-  if (!user?.id) {
-    Alert.alert("Erro", "Usuário não encontrado para salvar a foto.");
-    return;
-  }
-
-  try {
-    // 🔧 Reduz tamanho da imagem antes de converter para Base64
-    const manipulated = await manipulateAsync(
-      uri,
-      [{ resize: { width: 512 } }],
-      { compress: 0.7, format: SaveFormat.JPEG }
-    );
-
-    const base64Image = await toBase64(manipulated.uri);
-
-    await api.put(`/employees/update/${user.id}`, {
-      ...user,
-      photo: base64Image,
-    });
-
-    // Atualiza o contexto global instantaneamente
-    await updateUser({
-      photo: base64Image,
-    });
-
-  } catch (error) {
-    console.log("Erro ao atualizar foto automaticamente:", error);
-    Alert.alert("Erro", "Não foi possível atualizar a foto do perfil.");
-  }
-};
-
-async function handleSave() {
-  if (!canSave || !user?.id) return Alert.alert("Erro", "Preencha todos os campos corretamente antes de salvar.");
-
-  try {
-    let base64Image = image;
-    if (image && image.startsWith("file://")) {
-      base64Image = await toBase64(image);
+  const savePhotoAutomatically = async (uri: string) => {
+    if (!user?.id) {
+      Alert.alert("Erro", "Usuário não encontrado para salvar a foto.");
+      return;
     }
 
-    await api.put(`/employees/update/${user.id}`, {
-      name: nome,
-      email,
-      phone: telefone,
-      cpf,
-      birthDate: dataNascimento,
-      photo: base64Image,
-    });
+    try {
+      // 🔧 Reduz tamanho da imagem antes de converter para Base64
+      const manipulated = await manipulateAsync(
+        uri,
+        [{ resize: { width: 512 } }],
+        { compress: 0.7, format: SaveFormat.JPEG }
+      );
 
-    await updateUser({
-      ...user,
-      name: nome,
-      email,
-      phone: telefone,
-      cpf,
-      birthDate: dataNascimento,
-      photo: base64Image || undefined,
-    });
+      const base64Image = await toBase64(manipulated.uri);
 
-    Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
-  } catch (error) {
-    console.log("Erro ao atualizar perfil:", error);
-    Alert.alert("Erro", "Não foi possível atualizar o perfil.");
+      await api.put(`/employees/update/${user.id}`, {
+        ...user,
+        photo: base64Image,
+      });
+
+      // Atualiza o contexto global instantaneamente
+      await updateUser({
+        photo: base64Image,
+      });
+
+    } catch (error) {
+      console.log("Erro ao atualizar foto automaticamente:", error);
+      Alert.alert("Erro", "Não foi possível atualizar a foto do perfil.");
+    }
+  };
+
+  async function handleSave() {
+    if (!canSave || !user?.id) return Alert.alert("Erro", "Preencha todos os campos corretamente antes de salvar.");
+
+    try {
+      let base64Image = image;
+      if (image && image.startsWith("file://")) {
+        base64Image = await toBase64(image);
+      }
+
+      await api.put(`/employees/update/${user.id}`, {
+        name: nome,
+        email,
+        phone: telefone,
+        cpf,
+        birthDate: dataNascimento,
+        photo: base64Image,
+      });
+
+      await updateUser({
+        ...user,
+        name: nome,
+        email,
+        phone: telefone,
+        cpf,
+        birthDate: dataNascimento,
+        photo: base64Image || undefined,
+      });
+
+      Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
+    } catch (error) {
+      console.log("Erro ao atualizar perfil:", error);
+      Alert.alert("Erro", "Não foi possível atualizar o perfil.");
+    }
   }
-}
 
-return (
-  <KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    style={{ flex: 1 }}
-    keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 60}
-  >
-    <ScrollView
-      style={TabsStyles.container}
-      /* reduz o espaço padrão e limita o padding quando o teclado estiver aberto */
-      contentContainerStyle={{ flexGrow: 1, paddingBottom: Math.min(40 + keyboardHeight, 220) }}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="interactive"
-      showsVerticalScrollIndicator={false}
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 60}
     >
-      <View style={TabsStyles.headerPrincipal}>
-        <SetaVoltar />
-        <View style={TabsStyles.conjHeaderPrincipal}>
-          <Text style={TabsStyles.tituloPrincipal}>Editar Perfil</Text>
-          <Text style={TabsStyles.subtituloPrincipal}>Atualize suas informações</Text>
-        </View>
-      </View>
-
-      <View style={styles.todosCard}>
-        <View style={styles.card}>
-          <View style={styles.cardFoto}>
-            <View>
-              <View style={styles.avatarContainer}>
-                {image ? <Image source={{ uri: image }} style={styles.avatarImage} /> : <User color={"#fff"} size={50} strokeWidth={1.5} />}
-              </View>
-              <TouchableOpacity style={styles.cameraIconContainer} onPress={handleImagePicker}>
-                <Camera color={"#CE221E"} size={20} />
-              </TouchableOpacity>
-            </View>
-            <Text style={{ color: "#858585", fontSize: 14 }}>Toque no ícone para editar a foto</Text>
+      <ScrollView
+        style={TabsStyles.container}
+        /* reduz o espaço padrão e limita o padding quando o teclado estiver aberto */
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: Math.min(40 + keyboardHeight, 220) }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={TabsStyles.headerPrincipal}>
+          <SetaVoltar />
+          <View style={TabsStyles.conjHeaderPrincipal}>
+            <Text style={TabsStyles.tituloPrincipal}>Editar Perfil</Text>
+            <Text style={TabsStyles.subtituloPrincipal}>Atualize suas informações</Text>
           </View>
         </View>
 
-        <View style={styles.card}>
-          <View style={styles.formEditar}>
-            <View style={styles.opcaoForm}>
-              <View style={styles.iconELabel}>
-                <User strokeWidth={1.5} size={22} />
-                <Text style={styles.label}>Nome completo</Text>
-              </View>
-              <TextInput
-                style={styles.input}
-                value={nome}
-                onChangeText={setNome}
-                placeholder="Digite seu nome"
-                returnKeyType="next"
-              />
-            </View>
-
-            <View style={styles.opcaoForm}>
-              <View style={styles.iconELabel}>
-                <Mail strokeWidth={1.5} size={22} />
-                <Text style={styles.label}>E-mail</Text>
-              </View>
-              <TextInput
-                ref={emailRef}
-                style={styles.input}
-                value={email}
-                onChangeText={(t) => {
-                  setEmail(t);
-                  if (emailError) setEmailError(null);
-                }}
-                placeholder="email@exemplo.com"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                returnKeyType="done"
-              />
-              {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-            </View>
-
-            <View style={styles.opcaoForm}>
-              <View style={styles.iconELabel}>
-                <Phone strokeWidth={1.5} size={22} />
-                <Text style={styles.label}>Telefone</Text>
-              </View>
-              <TextInput
-                style={styles.input}
-                value={telefone}
-                onChangeText={(t) => setTelefone(t.replace(/[^\d]/g, "").slice(0, 11))}
-                placeholder="(99) 99999-9999"
-                keyboardType="phone-pad"
-                maxLength={11}
-              />
-            </View>
-
-            <View style={styles.opcaoForm}>
-              <View style={styles.iconELabel}>
-                <IdCard strokeWidth={1.5} size={22} />
-                <Text style={styles.label}>CPF</Text>
-              </View>
-              <TextInput
-                ref={cpfRef}
-                style={styles.input}
-                value={cpf}
-                onChangeText={handleCpfChange}
-                placeholder="00000000000"
-                keyboardType="number-pad"
-                maxLength={11}
-                editable={false}
-              />
-              {cpfError ? <Text style={styles.errorText}>{cpfError}</Text> : null}
-            </View>
-
-            <View style={styles.opcaoForm}>
-              <View style={styles.iconELabel}>
-                <Calendar strokeWidth={1.5} size={22} />
-                <Text style={styles.label}>Data de nascimento</Text>
-              </View>
-              <TouchableOpacity activeOpacity={0.8} onPress={() => { Keyboard.dismiss(); /* aqui pode abrir DatePicker */ }}>
-                <View pointerEvents="none">
-                  <TextInput style={styles.input}  editable={false} value={dataNascimento} placeholder="DD/MM/AAAA" editable={false} />
+        <View style={styles.todosCard}>
+          <View style={styles.card}>
+            <View style={styles.cardFoto}>
+              <View>
+                <View style={styles.avatarContainer}>
+                  {image ? <Image source={{ uri: image }} style={styles.avatarImage} /> : <User color={"#fff"} size={50} strokeWidth={1.5} />}
                 </View>
-              </TouchableOpacity>
+                <TouchableOpacity style={styles.cameraIconContainer} onPress={handleImagePicker}>
+                  <Camera color={"#CE221E"} size={20} />
+                </TouchableOpacity>
+              </View>
+              <Text style={{ color: "#858585", fontSize: 14 }}>Toque no ícone para editar a foto</Text>
             </View>
           </View>
-        </View>
 
+          <View style={styles.card}>
+            <View style={styles.formEditar}>
+              <View style={styles.opcaoForm}>
+                <View style={styles.iconELabel}>
+                  <User strokeWidth={1.5} size={22} />
+                  <Text style={styles.label}>Nome completo</Text>
+                </View>
+                <TextInput
+                  style={styles.input}
+                  value={nome}
+                  onChangeText={setNome}
+                  placeholder="Digite seu nome"
+                  returnKeyType="next"
+                />
+              </View>
 
-        <TouchableOpacity
-          style={{ alignItems: "center", marginTop: 10 }}
-          onPress={handleSave}
-          activeOpacity={0.8}
-          disabled={!canSave}
-        >
-          <View style={[TabsStyles.viewBotaoPrincipal, !canSave && styles.disabledBotao]}>
-            <Text style={[TabsStyles.botaoText, !canSave && styles.disabledBotaoText]}>Salvar Alterações</Text>
+              <View style={styles.opcaoForm}>
+                <View style={styles.iconELabel}>
+                  <Mail strokeWidth={1.5} size={22} />
+                  <Text style={styles.label}>E-mail</Text>
+                </View>
+                <TextInput
+                  ref={emailRef}
+                  style={styles.input}
+                  value={email}
+                  onChangeText={(t) => {
+                    setEmail(t);
+                    if (emailError) setEmailError(null);
+                  }}
+                  placeholder="email@exemplo.com"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  returnKeyType="done"
+                />
+                {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+              </View>
+
+              <View style={styles.opcaoForm}>
+                <View style={styles.iconELabel}>
+                  <Phone strokeWidth={1.5} size={22} />
+                  <Text style={styles.label}>Telefone</Text>
+                </View>
+                <TextInput
+                  style={styles.input}
+                  value={telefone}
+                  onChangeText={(t) => setTelefone(t.replace(/[^\d]/g, "").slice(0, 11))}
+                  placeholder="(99) 99999-9999"
+                  keyboardType="phone-pad"
+                  maxLength={11}
+                />
+              </View>
+
+              <View style={styles.opcaoForm}>
+                <View style={styles.iconELabel}>
+                  <IdCard strokeWidth={1.5} size={22} />
+                  <Text style={styles.label}>CPF</Text>
+                </View>
+                <TextInput
+                  ref={cpfRef}
+                  style={styles.input}
+                  value={cpf}
+                  onChangeText={handleCpfChange}
+                  placeholder="00000000000"
+                  keyboardType="number-pad"
+                  maxLength={11}
+                  editable={false}
+                />
+                {cpfError ? <Text style={styles.errorText}>{cpfError}</Text> : null}
+              </View>
+
+              <View style={styles.opcaoForm}>
+                <View style={styles.iconELabel}>
+                  <Calendar strokeWidth={1.5} size={22} />
+                  <Text style={styles.label}>Data de nascimento</Text>
+                </View>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => { Keyboard.dismiss(); /* aqui pode abrir DatePicker */ }}>
+                  <View pointerEvents="none">
+                    <TextInput style={styles.input} editable={false} value={dataNascimento} placeholder="DD/MM/AAAA" />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  </KeyboardAvoidingView>
-);
+
+
+          <TouchableOpacity
+            style={{ alignItems: "center", marginTop: 10 }}
+            onPress={handleSave}
+            activeOpacity={0.8}
+            disabled={!canSave}
+          >
+            <View style={[TabsStyles.viewBotaoPrincipal, !canSave && styles.disabledBotao]}>
+              <Text style={[TabsStyles.botaoText, !canSave && styles.disabledBotaoText]}>Salvar Alterações</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 }
 
 
@@ -385,9 +385,12 @@ const styles = StyleSheet.create({
   },
   opcaoForm: {},
   input: {
-    backgroundColor: "#E6E6E6",
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 8,
+    fontSize: 14,
   },
   label: {
     fontSize: 14,
@@ -433,21 +436,21 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   disabledBotao: {
-      backgroundColor: "#A50702",
-        color: "#fff",
-        borderRadius: 10,
-        paddingVertical: 12,
-        width: "62%",
-        marginTop: 25,
-        marginBottom: 30,
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "center"
+    backgroundColor: "#A50702",
+    color: "#fff",
+    borderRadius: 10,
+    paddingVertical: 12,
+    width: "62%",
+    marginTop: 25,
+    marginBottom: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center"
   },
   disabledBotaoText: {
     color: "#fff",
-        fontSize: 15,
-        fontWeight: "400"
+    fontSize: 15,
+    fontWeight: "400"
   },
   errorText: {
     color: "#CE221E",
