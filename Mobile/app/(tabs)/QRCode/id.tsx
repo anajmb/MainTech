@@ -42,63 +42,65 @@ export default function NovaTarefa() {
                 </View>
             </View>
 
-            <View style={styles.containerCard}>
-                <View style={styles.card}>
-                    <Text style={styles.titleCard}>Indentifique a máquina que deseja ter mais informações</Text>
-                    <View >
-                        <Text style={styles.label}>ID:</Text>
-                        <TextInput
-                            placeholder="Digite o id da máquina"
-                            placeholderTextColor={'#8B8686'}
-                            style={styles.input}
-                            value={idInput}
-                            onChangeText={setIdInput}
-                        />
-                    </View>
-                    <View style={{ alignItems: 'center', marginTop: 10 }}>
-                        <TouchableOpacity
-                            style={styles.confirmBtn}
-                            onPress={() => {
-                                if (idInput.trim()) {
-
-                                    const dataParaEnviar = JSON.stringify({ id: idInput });
-
-                                    router.push({
-                                        pathname: "/QRCode/infoMaq",
-                                        params: { codigo: dataParaEnviar } // Enviamos o JSON
-                                    })
-                                }
-                            }}
-                            activeOpacity={0.8}
-                        >
-                            <Text style={{ color: "#fff", fontSize: 18, fontWeight: "400" }}>
-                                Confirmar
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-
-                {machines.map((machine) =>
+            <View style={TabsStyles.todosCard}>
+                <View style={styles.containerCard}>
                     <View style={styles.card}>
-                        <View>
-                            <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
-                            <View style={styles.subCard}>
+                        <Text style={styles.titleCard}>Indentifique a máquina que deseja ter mais informações</Text>
+                        <View >
+                            <Text style={styles.label}>ID:</Text>
+                            <TextInput
+                                placeholder="Digite o id da máquina"
+                                placeholderTextColor={'#8B8686'}
+                                style={styles.input}
+                                value={idInput}
+                                onChangeText={setIdInput}
+                            />
+                        </View>
+                        <View style={{ alignItems: 'center', marginTop: 10 }}>
+                            <TouchableOpacity
+                                style={styles.confirmBtn}
+                                onPress={() => {
+                                    if (idInput.trim()) {
 
-                                <Image
-                                    style={styles.image}
-                                    source={{ uri: `${machine.qrCode}` }}
-                                />
-                                <View style={styles.cardContent}>
-                                    <Text style={styles.maqTitle}>{machine.name}</Text>
-                                    <Text style={styles.maqSubTitle}>{machine.location}</Text>
-                                    <Text style={styles.maqId}>ID: {machine.id}</Text>
-                                </View>
-                            </View>
+                                        const dataParaEnviar = JSON.stringify({ id: idInput });
 
+                                        router.push({
+                                            pathname: "/QRCode/infoMaq",
+                                            params: { codigo: dataParaEnviar } // Enviamos o JSON
+                                        })
+                                    }
+                                }}
+                                activeOpacity={0.8}
+                            >
+                                <Text style={{ color: "#fff", fontSize: 18, fontWeight: "400" }}>
+                                    Confirmar
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
-                )}
+
+
+                    {machines.map((machine) =>
+                        <View style={styles.card}>
+                            <View>
+                                <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
+                                <View style={styles.subCard}>
+
+                                    <Image
+                                        style={styles.image}
+                                        source={{ uri: `${machine.qrCode}` }}
+                                    />
+                                    <View style={styles.cardContent}>
+                                        <Text style={styles.maqTitle}>{machine.name}</Text>
+                                        <Text style={styles.maqSubTitle}>{machine.location}</Text>
+                                        <Text style={styles.maqId}>ID: {machine.id}</Text>
+                                    </View>
+                                </View>
+
+                            </View>
+                        </View>
+                    )}
+                </View>
             </View>
         </ScrollView>
     )

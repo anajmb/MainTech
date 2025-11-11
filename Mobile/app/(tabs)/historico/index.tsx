@@ -20,48 +20,50 @@ export default function Historico() {
 
             </View>
 
-            <View style={style.cardStats}>
-                <View style={style.statsItem}>
-                    <Text style={style.statsNum}>24</Text>
-                    <Text style={style.statsTexto}>Hoje</Text>
+            <View style={TabsStyles.todosCard}>
+                <View style={style.cardStats}>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>24</Text>
+                        <Text style={style.statsTexto}>Hoje</Text>
+
+                    </View>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>158</Text>
+                        <Text style={style.statsTexto}>Esta semana</Text>
+                    </View>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>894</Text>
+                        <Text style={style.statsTexto}>Total</Text>
+                    </View>
+
 
                 </View>
-                <View style={style.statsItem}>
-                    <Text style={style.statsNum}>158</Text>
-                    <Text style={style.statsTexto}>Esta semana</Text>
-                </View>
-                <View style={style.statsItem}>
-                    <Text style={style.statsNum}>894</Text>
-                    <Text style={style.statsTexto}>Total</Text>
-                </View>
 
 
-            </View>
+                {/*card de historico informacoes */}
 
-
-            {/*card de historico informacoes */}
-
-            <View style={style.cardHistorico}>
-                <View >
-                    <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                            <View style={{ backgroundColor: "#E0F7EF", padding: 6, borderRadius: 50 }}>
-                                <CheckCircle color="#6FCF97" size={21} />
+                <View style={style.cardHistorico}>
+                    <View >
+                        <View style={{ flex: 1 }}>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                                <View style={{ backgroundColor: "#E0F7EF", padding: 6, borderRadius: 50 }}>
+                                    <CheckCircle color="#6FCF97" size={21} />
+                                </View>
+                                <Text style={style.tituloHistorico}>Sangrador pneumático de freios</Text>
                             </View>
-                            <Text style={style.tituloHistorico}>Sangrador pneumático de freios</Text>
-                        </View>
-                        <Text style={style.subtituloHistorico}>Tarefa concluída</Text>
-                        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6, gap: 8 }}>
-                            <Text style={style.dataHistorico}>15/07/2025</Text>
-                        </View>
-                        <View>
-                            <Text style={style.horaHistorico}>15:30</Text>
+                            <Text style={style.subtituloHistorico}>Tarefa concluída</Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6, gap: 8 }}>
+                                <Text style={style.dataHistorico}>15/07/2025</Text>
+                            </View>
+                            <View>
+                                <Text style={style.horaHistorico}>15:30</Text>
 
+                            </View>
                         </View>
                     </View>
-                </View>
-                <View>
-                    <Text style={style.ConcluidoText}>Concluído</Text>
+                    <View>
+                        <Text style={style.ConcluidoText}>Concluído</Text>
+                    </View>
                 </View>
             </View>
 
