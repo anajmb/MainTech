@@ -1,76 +1,93 @@
+import { useEffect, useState } from "react";
 import Logo from "@/components/logo";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { CheckCircle } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { api } from "@/lib/axios";
+import { useAuth } from "@/contexts/authContext";
+
 
 export default function Historico() {
+    const [historico, setHistorico] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
+
+    useEffect(() => {
+        const fetchHistorico = async () => {
+            if (!user) return;
+            try {
+                console.log("🔍 Buscando histórico para o usuário:", user.id);
+                const response = await api.get(`/history/get/user/${user.id}`);
+                console.log("📦 Histórico recebido:", response.data);
+                setHistorico(response.data);
+            } catch (error) {
+                console.error("Erro ao carregar histórico:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHistorico();
+    }, [user]);
+
+
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator size="large" color="#CE221E" />
+            </View>
+        );
+    }
+
     return (
         <ScrollView style={TabsStyles.container}>
-
             <Logo />
-
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Histórico</Text>
-                    <Text style={TabsStyles.subtituloPrincipal}>Suas atividades recentes  </Text>
-
+                    <Text style={TabsStyles.subtituloPrincipal}>Suas atividades recentes</Text>
                 </View>
-
             </View>
 
             <View style={TabsStyles.todosCard}>
-                <View style={style.cardStats}>
-                    <View style={style.statsItem}>
-                        <Text style={style.statsNum}>24</Text>
-                        <Text style={style.statsTexto}>Hoje</Text>
-
-                    </View>
-                    <View style={style.statsItem}>
-                        <Text style={style.statsNum}>158</Text>
-                        <Text style={style.statsTexto}>Esta semana</Text>
-                    </View>
-                    <View style={style.statsItem}>
-                        <Text style={style.statsNum}>894</Text>
-                        <Text style={style.statsTexto}>Total</Text>
-                    </View>
-
-
-                </View>
-
-
-                {/*card de historico informacoes */}
-
-                <View style={style.cardHistorico}>
-                    <View >
-                        <View style={{ flex: 1 }}>
-                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                                <View style={{ backgroundColor: "#E0F7EF", padding: 6, borderRadius: 50 }}>
-                                    <CheckCircle color="#6FCF97" size={21} />
-                                </View>
-                                <Text style={style.tituloHistorico}>Sangrador pneumático de freios</Text>
-                            </View>
-                            <Text style={style.subtituloHistorico}>Tarefa concluída</Text>
-                            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6, gap: 8 }}>
-                                <Text style={style.dataHistorico}>15/07/2025</Text>
-                            </View>
+                {historico.length === 0 ? (
+                    <Text style={{ textAlign: "center", marginTop: 20, color: "#888" }}>
+                        Nenhum histórico encontrado.
+                    </Text>
+                ) : (
+                    historico.map((item, index) => (
+                        <View key={index} style={style.cardHistorico}>
                             <View>
-                                <Text style={style.horaHistorico}>15:30</Text>
-
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                                    <View style={{ backgroundColor: "#E0F7EF", padding: 6, borderRadius: 50 }}>
+                                        <CheckCircle color="#6FCF97" size={21} />
+                                    </View>
+                                    <Text style={style.tituloHistorico}>
+                                        {item.action}
+                                    </Text>
+                                </View>
+                                <Text style={style.subtituloHistorico}>
+                                    {item.description}
+                                </Text>
+                                <Text style={style.dataHistorico}>
+                                    {new Date(item.createdAt).toLocaleDateString()}
+                                </Text>
+                                <Text style={style.horaHistorico}>
+                                    {new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                </Text>
                             </View>
+                            <Text style={style.ConcluidoText}>
+                                {item.entityType}
+                            </Text>
                         </View>
-                    </View>
-                    <View>
-                        <Text style={style.ConcluidoText}>Concluído</Text>
-                    </View>
-                </View>
+                    ))
+                )}
             </View>
-
-
         </ScrollView>
-    )
-
+    );
 }
 
 const style = StyleSheet.create({
@@ -83,13 +100,10 @@ const style = StyleSheet.create({
         paddingVertical: 18,
         paddingHorizontal: 24,
         marginHorizontal: 8,
-        marginTop: 18,
-        marginBottom: 18,
+        marginTop: 18, marginBottom: 18,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.10,
-        shadowRadius: 4,
-        elevation: 3,
+        shadowOpacity: 0.10, shadowRadius: 4, elevation: 3,
     },
     statsItem: {
         alignItems: "center",
@@ -101,7 +115,6 @@ const style = StyleSheet.create({
         color: "#CE221E",
         marginBottom: 2,
     },
-
     statsTexto: {
         fontSize: 14,
         color: "#888",
@@ -141,8 +154,6 @@ const style = StyleSheet.create({
         marginLeft: 115,
         marginTop: -11.5,
     },
-
-
     ConcluidoText: {
         color: "#CE221E",
         fontSize: 15,
@@ -150,5 +161,3 @@ const style = StyleSheet.create({
         marginLeft: 240,
     },
 });
-
-

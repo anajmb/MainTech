@@ -19,7 +19,7 @@ type AuthContextType = {
   setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
   updateUser: (data: Partial<UserType>) => Promise<void>;
   logout: () => Promise<void>;
-  loginUser: (user:any) => void;
+  loginUser: (user: any) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,8 +30,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 🔹 Carrega o usuário salvo ao iniciar
   useEffect(() => {
     (async () => {
-      const storedUser = await AsyncStorage.getItem("user");
-      if (storedUser) setUser(JSON.parse(storedUser));
+      try {
+        const keepConnected = await AsyncStorage.getItem("keepConnected");
+        const storedUser = await AsyncStorage.getItem("user");
+        const token = await AsyncStorage.getItem("token");
+
+        // 🔹 Só restaura se o usuário quis manter-se conectado
+        if (keepConnected === "true" && storedUser && token) {
+          setUser(JSON.parse(storedUser));
+          console.log("Sessão restaurada automaticamente.");
+        } else {
+          console.log("Login automático desativado.");
+          await AsyncStorage.removeItem("user");
+          await AsyncStorage.removeItem("token");
+        }
+      } catch (error) {
+        console.error("Erro ao restaurar sessão:", error);
+      }
     })();
   }, []);
 
@@ -44,15 +59,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
 
-  function loginUser (user:any) {
+  function loginUser(user: any) {
     setUser(user);
 
   }
 
   // 🔹 Logout — limpa tudo e reseta o estado
   async function logout() {
-    await AsyncStorage.clear();
+    await AsyncStorage.removeItem("user");
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("keepConnected");
     setUser(null);
+    console.log("Logout concluído — sessão limpa manualmente.");
   }
 
   return (

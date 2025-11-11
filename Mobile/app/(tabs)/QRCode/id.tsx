@@ -80,10 +80,10 @@ export default function NovaTarefa() {
                     </View>
 
 
-                    {machines.map((machine) =>
                         <View style={styles.card}>
                             <View>
                                 <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
+                    {machines.map((machine) =>
                                 <View style={styles.subCard}>
 
                                     <Image
@@ -97,9 +97,9 @@ export default function NovaTarefa() {
                                     </View>
                                 </View>
 
+)}
                             </View>
                         </View>
-                    )}
                 </View>
             </View>
         </ScrollView>
