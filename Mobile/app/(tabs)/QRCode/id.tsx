@@ -37,7 +37,7 @@ export default function NovaTarefa() {
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
-                    <Text style={TabsStyles.tituloPrincipal}>Indentificação</Text>
+                    <Text style={TabsStyles.tituloPrincipal}>Identificação</Text>
                     <Text style={TabsStyles.subtituloPrincipal}>de Máquinas</Text>
                 </View>
             </View>
@@ -45,8 +45,8 @@ export default function NovaTarefa() {
             <View style={styles.containerCard}>
                 <View style={styles.card}>
                     <Text style={styles.titleCard}>Indentifique a máquina que deseja ter mais informações</Text>
-                    <View style={{ marginBottom: 20 }}>
-                        <Text style={styles.label}>ID</Text>
+                    <View >
+                        <Text style={styles.label}>ID:</Text>
                         <TextInput
                             placeholder="Digite o id da máquina"
                             placeholderTextColor={'#8B8686'}
@@ -90,12 +90,12 @@ export default function NovaTarefa() {
                                     source={{ uri: `${machine.qrCode}` }}
                                 />
                                 <View style={styles.cardContent}>
-                                <Text style={styles.maqTitle}>{machine.name}</Text>
-                                <Text style={styles.maqSubTitle}>{machine.location}</Text>
-                                <Text style={styles.maqId}>ID: {machine.id}</Text>
+                                    <Text style={styles.maqTitle}>{machine.name}</Text>
+                                    <Text style={styles.maqSubTitle}>{machine.location}</Text>
+                                    <Text style={styles.maqId}>ID: {machine.id}</Text>
+                                </View>
                             </View>
-                            </View>
-                           
+
                         </View>
                     </View>
                 )}
@@ -109,29 +109,30 @@ const styles = StyleSheet.create({
         gap: 30,
     },
     titleCard: {
-        fontSize: 21,
-        fontWeight: "500",
-        color: "gray",
-        marginBottom: 30,
+        fontSize: 20,
         textAlign: "center",
+        color: "#6c6c6c",
+        marginTop: 20,
+        marginBottom: 20,
     },
     qrCodeCard: {
         fontSize: 19,
         fontWeight: "500",
         color: "gray",
-        marginBottom: 40,
+        marginBottom: 20,
         textAlign: "center",
     },
     card: {
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
         backgroundColor: '#eeeeee',
-        padding: 25,
+        padding: 20,
         borderRadius: 10,
     },
     label: {
-        fontSize: 12,
+        fontSize: 15,
         textAlign: 'left',
-        marginBottom: 8
+        marginBottom: 8,
+        marginLeft: 4
     },
     tituloCard: {
         fontSize: 15,
@@ -149,6 +150,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 15,
         flexDirection: "row",
+        marginVertical: 8,
+        elevation: 2,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
     },
     confirmBtn: {
         backgroundColor: "#A50702",
@@ -172,6 +182,7 @@ const styles = StyleSheet.create({
     cardContent: {
         flex: 1,
         flexShrink: 1,
+        backgroundColor: "#fff"
     },
     maqTitle: {
         fontSize: 18,
