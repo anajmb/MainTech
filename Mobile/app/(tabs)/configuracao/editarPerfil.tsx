@@ -432,15 +432,16 @@ const styles = StyleSheet.create({
   },
   disabledBotao: {
     backgroundColor: "#A50702",
-    color: "#fff",
-    borderRadius: 10,
-    paddingVertical: 12,
-    width: "62%",
-    marginTop: 25,
-    marginBottom: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center"
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 10,
+        marginBottom: 30,
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center"
+
   },
   disabledBotaoText: {
     color: "#fff",

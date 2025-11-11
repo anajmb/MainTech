@@ -64,23 +64,11 @@ export default function Privacidade() {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardTitle}>Conta Protegida</Text>
-              <Text style={styles.cardSubtitle}>Seu nível de segurança está alto</Text>
+              <Text style={styles.cardSubtitle}>Proteção de alto nível </Text>
             </View>
           </View>
-          <View style={styles.separator} />
+        
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>95%</Text>
-              <Text style={styles.statLabel}>Segurança</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>2</Text>
-              <Text style={styles.statLabel}>Fatores</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>24h</Text>
-              <Text style={styles.statLabel}>Ativo</Text>
-            </View>
           </View>
         </View>
 
@@ -145,12 +133,15 @@ export default function Privacidade() {
           </View>
 
           <TouchableOpacity
-            style={[styles.actionButton, !canSubmit && styles.actionButtonDisabled]}
+            style={[
+              styles.btnAlterarSenha,
+              { backgroundColor: canSubmit ? "#A50702" : "#BDBDBD" }
+            ]}
             onPress={handleChangePassword}
             activeOpacity={0.8}
             disabled={!canSubmit}
           >
-            <Text style={[styles.buttonText, !canSubmit && styles.buttonTextDisabled]}>Alterar Senha</Text>
+            <Text style={styles.btnAlterarSenhaText}>Alterar senha</Text>
           </TouchableOpacity>
         </View>
 
@@ -185,6 +176,8 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: -10,
+    
   },
   cardIconContainer: {
     backgroundColor: 'rgba(46, 125, 50, 0.1)',
@@ -268,26 +261,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  actionButton: {
-    backgroundColor: "#E53935",
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 24,
-    alignItems: 'center'
-  },
-  actionButtonDisabled: {
-    backgroundColor: "#D8D8D8",
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontWeight: "400",
-    fontSize: 16,
-  },
-  buttonTextDisabled: {
-    color: "#AAAAAA",
-    justifyContent: "center",
-    alignSelf: "center",
-  },
+  
   tipItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -305,4 +279,20 @@ const styles = StyleSheet.create({
     color: '#666',
     lineHeight: 22,
   },
-});
+  btnAlterarSenha: {
+    borderRadius: 10,
+    paddingVertical: 12,
+    width: 220,
+    alignSelf: "center",
+    alignItems: "center",
+    marginTop: 18,
+    marginBottom: 8,
+    backgroundColor: "#A50702",
+  },
+  btnAlterarSenhaText: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "400",
+    textAlign: "center",
+  },
+});''
