@@ -164,6 +164,7 @@ export default function FazerTarefa() {
 
         console.log("Enviando:", {
             machineId: machineData.id,
+            machineName: machineData.name, // <-- MUDANÇA MÍNIMA AQUI
             priority: selectedPrioridade,
             payload: result,
         });
@@ -173,6 +174,7 @@ export default function FazerTarefa() {
             // ATENÇÃO: Verifique o endpoint da sua API
             const res = await api.post("/serviceOrders/create", {
                 machineId: machineData.id,
+                machineName: machineData.name, // <-- MUDANÇA MÍNIMA AQUI
                 priority: selectedPrioridade,
                 payload: result,
             });
@@ -206,10 +208,6 @@ export default function FazerTarefa() {
 
     // --- Render Principal ---
     const sets = machineData.sets || [];
-
-
-
-
 
     return (
         <ScrollView style={TabsStyles.container}>
