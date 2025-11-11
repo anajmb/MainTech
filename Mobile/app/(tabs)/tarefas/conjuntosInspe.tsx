@@ -33,7 +33,6 @@ interface Machines {
     tasks: any[];
 }
 
-// NOVO TIPO: Detalhes completos do Set para o Payload
 interface DetailedSelection {
     setId: number;
     setName: string;
@@ -43,23 +42,28 @@ interface DetailedSelection {
 }
 
 export default function ConjuntosInspe() {
-    // --- Hooks ---
     const router = useRouter();
-    const { machineData: machineDataJSON, selections: selectionsJSON, setId } =
-        useLocalSearchParams<{ machineData: string; selections: string; setId: string }>();
 
-    // --- States ---
+    // --- MUDANÇA 1: Ler o 'taskId' que veio da tela anterior ---
+    const { machineData: machineDataJSON, selections: selectionsJSON, setId, taskId: taskIdParam } =
+        useLocalSearchParams<{ machineData: string; selections: string; setId: string; taskId: string }>();
+    // --- Fim da Mudança 1 ---
+
     const [machineData, setMachineData] = useState<Machines | null>(null);
     const [currentSet, setCurrentSet] = useState<MachineSet | null>(null);
     const [selections, setSelections] = useState<Record<number, { changes: number[]; repairs: number[] }>>({});
+
+    // --- MUDANÇA 2: Criar um state para guardar o 'taskId' ---
+    const [taskId, setTaskId] = useState<number | null>(null);
+    // --- Fim da Mudança 2 ---
 
     const [currentStatus, setCurrentStatus] = useState<'perfeito' | 'avariado' | null>(null);
     const [selectedChanges, setSelectedChanges] = useState<Record<number, boolean>>({});
     const [selectedRepairs, setSelectedRepairs] = useState<Record<number, boolean>>({});
 
-    // --- Effects ---
     useEffect(() => {
-        if (machineDataJSON && selectionsJSON && setId) {
+        // --- MUDANÇA 3: Salvar o 'taskId' no state ---
+        if (machineDataJSON && selectionsJSON && setId && taskIdParam) {
             try {
                 const data: Machines = JSON.parse(machineDataJSON);
                 const currentSelections = JSON.parse(selectionsJSON);
@@ -67,12 +71,13 @@ export default function ConjuntosInspe() {
 
                 setMachineData(data);
                 setSelections(currentSelections);
+                setTaskId(Number(taskIdParam)); // Salva o taskId no state
+                // --- Fim da Mudança 3 ---
 
                 if (set) {
                     setCurrentSet(set);
                     const saved = currentSelections[set.id];
 
-                    // Lógica para carregar estado e seleções salvas
                     if (saved) {
                         const isPerfeito = saved.changes.length === 0 && saved.repairs.length === 0;
                         setCurrentStatus(isPerfeito ? "perfeito" : "avariado");
@@ -85,7 +90,6 @@ export default function ConjuntosInspe() {
                         saved.repairs.forEach((id) => (repairsMap[id] = true));
                         setSelectedRepairs(repairsMap);
                     } else {
-                        // Inicializa os toggles como falsos
                         const initChanges: Record<number, boolean> = {};
                         const initRepairs: Record<number, boolean> = {};
                         (set.subsets || []).forEach((s) => {
@@ -101,7 +105,7 @@ export default function ConjuntosInspe() {
                 Alert.alert("Erro", "Não foi possível carregar os dados do conjunto.");
             }
         }
-    }, [machineDataJSON, selectionsJSON, setId]);
+    }, [machineDataJSON, selectionsJSON, setId, taskIdParam]); // Adicionado taskIdParam
 
     function toggleChange(subId: number) {
         setSelectedChanges((prev) => ({ ...prev, [subId]: !prev[subId] }));
@@ -111,7 +115,14 @@ export default function ConjuntosInspe() {
     }
 
     function handleSaveAndReturn() {
-        if (!currentSet || !machineData) return; // Adicionado check para machineData
+        if (!currentSet || !machineData) return; 
+        
+        // --- MUDANÇA 4: Verificar se o taskId foi carregado ---
+        if (!taskId) {
+            Alert.alert("Erro", "ID da Tarefa não encontrado. Tente voltar e entrar novamente.");
+            return;
+        }
+        // --- Fim da Mudança 4 ---
 
         if (currentStatus === null) {
             Alert.alert("Atenção", "Por favor, selecione o estado do conjunto (Perfeito ou Avariado).");
@@ -126,13 +137,11 @@ export default function ConjuntosInspe() {
             repairs = Object.keys(selectedRepairs).filter(k => selectedRepairs[Number(k)]).map(Number);
         }
 
-        // 1. Atualiza o objeto de seleções de IDs
         const updatedSelections = {
             ...selections,
             [currentSet.id]: { changes, repairs }
         };
 
-        // 2. CRIAÇÃO DO PAYLOAD DETALHADO (com nomes)
         const allSubsets = currentSet.subsets || [];
 
         const detailedChanges = changes.map(id => {
@@ -153,18 +162,19 @@ export default function ConjuntosInspe() {
             subsetsRepaired: detailedRepairs,
         };
 
-        // 3. Navega DE VOLTA para o Hub, passando o estado e o detalhe
+        // --- MUDANÇA 5: Enviar o 'taskId' de volta ---
         router.replace({
             pathname: "/(tabs)/tarefas/fazerTarefaInspe",
             params: {
-                codigo: JSON.stringify({ id: machineData.id }),
+                // 'codigo' agora envia o 'taskId' de volta
+                codigo: JSON.stringify({ taskId: taskId }), 
                 updatedSelections: JSON.stringify(updatedSelections),
                 detailedSelection: JSON.stringify(currentDetailedSelection)
             }
         });
+        // --- Fim da Mudança 5 ---
     }
 
-    // --- Render ---
     if (!currentSet) {
         return (
             <View style={[TabsStyles.container, styles.loadingContainer]}>
@@ -179,7 +189,6 @@ export default function ConjuntosInspe() {
 
     return (
         <ScrollView style={TabsStyles.container}>
-            {/* ... Restante do JSX da tela ConjuntosInspe (Styles omitidos para brevidade) */}
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -190,7 +199,6 @@ export default function ConjuntosInspe() {
             <View style={styles.cardEstado}>
                 <Text style={styles.pergunta}>Qual o estado do conjunto?</Text>
 
-                {/* Botões Perfeito / Avariado */}
                 <TouchableOpacity
                     style={[styles.opcao, currentStatus === 'perfeito' && styles.opcaoSelecionadaVerde]}
                     onPress={() => setCurrentStatus('perfeito')}
@@ -213,10 +221,8 @@ export default function ConjuntosInspe() {
                     <View style={styles.columnsWrapper}>
                         <View style={styles.divisorHorizontal} />
                         <View style={styles.columns}>
-                            {/* Coluna Trocar */}
                             <View style={styles.checklistCol}>
                                 <Text style={styles.pergunta}>Trocar</Text>
-                                {/* ... Mapeamento de changeSubsets ... */}
                                 {changeSubsets.length === 0 ? (
                                     <Text style={styles.noSubsetText}>Nenhum para trocar</Text>
                                 ) : (
@@ -231,10 +237,8 @@ export default function ConjuntosInspe() {
 
                             <View style={styles.divisor} />
 
-                            {/* Coluna Reparar */}
                             <View style={styles.checklistCol}>
                                 <Text style={styles.pergunta}>Reparar</Text>
-                                {/* ... Mapeamento de repairSubsets ... */}
                                 {repairSubsets.length === 0 ? (
                                     <Text style={styles.noSubsetText}>Nenhum para reparar</Text>
                                 ) : (
@@ -252,7 +256,6 @@ export default function ConjuntosInspe() {
                     </View>
                 )}
 
-                {/* Botão Salvar e Voltar */}
                 <View style={styles.navigationContainer}>
                     <TouchableOpacity onPress={handleSaveAndReturn} style={[styles.navButton, styles.primaryNavButton]}>
                         <Text style={[styles.navButtonText, styles.primaryNavButtonText]}>
@@ -266,7 +269,6 @@ export default function ConjuntosInspe() {
 }
 
 const styles = StyleSheet.create({
-    // (Styles omitidos para brevidade, mas devem ser mantidos no seu arquivo original)
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',

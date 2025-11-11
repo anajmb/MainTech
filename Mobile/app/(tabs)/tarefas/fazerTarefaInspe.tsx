@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter, Link } from "expo-router"; // Adicionado Link
+import { useLocalSearchParams, useRouter, Link } from "expo-router"; 
 import React, { useEffect, useState } from "react";
 import { api } from "../../../lib/axios";
 
@@ -15,26 +15,42 @@ import {
     View
 } from "react-native";
 
-// --- Interfaces (Mantenha todas) ---
+// --- Interfaces para a API ---
+interface ApiPerson {
+    id: number;
+    name: string; 
+}
+
+interface ApiInspector {
+    id: number;
+    person: ApiPerson; 
+}
+
+interface ApiTask {
+    id: number;
+    inspectorId: number;
+    machineId: number;
+    inspector: ApiInspector; 
+}
+
+// --- Interfaces locais (não precisam mudar) ---
 interface MachineTask {
     id: number;
     title: string;
     description: string;
-    inspectorId: number;
+    inspectorId: number; 
     machineId: number;
     status: string;
     expirationDate: string;
     createDate: string;
     updateDate: string;
 }
-
 interface SubSet {
     id: number;
     name: string;
     changes: boolean;
     repairs: boolean;
 }
-
 interface MachineSet {
     id: number;
     name: string;
@@ -43,7 +59,6 @@ interface MachineSet {
     updateDate: string;
     subsets: SubSet[];
 }
-
 interface Machines {
     id: number;
     name: string;
@@ -55,55 +70,78 @@ interface Machines {
     updateDate: string;
     sets: MachineSet[];
     tasks: MachineTask[];
-    // Adicionei a oficina para bater com a imagem
     office?: string;
 }
 
 // --- Constantes ---
 type ChavePrioridade = 'low' | 'medium' | 'high';
-
 const prioridadeOpcao = [
     { key: 'low', label: 'Baixa', color: '#a8ceb8ff', bgColor: '#f5dbdd7c' },
     { key: 'medium', label: 'Média', color: '#f5db8fff', bgColor: '#f5dbdd7c' },
     { key: 'high', label: 'Alta', color: '#ec8c91ff', bgColor: '#f5dbdd7c' }
-]
+];
 
 export default function FazerTarefa() {
-    // --- Hooks ---
-    // 'codigo' é o param inicial para carregar
-    // 'updatedSelections' é o que recebemos DE VOLTA da página de inspeção
+
     const { codigo, updatedSelections } = useLocalSearchParams<{ codigo: string; updatedSelections?: string }>();
     const router = useRouter();
 
-    // --- States ---
     const [machineData, setMachineData] = useState<Machines | null>(null);
     const [loading, setLoading] = useState(true);
-
-    // !! ESTADO PRINCIPAL: Armazena os resultados de todas as inspeções !!
     const [selectionsBySet, setSelectionsBySet] = useState<
         Record<number, { changes: number[]; repairs: number[] }>
     >({});
-
     const [selectedPrioridade, setSelectedPrioridade] = useState<ChavePrioridade>('medium');
+    
+    // States para guardar os dados da tarefa
+    const [inspectorId, setInspectorId] = useState<number | null>(null);
+    const [inspectorName, setInspectorName] = useState<string | null>(null);
+    // State para guardar o ID da tarefa e repassá-lo
+    const [taskId, setTaskId] = useState<number | null>(null);
 
-    // 1. Efeito para carregar os dados da máquina (só na primeira vez)
     useEffect(() => {
-        async function loadMachineById() {
+        async function loadTaskAndMachineData() {
             if (!codigo) {
                 setLoading(false);
                 return;
             }
             try {
                 const info = JSON.parse(codigo as string);
-                if (!info.id) {
+                
+                if (!info.taskId) {
                     setLoading(false);
+                    Alert.alert("Erro", "ID da Tarefa (taskId) não recebido no parâmetro 'codigo'.");
+                    router.back();
                     return;
                 }
-                const res = await api.get(`/machines/getUnique/${info.id}`);
-                setMachineData(res.data || null);
-            } catch (error) {
-                console.log(error);
-                Alert.alert("Erro", "Falha ao carregar dados da máquina.");
+
+                // Salva o taskId no state assim que o lemos
+                setTaskId(info.taskId); 
+
+                const taskRes = await api.get<ApiTask>(`/tasks/getUnique/${info.taskId}`);
+                const task = taskRes.data;
+
+                if (!task.inspector || !task.inspector.person || !task.inspector.person.name) {
+                    Alert.alert(
+                        "Erro de API", 
+                        "A resposta da tarefa não incluiu 'inspector.person.name'."
+                    );
+                    setLoading(false);
+                    router.back();
+                    return;
+                }
+
+                setInspectorId(task.inspector.id);
+                setInspectorName(task.inspector.person.name); 
+                
+                const machineId = task.machineId; 
+                const machineRes = await api.get(`/machines/getUnique/${machineId}`);
+                setMachineData(machineRes.data || null);
+
+            } catch (error: any) {
+                console.log("Erro ao carregar dados:", error?.response?.data || error.message);
+                Alert.alert("Erro", "Falha ao carregar dados da tarefa ou máquina.");
+                router.back();
             } finally {
                 setLoading(false);
             }
@@ -112,18 +150,15 @@ export default function FazerTarefa() {
         if (machineData && updatedSelections) {
             setLoading(false);
         }
-        // Se NÃO temos os dados (primeira carga), buscamos na API.
         else if (!machineData) {
-            loadMachineById();
+            loadTaskAndMachineData(); 
         }
 
-    }, [codigo, updatedSelections, machineData]);
+    }, [codigo, updatedSelections, machineData, router]); 
 
-    // 2. Efeito para ATUALIZAR o estado quando voltamos da página de inspeção
     useEffect(() => {
         if (updatedSelections) {
             try {
-                // Atualiza o estado local com os dados que vieram da outra página
                 const selections = JSON.parse(updatedSelections);
                 setSelectionsBySet(selections);
             } catch (e) {
@@ -132,31 +167,60 @@ export default function FazerTarefa() {
         }
     }, [updatedSelections]);
 
-    // --- Handler de Envio Final ---
     async function handleConfirm() {
         if (!machineData) return;
 
-        // 1. Monta o payload final.
-        // O 'selectionsBySet' já está 100% atualizado
+        if (!inspectorId || !inspectorName) {
+            Alert.alert("Erro", "Não foi possível identificar o inspetor. Tente novamente.");
+            return;
+        }
+
         const result: {
             machineId: number;
             setId: number;
+            setName: string;
             subsetId: number;
+            subsetName: string;
             action: "change" | "repair";
         }[] = [];
 
         Object.keys(selectionsBySet).forEach((setIdStr) => {
             const setId = Number(setIdStr);
             const sel = selectionsBySet[setId];
-            sel?.changes.forEach((subsetId) =>
-                result.push({ machineId: machineData.id, setId, subsetId, action: "change" })
-            );
-            sel?.repairs.forEach((subsetId) =>
-                result.push({ machineId: machineData.id, setId, subsetId, action: "repair" })
-            );
+            const currentSet = machineData.sets.find(s => s.id === setId);
+            if (!currentSet) {
+                console.warn(`Conjunto com ID ${setId} não encontrado em machineData.`);
+                return;
+            }
+            const setName = currentSet.name;
+
+            sel?.changes.forEach((subsetId) => {
+                const currentSubset = currentSet.subsets.find(sub => sub.id === subsetId);
+                const subsetName = currentSubset ? currentSubset.name : "Nome não encontrado";
+                result.push({
+                    machineId: machineData.id,
+                    setId,
+                    setName: setName,
+                    subsetId,
+                    subsetName: subsetName,
+                    action: "change"
+                });
+            });
+
+            sel?.repairs.forEach((subsetId) => {
+                const currentSubset = currentSet.subsets.find(sub => sub.id === subsetId);
+                const subsetName = currentSubset ? currentSubset.name : "Nome não encontrado";
+                result.push({
+                    machineId: machineData.id,
+                    setId,
+                    setName: setName,
+                    subsetId,
+                    subsetName: subsetName,
+                    action: "repair"
+                });
+            });
         });
 
-        // Validação: Checa se todos os conjuntos foram inspecionados
         if (Object.keys(selectionsBySet).length !== machineData.sets.length) {
             Alert.alert("Atenção", "Você precisa inspecionar todos os conjuntos antes de finalizar.");
             return;
@@ -164,19 +228,20 @@ export default function FazerTarefa() {
 
         console.log("Enviando:", {
             machineId: machineData.id,
-            machineName: machineData.name, // <-- MUDANÇA MÍNIMA AQUI
+            machineName: machineData.name,
             priority: selectedPrioridade,
             payload: result,
+            inspectorId: inspectorId, 
+            inspectorName: inspectorName, 
         });
 
-        // 2. Envia para o backend
         try {
-            // ATENÇÃO: Verifique o endpoint da sua API
             const res = await api.post("/serviceOrders/create", {
                 machineId: machineData.id,
-                machineName: machineData.name, // <-- MUDANÇA MÍNIMA AQUI
                 priority: selectedPrioridade,
                 payload: result,
+                inspectorId: inspectorId, 
+                inspectorName: inspectorName, 
             });
 
             Alert.alert("Sucesso", res.data?.msg || "Inspeção enviada com sucesso.");
@@ -188,7 +253,6 @@ export default function FazerTarefa() {
         }
     }
 
-    // --- Render Loading / Error ---
     if (loading) {
         return (
             <View style={[TabsStyles.container, styles.loadingContainer]}>
@@ -206,7 +270,6 @@ export default function FazerTarefa() {
         );
     }
 
-    // --- Render Principal ---
     const sets = machineData.sets || [];
 
     return (
@@ -256,12 +319,13 @@ export default function FazerTarefa() {
                                 <Link
                                     key={set.id}
                                     href={{
-
                                         pathname: "/(tabs)/tarefas/conjuntosInspe",
                                         params: {
                                             machineData: JSON.stringify(machineData),
                                             selections: JSON.stringify(selectionsBySet),
                                             setId: set.id,
+                                            // ❗️ Adiciona o taskId para a próxima tela
+                                            taskId: taskId 
                                         }
                                     }}
                                     asChild

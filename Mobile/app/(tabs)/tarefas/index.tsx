@@ -2,7 +2,8 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, ScrollView } from "react-native";
+// --- Removido 'ScrollView' ---
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import { Link, useRouter } from "expo-router";
 import TasksCards from "./tasksCard";
 import { api } from "@/lib/axios";
@@ -40,15 +41,10 @@ export default function Tarefas() {
                 if (filtro === "concluida") {
                     params.status = "COMPLETED";
                 }
-
-                // se for inspetor, trazer só as tarefas dele
                 if (user.role === "INSPECTOR") {
-                    // assume que stored user tem id; se não tiver, adapte conforme seu shape
-                    // cast seguro para any caso shape seja diferente
                     const inspectorId = (user as any).id;
                     if (inspectorId) params.inspectorId = inspectorId;
                 }
-                // admin não precisa de inspectorId (traz tudo)
 
                 const response = await api.get('/tasks/get', { params });
                 setTasks(response.data);
@@ -65,88 +61,89 @@ export default function Tarefas() {
     if (!user) return <ActivityIndicator size="large" color="#CF0000" style={{ flex: 1 }} />;
 
     return (
-        <ScrollView style={TabsStyles.container}>
-            <Logo />
-
-            <View style={TabsStyles.headerPrincipal}>
-                <SetaVoltar />
-                <View style={TabsStyles.conjHeaderPrincipal}>
-                    <Text style={TabsStyles.tituloPrincipal}>Tarefas</Text>
-                    <Text style={TabsStyles.subtituloPrincipal}>Minhas tarefas</Text>
-                </View>
-
-                {/* botão + apenas para ADMIN */}
-                {user.role === "ADMIN" && (
-                    <Link href={'/tarefas/novaTarefa'}>
-                        <View style={styles.plusButton}>
-                            <Plus color={"#fff"} strokeWidth={1.8} size={30} />
+        <View style={TabsStyles.container}>
+            
+            <FlatList
+                data={tasks}
+                keyExtractor={(item) => item.id.toString()}
+                
+                ListHeaderComponent={
+                    <>
+                        <Logo />
+                        <View style={TabsStyles.headerPrincipal}>
+                            <SetaVoltar />
+                            <View style={TabsStyles.conjHeaderPrincipal}>
+                                <Text style={TabsStyles.tituloPrincipal}>Tarefas</Text>
+                                <Text style={TabsStyles.subtituloPrincipal}>Minhas tarefas</Text>
+                            </View>
+                            {user.role === "ADMIN" && (
+                                <Link href={'/tarefas/novaTarefa'}>
+                                    <View style={styles.plusButton}>
+                                        <Plus color={"#fff"} strokeWidth={1.8} size={30} />
+                                    </View>
+                                </Link>
+                            )}
                         </View>
-                    </Link>
+                        <View style={styles.filtro}>
+                            <TouchableOpacity onPress={() => setFiltro("todas")}>
+                                <Text style={[styles.filtroTitulo, filtro === "todas" && styles.filtroAtivo]}>
+                                    Todas
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setFiltro("pendente")}>
+                                <Text style={[styles.filtroTitulo, filtro === "pendente" && styles.filtroAtivo]}>
+                                    Pendentes
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setFiltro("concluida")}>
+                                <Text style={[styles.filtroTitulo, filtro === "concluida" && styles.filtroAtivo]}>
+                                    Concluídas
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                }
+
+                renderItem={({ item }) => (
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (user.role === "INSPECTOR") {
+
+                                // --- Esta é a linha importante ---
+                                // Ela envia o ID da Tarefa (item.id)
+                                const paramsParaEnviar = { taskId: item.id }; 
+                                // --- Fim ---
+
+                                router.push({
+                                    pathname: "/tarefas/fazerTarefaInspe", // Verifique se este é o nome correto do arquivo
+                                    params: { codigo: JSON.stringify(paramsParaEnviar) }
+                                });
+                            }
+                        }}
+                        activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
+                    >
+                        <TasksCards
+                            id={item.id}
+                            title={item.title}
+                            description={item.description}
+                            updateDate={item.updateDate}
+                            status={item.status}
+                        />
+                    </TouchableOpacity>
                 )}
-            </View>
 
-            <View style={styles.filtro}>
-                <TouchableOpacity onPress={() => setFiltro("todas")}>
-                    <Text style={[styles.filtroTitulo, filtro === "todas" && styles.filtroAtivo]}>
-                        Todas
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setFiltro("pendente")}>
-                    <Text style={[styles.filtroTitulo, filtro === "pendente" && styles.filtroAtivo]}>
-                        Pendentes
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setFiltro("concluida")}>
-                    <Text style={[styles.filtroTitulo, filtro === "concluida" && styles.filtroAtivo]}>
-                        Concluídas
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={TabsStyles.todosCard}>
-                <ScrollView>
-
-                    {loading ? (
+                ListEmptyComponent={
+                    loading ? (
                         <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 50 }} />
                     ) : (
-                        <FlatList
-                            data={tasks}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
-                                // se for INSPECTOR, ao clicar vai para fazerTarefa; admin não tem navegação ao clicar
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        if (user.role === "INSPECTOR") {
-                                            const paramsParaEnviar = { id: item.machineId };
-
-                                            router.push({
-                                                pathname: "/tarefas/fazerTarefaInspe",
-                                                params: { codigo: JSON.stringify(paramsParaEnviar) }
-                                            });
-                                        }
-                                    }}
-                                    activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
-                                >
-                                    <TasksCards
-                                        id={item.id}
-                                        title={item.title}
-                                        description={item.description}
-                                        updateDate={item.updateDate}
-                                        status={item.status}
-                                    />
-                                </TouchableOpacity>
-                            )}
-                            contentContainerStyle={{ paddingBottom: 20 }}
-                            ListEmptyComponent={
-                                <View style={styles.emptyContainer}>
-                                    <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
-                                </View>
-                            }
-                        />
-                    )}
-                </ScrollView>
-            </View>
-        </ScrollView>
+                        <View style={styles.emptyContainer}>
+                            <Text style={styles.emptyText}>Nenhuma tarefa encontrada.</Text>
+                        </View>
+                    )
+                }
+                contentContainerStyle={{ paddingBottom: 20 }}
+            />
+        </View>
     );
 }
 
@@ -182,7 +179,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#CF0000'
     },
     emptyContainer: {
-        flex: 15,
+        flex: 15, 
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 50,
