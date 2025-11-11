@@ -64,7 +64,7 @@ export default function Privacidade() {
             </View>
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardTitle}>Conta Protegida</Text>
-              <Text style={styles.cardSubtitle}>Proteção de alto nível </Text>
+              <Text style={styles.cardSubtitle}>Seus dados estão protegidos conosco</Text>
             </View>
           </View>
         
