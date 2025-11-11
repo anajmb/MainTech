@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../../lib/axios";
 import { useAuth } from "@/contexts/authContext";
-
+import SetaVoltar from "@/components/setaVoltar";
+import { TabsStyles } from "@/styles/globalTabs";
 
 interface MachineTask {
   id: number;
@@ -65,15 +66,21 @@ export default function InfosMaquina() {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontWeight: "bold", fontSize: 18, alignSelf: "center" }}>Informações da máquina</Text>
+      <View style={TabsStyles.headerPrincipal}>
+        <SetaVoltar />
+        <View style={TabsStyles.conjHeaderPrincipal}>
+          <Text style={TabsStyles.tituloPrincipal}>Informações da máquina</Text>
+          <Text style={TabsStyles.subtituloPrincipal}>Atualize suas informações</Text>
+        </View>
+      </View>
       {machineData ? (
         <>
-          <View style={styles.dataContainer}>
+          {/* Mudei aqui: card agora segue padrão dos outros cards do app */}
+          <View style={styles.cardInfoMaquina}>
             <Text style={styles.fieldsTitle}>Nome da máquina</Text>
             <Text style={styles.fieldsContent}>{machineData.name}</Text>
 
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 1, padding: 5 }}>
-
               <View style={{ alignItems: "center", width: "50%" }}>
                 <Text style={styles.fieldsTitle} >Ultima atualização</Text>
                 <Text style={styles.fieldsContent}>
@@ -82,15 +89,11 @@ export default function InfosMaquina() {
                     month: '2-digit',
                     year: 'numeric',
                   })}
-
                 </Text>
               </View>
-
               <View style={{ alignItems: "center", width: "50%" }}>
                 <Text style={styles.fieldsTitle}>Conjuntos</Text>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(true)}
-                  >
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
                   <Text style={styles.fieldsContentInspe}>
                     {selectedSet ? selectedSet.name : `Ver conjuntos`}
                   </Text>
@@ -108,22 +111,25 @@ export default function InfosMaquina() {
                     backgroundColor: "rgba(0,0,0,0.3)"
                   }}>
                     <View style={{
-                      backgroundColor: "#e6e6e6",
-                      borderRadius: 10,
-                      padding: 20,
-                      minWidth: 250,
-                      maxHeight: 300
+                      backgroundColor: "#eeeeeee", // Mudei aqui: fundo branco igual aos outros cards
+                      borderRadius: 16,        // Mudei aqui: borda arredondada igual aos outros cards
+                      padding: 24,
+                      minWidth: 270,
+                      maxHeight: 340,
+                      elevation: 4,
+                      shadowColor: "#000",
+                      shadowOpacity: 0.08,
+                      shadowRadius: 8,
                     }}>
                       <Text style={{ fontSize: 20, marginBottom: 10 }}>Conjuntos desta máquina:</Text>
-
                       <ScrollView>
                         {machineData.sets.map((set: any) => (
                           <View
                             key={set.id}
                             style={{
                               padding: 10,
-                              borderWidth: 1,
-                              borderColor: "#e6e6e6ff",
+                              borderBottomWidth: 1,
+                              borderColor: "#e6e6e6",
                             }}
                           >
                             <Text style={{ fontSize: 15 }}>{set.name}</Text>
@@ -131,16 +137,22 @@ export default function InfosMaquina() {
                         ))}
                       </ScrollView>
                       <TouchableOpacity
-                        style={{ marginTop: 10, alignSelf: "center", backgroundColor: "#ce221e", padding: 5, borderRadius: 5, }}
+                        style={{
+                          marginTop: 16,
+                          alignSelf: "center",
+                          backgroundColor: "#A50702",
+                          paddingVertical: 12, // aumentei a altura do botão
+                          paddingHorizontal: 32, // aumentei a largura do botão
+                          borderRadius: 12,
+                        }}
                         onPress={() => setModalVisible(false)}
                       >
-                        <Text style={{ color: "#fff" }}>Fechar</Text>
+                        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Fechar</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
                 </Modal>
               </View>
-
             </View>
 
             <Text style={styles.fieldsTitle}>Descrição:</Text>
@@ -149,14 +161,10 @@ export default function InfosMaquina() {
             <Text style={styles.fieldsTitle}>Temperatura:</Text>
             <Text style={styles.fieldsContent}>{machineData.temperature} °C</Text>
 
-
-
             {machineData.tasks && machineData.tasks.length > 0 ? (
               <>
                 <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
-
                 {user?.role === "INSPECTOR" ? (
-                  // 🔹 Inspetor vê o botão e pode clicar
                   <Link
                     href={{
                       pathname: '/(tabs)/tarefas/fazerTarefaInspe',
@@ -171,7 +179,6 @@ export default function InfosMaquina() {
                     </TouchableOpacity>
                   </Link>
                 ) : (
-                  // 🔸 Admin vê apenas o nome das tarefas
                   <View style={{ alignItems: "center" }}>
                     {machineData.tasks.map((task) => (
                       <Text key={task.id} style={styles.fieldsContent}>
@@ -182,12 +189,9 @@ export default function InfosMaquina() {
                 )}
               </>
             ) : (
-              <>
-                <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
-              </>
+              <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
             )}
           </View>
-
         </>
       ) : (
         <Text style={{ alignSelf: "center" }}>Carregando...</Text>
@@ -199,20 +203,20 @@ export default function InfosMaquina() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    paddingTop: 70,
     padding: 22,
   },
-  dataContainer: {
-    justifyContent: "space-between",
-    backgroundColor: "#f1f1f1",
-    borderRadius: 9,
-    padding: 10,
-    paddingVertical: 60,
-    marginVertical: 8,
-    elevation: 2,
+  cardInfoMaquina: {
+    backgroundColor: "#eeeeee",
+    borderRadius: 16,
+    padding: 18,
+    marginVertical: 12,
+    marginHorizontal: 8,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.13,
     shadowRadius: 4,
+    elevation: 3,
   },
   fieldsTitle: {
     fontSize: 16,
@@ -231,7 +235,6 @@ const styles = StyleSheet.create({
     width: "80%",
     flexDirection: "row",
   },
-
   fieldsContentInspe: {
     backgroundColor: "#A50702",
     color: "#fff",
