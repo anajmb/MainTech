@@ -2,9 +2,9 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Pencil, Trash2, Wrench } from "lucide-react-native";
-import { api } from "../../../lib/axios"; // É uma boa prática usar a instância do Axios se você a tiver
+import { api } from "../../../lib/axios";
 
 interface Machines {
     id: number;
@@ -13,7 +13,6 @@ interface Machines {
     qrCode: string
 }
 
-// Interface para os dados vindos da API /sets/get
 interface SetFromAPI {
     id: number;
     name: string;
@@ -24,24 +23,26 @@ export default function Maquinas() {
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
     const [open, setOpen] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    
-    // --- MODIFICADO ---
-    // 1. O estado agora é um array de strings (para IDs) para permitir múltipla seleção
+
+    // edição
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [selectedMachine, setSelectedMachine] = useState<Machines | null>(null);
+    const [editName, setEditName] = useState("");
+    const [isEditing, setIsEditing] = useState(false);
+    const editInputRef = useRef<TextInput | null>(null);
+
+    // conjuntos
     const [conjuntoSelecionado, setConjuntoSelecionado] = useState<string[]>([]);
     const [openConjunto, setOpenConjunto] = useState(false);
-
-    // 2. O estado inicial agora é 'Carregando...'
     const [conjuntos, setConjuntos] = useState([
         { label: 'Carregando...', value: '', disabled: true },
     ]);
-    // --- FIM DA MODIFICAÇÃO ---
-    
-    // --- NOVOS ESTADOS PARA O FORMULÁRIO ---
+
+    // formulário novo
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
     const [loadingSubmit, setLoadingSubmit] = useState(false);
-    const [refreshKey, setRefreshKey] = useState(0); // Para atualizar a lista
-    // --- FIM DOS NOVOS ESTADOS ---
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const [oficinas, setOficinas] = useState([
         { label: 'Selecione', value: '', disabled: true },
@@ -56,7 +57,6 @@ export default function Maquinas() {
     useEffect(() => {
         async function fetchMachines() {
             try {
-                // Usando a instância 'api' se ela estiver configurada com a baseURL
                 const response = await api.get('/machines/get');
                 setMachines(response.data);
             } catch (error) {
@@ -64,27 +64,19 @@ export default function Maquinas() {
             }
         }
 
-        // --- NOVO ---
-        // 3. Função para buscar os conjuntos (sets)
         async function fetchSets() {
             try {
                 const response = await api.get('/sets/get');
-                const data: SetFromAPI[] = response.data; // Tipamos a resposta
-
-                // 4. Transformamos os dados da API (ex: {id: 1, name: 'Conjunto 1'})
-                //    para o formato do DropDownPicker (ex: {label: 'Conjunto 1', value: '1'})
+                const data: SetFromAPI[] = response.data;
                 const formattedSets = data.map(set => ({
                     label: set.name,
-                    value: set.id.toString(), // Convertemos o ID para string
+                    value: set.id.toString(),
                     disabled: false
                 }));
-
-                // 5. Atualizamos o estado dos conjuntos
                 setConjuntos([
                     { label: 'Selecione', value: '', disabled: true },
                     ...formattedSets
                 ]);
-
             } catch (error) {
                 console.error('Error fetching sets:', error);
                 setConjuntos([
@@ -92,23 +84,89 @@ export default function Maquinas() {
                 ]);
             }
         }
-        // --- FIM DO NOVO ---
 
         fetchMachines();
-        fetchSets(); // 6. Chamamos a nova função
-    }, [refreshKey]); // <-- MODIFICADO: Adiciona refreshKey para recarregar a lista
+        fetchSets();
+    }, [refreshKey]);
 
-    // --- CORREÇÃO DE BUG ---
-    // Lógica para o botão de deletar no modal
+    // foco automático ao entrar em edição
+    useEffect(() => {
+        if (isEditing) {
+            const t = setTimeout(() => {
+                editInputRef.current?.focus();
+            }, 50);
+            return () => clearTimeout(t);
+        }
+    }, [isEditing]);
+
     function handleDelete() {
-        // Coloque sua lógica de API delete aqui
         console.log("Deletando...");
-        setModalVisible(false); // Fecha o modal após a ação
+        setModalVisible(false);
     }
 
-    // --- NOVA FUNÇÃO PARA CADASTRAR A MÁQUINA ---
+    function openEditModal(machine: Machines) {
+        setSelectedMachine(machine);
+        setEditName(machine.name);
+        setIsEditing(true);
+        setEditModalVisible(true);
+    }
+
+    async function handleEditDelete() {
+        if (!selectedMachine) return;
+        const id = selectedMachine.id;
+        try {
+            await api.delete(`/machines/delete/${id}`);
+            setMachines(prev => prev.filter(m => m.id !== id));
+        } catch (err) {
+            console.warn('Delete API failed, atualizando localmente', err);
+            setMachines(prev => prev.filter(m => m.id !== id));
+        } finally {
+            setEditModalVisible(false);
+            setSelectedMachine(null);
+            setRefreshKey(k => k + 1);
+        }
+    }
+
+    // Corrigido: usa retorno da API quando disponível e garante atualização local imediata
+    async function handleSaveEdit() {
+        if (!selectedMachine) return;
+        const trimmed = editName.trim();
+        if (!trimmed) {
+            Alert.alert('Erro', 'Nome não pode ficar vazio.');
+            return;
+        }
+
+        const id = selectedMachine.id;
+
+        // Atualiza otimisticamente na UI para feedback imediato
+        setMachines(prev => prev.map(m => m.id === id ? { ...m, name: trimmed } : m));
+
+        try {
+            const response = await api.put(`/machines/update/${id}`, { name: trimmed });
+            // Se a API retornar o objeto atualizado, use ele; caso contrário, já atualizamos otimisticamente
+            const updated = response?.data;
+            if (updated && typeof updated === 'object') {
+                setMachines(prev => prev.map(m => m.id === id ? { ...m, ...updated } : m));
+            }
+            // Feedback ao usuário
+            Alert.alert('Sucesso', 'Nome atualizado.');
+        } catch (err: any) {
+            console.error('Erro ao atualizar máquina:', err?.response?.data || err?.message || err);
+            Alert.alert('Erro', 'Não foi possível salvar a alteração. Verifique a conexão.');
+            // Recarrega lista local para garantir consistência
+            setRefreshKey(k => k + 1);
+        } finally {
+            // limpa estados e fecha modal
+            setEditModalVisible(false);
+            setSelectedMachine(null);
+            setEditName("");
+            setIsEditing(false);
+            // força refetch para garantir sincronização com servidor
+            setRefreshKey(k => k + 1);
+        }
+    }
+
     async function handleCadastro() {
-        // 1. Validação
         if (!nome.trim() || !descricao.trim() || !oficinaSelecionada || conjuntoSelecionado.length === 0) {
             Alert.alert("Erro", "Por favor, preencha todos os campos.");
             return;
@@ -116,31 +174,23 @@ export default function Maquinas() {
 
         setLoadingSubmit(true);
 
-        // 2. Encontra o 'label' da oficina (ex: "Oficina de Manutenção")
         const oficinaLabel = oficinas.find(o => o.value === oficinaSelecionada)?.label;
 
-        // 3. Montar Payload
         const payload = {
             name: nome,
             description: descricao,
-            location: oficinaLabel, // Envia o nome da oficina
-            sets: conjuntoSelecionado.map(Number) // Converte o array de strings (IDs) para números
+            location: oficinaLabel,
+            sets: conjuntoSelecionado.map(Number)
         };
 
-        console.log("Enviando cadastro de máquina:", payload);
-
-        // 4. Chamar API
         try {
             await api.post('/machines/create', payload);
             Alert.alert("Sucesso", "Máquina cadastrada com sucesso!");
-
-            // 5. Limpar formulário e recarregar lista
             setNome("");
             setDescricao("");
             setOficinaSelecionada("");
             setConjuntoSelecionado([]);
-            setRefreshKey(key => key + 1); // Dispara o useEffect para recarregar
-
+            setRefreshKey(key => key + 1);
         } catch (error: any) {
             console.error("Erro ao cadastrar máquina:", error.response?.data || error.message);
             Alert.alert("Erro", "Não foi possível cadastrar a máquina.");
@@ -148,12 +198,9 @@ export default function Maquinas() {
             setLoadingSubmit(false);
         }
     }
-    // --- FIM DA NOVA FUNÇÃO ---
 
     return (
         <ScrollView style={TabsStyles.container}>
-
-            {/* Header */}
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -165,31 +212,28 @@ export default function Maquinas() {
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Informe os dados para cadastrar</Text>
 
-                    {/* Input Nome */}
                     <View style={{ marginBottom: 20, marginTop: 30 }}>
                         <Text style={styles.label}>Nome da Máquina:</Text>
-                        <TextInput 
-                            placeholder="Digite o nome da máquina" 
-                            placeholderTextColor={"#6c6c6c"} 
-                            style={styles.input} 
+                        <TextInput
+                            placeholder="Digite o nome da máquina"
+                            placeholderTextColor={"#6c6c6c"}
+                            style={styles.input}
                             value={nome}
                             onChangeText={setNome}
                         />
                     </View>
 
-                    {/* Input Descrição */}
                     <View style={{ marginBottom: 20, marginTop: 10 }}>
                         <Text style={styles.label}>Descrição da Máquina:</Text>
-                        <TextInput 
-                            placeholder="Escreva uma descrição para a máquina" 
-                            placeholderTextColor={"#6c6c6c"} 
-                            style={styles.input} 
+                        <TextInput
+                            placeholder="Escreva uma descrição para a máquina"
+                            placeholderTextColor={"#6c6c6c"}
+                            style={styles.input}
                             value={descricao}
                             onChangeText={setDescricao}
                         />
                     </View>
 
-                    {/* Dropdown Oficina */}
                     <View style={{ marginBottom: 20, marginTop: 10, zIndex: 2000 }}>
                         <Text style={styles.label}>Oficina:</Text>
                         <DropDownPicker
@@ -201,45 +245,42 @@ export default function Maquinas() {
                             setItems={setOficinas}
                             placeholder="Selecione"
                             style={styles.input}
-                            dropDownContainerStyle={{ 
-                                backgroundColor: '#e6e6e6', 
-                                borderRadius: 10, 
+                            dropDownContainerStyle={{
+                                backgroundColor: '#e6e6e6',
+                                borderRadius: 10,
                                 borderColor: '#e6e6e6',
-                                maxHeight: 200 
+                                maxHeight: 200
                             }}
                             placeholderStyle={{ color: '#6c6c6c' }}
                             textStyle={{ color: oficinaSelecionada ? '#000' : '#6c6c6c' }}
                             disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                            listMode="SCROLLVIEW" // Adicionado para melhor performance
+                            listMode="SCROLLVIEW"
                         />
                     </View>
 
-                    {/* Dropdown Conjuntos */}
                     <View style={{ marginBottom: 20, marginTop: 10, zIndex: 1000 }}>
                         <Text style={styles.label}>Conjuntos:</Text>
                         <DropDownPicker
                             open={openConjunto}
-                            value={conjuntoSelecionado} // Agora é um array: ['1', '2']
+                            value={conjuntoSelecionado}
                             items={conjuntos}
                             setOpen={setOpenConjunto}
                             setValue={setConjuntoSelecionado}
                             setItems={setConjuntos}
-                            
-                            multiple={true} // Permite selecionar múltiplos
-                            mode="BADGE" // Mostra os itens selecionados como "badges"
-                            
+                            multiple={true}
+                            mode="BADGE"
                             placeholder="Selecione"
                             style={styles.input}
                             dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
                             placeholderStyle={{ color: '#6c6c6c' }}
                             textStyle={{ color: conjuntoSelecionado.length > 0 ? '#000' : '#6c6c6c' }}
                             disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                            listMode="SCROLLVIEW" // Adicionado para melhor performance
+                            listMode="SCROLLVIEW"
                         />
                     </View>
 
-                    <TouchableOpacity 
-                        style={styles.botaoCad} 
+                    <TouchableOpacity
+                        style={styles.botaoCad}
                         onPress={handleCadastro}
                         disabled={loadingSubmit}
                     >
@@ -249,9 +290,8 @@ export default function Maquinas() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Máquinas cadastradas */}
                 <View style={styles.cardCad}>
-                    <Text style={styles.tituloCard}>Máquinas Cadastradas</Text>
+                    <Text style={[styles.tituloCard, styles.tituloCardCompact]}>Máquinas Cadastradas</Text>
 
                     {machines.map((machine) => (
                         <View key={machine.id} style={styles.cardMaq}>
@@ -266,10 +306,10 @@ export default function Maquinas() {
                             </View>
 
                             <View style={styles.editIcons}>
-                                <TouchableOpacity>
-                                    <Pencil size={18} color="#666" style={{ marginRight: 8 }} />
+                                <TouchableOpacity style={[styles.iconButton]} accessibilityLabel="Editar máquina" onPress={() => openEditModal(machine)}>
+                                    <Pencil size={18} color="#666" />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                                <TouchableOpacity style={[styles.iconButton, styles.iconDelete]} onPress={() => setModalVisible(true)} accessibilityLabel="Excluir máquina">
                                     <Trash2 size={18} color="#dc0606ff" />
                                 </TouchableOpacity>
                             </View>
@@ -278,32 +318,64 @@ export default function Maquinas() {
                 </View>
             </View>
 
-            {/* Modal de Confirmação (com bug corrigido) */}
             <Modal visible={modalVisible} transparent animationType="fade">
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}>
-                    <View style={{ backgroundColor: '#fff', padding: 40, borderRadius: 20, alignItems: 'center' }}>
-                        <Text style={{ fontSize: 22 }}>Deseja realmente deletar?</Text>
-                        <View style={{ flexDirection: 'row', marginTop: 24 }}>
-                            
-                            <TouchableOpacity onPress={handleDelete}>
-                                <Text style={{ color: 'red', marginRight: 16, fontSize: 18 }}>Deletar</Text>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalBox}>
+                        <Text style={styles.modalTitle}>Deseja realmente deletar?</Text>
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity style={styles.modalDeleteButton} onPress={handleDelete} accessibilityLabel="Deletar">
+                                <Text style={styles.modalDeleteText}>Deletar</Text>
                             </TouchableOpacity>
-                            
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text style={{ fontSize: 18 }}>Cancelar</Text>
+
+                            <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)} accessibilityLabel="Cancelar">
+                                <Text style={styles.modalCancelText}>Cancelar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
             </Modal>
+
+            <Modal visible={editModalVisible} transparent animationType="fade">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalBox}>
+                        <Text style={styles.modalTitle}>Editar máquina</Text>
+
+                        <TextInput
+                            ref={editInputRef}
+                            style={styles.modalEditInput}
+                            value={editName}
+                            onChangeText={setEditName}
+                            placeholder="Novo nome"
+                            placeholderTextColor="#6c6c6c"
+                            onSubmitEditing={handleSaveEdit}
+                        />
+
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity
+                                style={[styles.modalSaveButton]}
+                                onPress={handleSaveEdit}
+                                accessibilityLabel="Salvar"
+                                disabled={!editName.trim()}
+                            >
+                                <Text style={styles.modalSaveText}>Salvar</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.modalCancelButton} onPress={() => { setEditModalVisible(false); setSelectedMachine(null); setIsEditing(false); setEditName(""); }} accessibilityLabel="Cancelar">
+                                <Text style={styles.modalCancelText}>Cancelar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     todosCard: {
-        width: '90%', // Adicionado para centralizar
-        alignSelf: 'center', // Adicionado para centralizar
+        width: '90%',
+        alignSelf: 'center',
         gap: 30,
         paddingBottom: 90,
     },
@@ -323,6 +395,10 @@ const styles = StyleSheet.create({
         color: "#6c6c6c",
         marginTop: 20
     },
+    tituloCardCompact: {
+        marginTop: 6,
+        marginBottom: 16,
+    },
     label: {
         fontSize: 13,
         textAlign: 'left',
@@ -332,7 +408,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#e6e6e6',
         padding: 10,
-        borderColor: '#e6e6e6', // Garante que a borda tenha a mesma cor
+        borderColor: '#e6e6e6',
         borderWidth: 1,
     },
     botaoCad: {
@@ -387,5 +463,89 @@ const styles = StyleSheet.create({
     editIcons: {
         flexDirection: "row",
         alignItems: "center",
+    },
+    iconButton: {
+        padding: 8,
+        borderRadius: 8,
+    },
+    iconDelete: {
+        marginLeft: 6,
+    },
+
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.3)',
+    },
+    modalBox: {
+        backgroundColor: '#fff',
+        padding: 28,
+        borderRadius: 16,
+        alignItems: 'center',
+        width: '85%',
+    },
+    modalTitle: {
+        fontSize: 20,
+        marginBottom: 18,
+        color: '#000',
+    },
+    modalNameText: {
+        fontSize: 18,
+        color: '#000',
+        marginBottom: 12,
+    },
+    modalEditInput: {
+        width: '100%',
+        borderRadius: 10,
+        backgroundColor: '#f2f2f2',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderColor: '#e6e6e6',
+        borderWidth: 1,
+        marginBottom: 12,
+        color: '#000'
+    },
+    modalActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 12
+    },
+    modalDeleteButton: {
+        backgroundColor: '#fdecea',
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        marginRight: 12,
+    },
+    modalSecondaryButton: {},
+    modalDeleteText: {
+        color: '#dc0606ff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    modalSaveButton: {
+        backgroundColor: '#e6f7ee',
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        marginRight: 12,
+    },
+    modalSaveText: {
+        color: '#077a3a',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    modalCancelButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        marginLeft: 8
+    },
+     modalCancelText: {
+        color: '#333333',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
