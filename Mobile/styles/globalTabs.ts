@@ -6,7 +6,6 @@ export const TabsStyles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         paddingBottom: 90,
-        // flex: 1,
         backgroundColor: '#F5F5F5',
     },
     text: {
@@ -14,7 +13,6 @@ export const TabsStyles = StyleSheet.create({
     },
     tituloPrincipal: {
         fontSize: 28,
-        // fontFamily: 'Poppins-Regular'
     },
     subtituloPrincipal: {
         fontSize: 16,
@@ -33,12 +31,11 @@ export const TabsStyles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 25,
-        backgroundColor: '#d10b03', // cor de fundo caso não tenha imagem
+        backgroundColor: '#d10b03',
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden', // 🔥 garante que a imagem fique dentro do círculo
+        overflow: 'hidden',
     },
-
     userFoto: {
         width: '100%',
         height: '100%',
@@ -54,5 +51,8 @@ export const TabsStyles = StyleSheet.create({
         padding: 8,
         textAlign: 'center',
         color: '#fff'
+    },
+    todosCard: {
+        marginBottom: 20,
     }
 })
