@@ -1,10 +1,22 @@
+import Logo from "@/components/logo";
+import SetaVoltar from "@/components/setaVoltar";
+import { TabsStyles } from "@/styles/globalTabs";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function Politica () {
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={TabsStyles.container}>
+            <Logo />
+
+            <View style={TabsStyles.headerPrincipal}>
+                <SetaVoltar />
+                <View style={TabsStyles.conjHeaderPrincipal}>
+                    <Text style={TabsStyles.tituloPrincipal}>Política de Privacidade</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>Leia nossos termos</Text>
+                </View>
+            </View>
+
             <View style={styles.card}>
-                <Text style={styles.title}>Política de Privacidade</Text>
                 <Text style={styles.text}>
                     A MainTech valoriza a sua privacidade e está comprometida em proteger os dados pessoais coletados durante a prestação dos nossos serviços de gestão e prevenção de máquinas industriais. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos as informações que você nos fornece.
                 </Text>
@@ -51,12 +63,10 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     card: {
-        backgroundColor: "#fff",
-        margin: 18,
+        backgroundColor: "#f7f7f7",
         borderRadius: 12,
         padding: 18,
-        elevation: 2,
-        marginTop: 50                                                                                   ,
+        elevation: 22,
     },
     title: {
         fontSize: 22,
