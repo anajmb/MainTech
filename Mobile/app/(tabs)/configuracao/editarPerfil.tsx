@@ -342,14 +342,15 @@ export default function EditarPerfil() {
 
 
           <TouchableOpacity
-            style={{ alignItems: "center", marginTop: 10 }}
+            style={[
+              styles.disabledBotao,
+              { backgroundColor: canSave ? "#A50702" : "#BDBDBD" }
+            ]}
             onPress={handleSave}
             activeOpacity={0.8}
             disabled={!canSave}
           >
-            <View style={[TabsStyles.viewBotaoPrincipal, !canSave && styles.disabledBotao]}>
-              <Text style={[TabsStyles.botaoText, !canSave && styles.disabledBotaoText]}>Salvar Alterações</Text>
-            </View>
+            <Text style={styles.disabledBotaoText}>Salvar Alterações</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -432,15 +433,15 @@ const styles = StyleSheet.create({
   },
   disabledBotao: {
     backgroundColor: "#A50702",
-        color: "#fff",
-        borderRadius: 10,
-        paddingVertical: 12,
-        width: "62%",
-        marginTop: 10,
-        marginBottom: 30,
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "center"
+    color: "#fff",
+    borderRadius: 10,
+    paddingVertical: 12,
+    width: "62%",
+    marginTop: 10,
+    marginBottom: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center"
 
   },
   disabledBotaoText: {
