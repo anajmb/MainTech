@@ -237,7 +237,7 @@ export default function Equipes() {
                         setItems={setEmployeeItems}
                         placeholder="Selecione o membro"
                         style={[style.inputAdicionar, {borderWidth: 0, borderColor: 'transparent' }]}
-                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent'}}
+                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent', maxHeight: 200 }}
                         placeholderStyle={{ color: '#6c6c6c' }}
                         disabledItemLabelStyle={{ color: '#6c6c6c' }}
                         textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}

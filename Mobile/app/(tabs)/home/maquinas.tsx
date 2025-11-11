@@ -75,7 +75,8 @@ export default function Maquinas() {
                 //    para o formato do DropDownPicker (ex: {label: 'Conjunto 1', value: '1'})
                 const formattedSets = data.map(set => ({
                     label: set.name,
-                    value: set.id.toString() // Convertemos o ID para string
+                    value: set.id.toString(), // Convertemos o ID para string
+                    disabled: false
                 }));
 
                 // 5. Atualizamos o estado dos conjuntos
