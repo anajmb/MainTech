@@ -10,11 +10,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "expo-router";
 import Logo from "@/components/logo";
 import { useAuth } from "@/contexts/authContext";
+import AtividadesRecentes from "@/components/ativRecent";
+
+
 function AdminHome() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const { user } = useAuth();
+
   useFocusEffect(
     useCallback(() => {
       const loadPreference = async () => {
@@ -31,6 +35,7 @@ function AdminHome() {
       setRefreshing(false);
     }, 2000);
   }, []);
+   
   return (
     <ScrollView
       style={TabsStyles.container}
@@ -114,7 +119,7 @@ function AdminHome() {
           </View>
           <View style={styles.ativRecente}>
             <Text style={styles.titulo}>Atividades Recentes</Text>
-            <View style={styles.ativRecenteCard}>
+            {/* <View style={styles.ativRecenteCard}>
               <View style={styles.iconAtivRecente}>
                 <CheckCircle color={'#51C385'} size={22} />
               </View>
@@ -122,18 +127,21 @@ function AdminHome() {
                 <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
                 <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
               </View>
-            </View>
+            </View> */}
+            <AtividadesRecentes />
           </View>
         </View>
         </View>
     </ScrollView>
   )
 }
+
 function UsersHome() {
   const [isNotificacoesVisible, setNotificacoesVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const { user } = useAuth();
+
   useFocusEffect(
     useCallback(() => {
       const loadPreference = async () => {
@@ -235,7 +243,7 @@ function UsersHome() {
         </View>
         <View style={styles.ativRecente}>
           <Text style={styles.titulo}>Atividades Recentes</Text>
-          <View style={styles.ativRecenteCard}>
+          {/* <View style={styles.ativRecenteCard}>
             <View style={styles.iconAtivRecente}>
               <CheckCircle color={'#51C385'} size={22} />
             </View>
@@ -243,7 +251,8 @@ function UsersHome() {
               <Text style={styles.ativInfoTitulo}>Verificação da máquina</Text>
               <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
             </View>
-          </View>
+          </View> */}
+           <AtividadesRecentes />
         </View>
       </View>
     </ScrollView>
@@ -251,6 +260,7 @@ function UsersHome() {
 }
 export default function Home() {
   const { user } = useAuth();
+
   if (!user) return <ActivityIndicator size="large" />;
   return user.role === "ADMIN" ? <AdminHome /> : <UsersHome />;
 }

@@ -3,6 +3,9 @@ import { CameraView, useCameraPermissions } from "expo-camera"
 import React, { useState, useRef, useEffect } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
 import { IdCard, Scan, ScanBarcode } from "lucide-react-native";
+import { useAuth } from "@/contexts/authContext";
+import { api } from "@/lib/axios";
+
 
 export default function QRCode() {
 
@@ -13,6 +16,7 @@ export default function QRCode() {
 
   const qrCodeLock = useRef(false)
   const router = useRouter();
+   const { user } = useAuth();
 
   async function handleOpenCamera() {
     try {
@@ -27,28 +31,47 @@ export default function QRCode() {
     }
   }
 
-  function handdleQRCodeRead(data: string) {
-    setModalIsVisible(false);
 
-    let jsonData = {};
-    try {
-      jsonData = JSON.parse(data);
-    } catch {
-      // Se não for JSON, envie como string mesmo
-      jsonData = { value: data };
-    }
+ async function handdleQRCodeRead(data: string) {
+  setModalIsVisible(false);
 
-    router.push({
-      pathname: "../QRCode/infoMaq",
-      params: { codigo: data }
-    });
+  let jsonData: any = {};
+  try {
+    jsonData = JSON.parse(data);
+  } catch {
+    jsonData = { value: data };
   }
+
+  try {
+    if (user) {
+      await api.post("/history/create", {
+        userId: user.id,
+        entityId: jsonData.id || null, // 🔹 Agora pega o id da máquina
+        entityType: "Escaneado",          // 🔹 Bate com o backend (Task, QRCode ou ServiceOrder)
+        action: "Escaneou máquina",    // 🔹 Texto legível
+        description: `Usuário escaneou o QR ${jsonData.name || "desconhecida"}`,
+      });
+      console.log("Histórico registrado com sucesso!");
+    } else {
+      console.warn("Usuário não autenticado — histórico não registrado.");
+    }
+  } catch (error: any) {
+    console.error("Erro ao registrar histórico:", error.response?.data || error.message);
+  }
+
+  // Continua fluxo normal
+  router.push({
+    pathname: "../QRCode/infoMaq",
+    params: { codigo: data },
+  });
+}
+
 
   useFocusEffect(
     React.useCallback(() => {
       handleOpenCamera();
     }, [])
-  )
+  );
 
   return (
     <View style={styles.container}>

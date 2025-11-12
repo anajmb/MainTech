@@ -5,10 +5,12 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { useEffect, useState, useRef } from 'react';
 import { Pencil, Trash2, Wrench } from "lucide-react-native";
 import { api } from "../../../lib/axios";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Machines {
     id: number;
     name: string;
+    description: string;
     location: string;
     qrCode: string
 }
@@ -45,7 +47,7 @@ export default function Maquinas() {
     const [refreshKey, setRefreshKey] = useState(0);
 
     const [oficinas, setOficinas] = useState([
-        { label: 'Selecione', value: '', disabled: true },
+        { key: "default", label: 'Selecione', value: '', disabled: true },
         { label: 'Oficina de Manutenção', value: 'oficina1' },
         { label: 'Oficina de Usinagem', value: 'oficina2' },
         { label: 'Oficina de Soldagem', value: 'oficina3' },
@@ -69,14 +71,17 @@ export default function Maquinas() {
                 const response = await api.get('/sets/get');
                 const data: SetFromAPI[] = response.data;
                 const formattedSets = data.map(set => ({
+                    key: `set-${set.id}`,
                     label: set.name,
                     value: set.id.toString(),
                     disabled: false
                 }));
+
                 setConjuntos([
-                    { label: 'Selecione', value: '', disabled: true },
+                    { key: 'default', label: 'Selecione', value: '', disabled: true },
                     ...formattedSets
                 ]);
+
             } catch (error) {
                 console.error('Error fetching sets:', error);
                 setConjuntos([
@@ -126,45 +131,45 @@ export default function Maquinas() {
             setRefreshKey(k => k + 1);
         }
     }
+// ✅ Corrigido para evitar undefined e garantir atualização correta
+async function handleSaveEdit() {
+    if (!selectedMachine) return;
 
-    // Corrigido: usa retorno da API quando disponível e garante atualização local imediata
-    async function handleSaveEdit() {
-        if (!selectedMachine) return;
-        const trimmed = editName.trim();
-        if (!trimmed) {
-            Alert.alert('Erro', 'Nome não pode ficar vazio.');
-            return;
-        }
+    // Garante que editName sempre é string antes de trim()
+    const trimmed = (editName ?? "").trim();
 
-        const id = selectedMachine.id;
-
-        // Atualiza otimisticamente na UI para feedback imediato
-        setMachines(prev => prev.map(m => m.id === id ? { ...m, name: trimmed } : m));
-
-        try {
-            const response = await api.put(`/machines/update/${id}`, { name: trimmed });
-            // Se a API retornar o objeto atualizado, use ele; caso contrário, já atualizamos otimisticamente
-            const updated = response?.data;
-            if (updated && typeof updated === 'object') {
-                setMachines(prev => prev.map(m => m.id === id ? { ...m, ...updated } : m));
-            }
-            // Feedback ao usuário
-            Alert.alert('Sucesso', 'Nome atualizado.');
-        } catch (err: any) {
-            console.error('Erro ao atualizar máquina:', err?.response?.data || err?.message || err);
-            Alert.alert('Erro', 'Não foi possível salvar a alteração. Verifique a conexão.');
-            // Recarrega lista local para garantir consistência
-            setRefreshKey(k => k + 1);
-        } finally {
-            // limpa estados e fecha modal
-            setEditModalVisible(false);
-            setSelectedMachine(null);
-            setEditName("");
-            setIsEditing(false);
-            // força refetch para garantir sincronização com servidor
-            setRefreshKey(k => k + 1);
-        }
+    if (!trimmed) {
+        Alert.alert('Erro', 'Nome não pode ficar vazio.');
+        return;
     }
+
+    const id = selectedMachine.id;
+
+    try {
+        // ✅ Atualiza apenas o campo alterado, mantendo o resto do banco
+        const response = await api.put(`/machines/update/${id}`, {
+            name: trimmed,
+        });
+
+        // ✅ Atualiza localmente sem precisar refazer o GET
+        setMachines(prev =>
+            prev.map(m =>
+                m.id === id ? { ...m, name: trimmed } : m
+            )
+        );
+
+        Alert.alert('Sucesso', 'Máquina atualizada.');
+    } catch (err: any) {
+        console.error('Erro ao atualizar máquina:', err.response?.data || err.message);
+        Alert.alert('Erro', 'Não foi possível atualizar a máquina.');
+    } finally {
+        setEditModalVisible(false);
+        setSelectedMachine(null);
+        setEditName("");
+        setIsEditing(false);
+    }
+}
+
 
     async function handleCadastro() {
         if (!nome.trim() || !descricao.trim() || !oficinaSelecionada || conjuntoSelecionado.length === 0) {
@@ -200,175 +205,178 @@ export default function Maquinas() {
     }
 
     return (
-        <ScrollView style={TabsStyles.container}>
-            <View style={TabsStyles.headerPrincipal}>
-                <SetaVoltar />
-                <View style={TabsStyles.conjHeaderPrincipal}>
-                    <Text style={TabsStyles.tituloPrincipal}>Cadastrar máquinas</Text>
-                </View>
-            </View>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
 
-            <View style={styles.todosCard}>
-                <View style={styles.cardCad}>
-                    <Text style={styles.tituloCard}>Informe os dados para cadastrar</Text>
-
-                    <View style={{ marginBottom: 20, marginTop: 30 }}>
-                        <Text style={styles.label}>Nome da Máquina:</Text>
-                        <TextInput
-                            placeholder="Digite o nome da máquina"
-                            placeholderTextColor={"#6c6c6c"}
-                            style={styles.input}
-                            value={nome}
-                            onChangeText={setNome}
-                        />
+            <ScrollView style={TabsStyles.container}>
+                <View style={TabsStyles.headerPrincipal}>
+                    <SetaVoltar />
+                    <View style={TabsStyles.conjHeaderPrincipal}>
+                        <Text style={TabsStyles.tituloPrincipal}>Cadastrar máquinas</Text>
                     </View>
-
-                    <View style={{ marginBottom: 20, marginTop: 10 }}>
-                        <Text style={styles.label}>Descrição da Máquina:</Text>
-                        <TextInput
-                            placeholder="Escreva uma descrição para a máquina"
-                            placeholderTextColor={"#6c6c6c"}
-                            style={styles.input}
-                            value={descricao}
-                            onChangeText={setDescricao}
-                        />
-                    </View>
-
-                    <View style={{ marginBottom: 20, marginTop: 10, zIndex: 2000 }}>
-                        <Text style={styles.label}>Oficina:</Text>
-                        <DropDownPicker
-                            open={open}
-                            value={oficinaSelecionada}
-                            items={oficinas}
-                            setOpen={setOpen}
-                            setValue={setOficinaSelecionada}
-                            setItems={setOficinas}
-                            placeholder="Selecione"
-                            style={styles.input}
-                            dropDownContainerStyle={{
-                                backgroundColor: '#e6e6e6',
-                                borderRadius: 10,
-                                borderColor: '#e6e6e6',
-                                maxHeight: 200
-                            }}
-                            placeholderStyle={{ color: '#6c6c6c' }}
-                            textStyle={{ color: oficinaSelecionada ? '#000' : '#6c6c6c' }}
-                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                            listMode="SCROLLVIEW"
-                        />
-                    </View>
-
-                    <View style={{ marginBottom: 20, marginTop: 10, zIndex: 1000 }}>
-                        <Text style={styles.label}>Conjuntos:</Text>
-                        <DropDownPicker
-                            open={openConjunto}
-                            value={conjuntoSelecionado}
-                            items={conjuntos}
-                            setOpen={setOpenConjunto}
-                            setValue={setConjuntoSelecionado}
-                            setItems={setConjuntos}
-                            multiple={true}
-                            mode="BADGE"
-                            placeholder="Selecione"
-                            style={styles.input}
-                            dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
-                            placeholderStyle={{ color: '#6c6c6c' }}
-                            textStyle={{ color: conjuntoSelecionado.length > 0 ? '#000' : '#6c6c6c' }}
-                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                            listMode="SCROLLVIEW"
-                        />
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.botaoCad}
-                        onPress={handleCadastro}
-                        disabled={loadingSubmit}
-                    >
-                        <Text style={{ color: '#fff' }}>
-                            {loadingSubmit ? "Cadastrando..." : "Cadastrar Máquina"}
-                        </Text>
-                    </TouchableOpacity>
                 </View>
 
-                <View style={styles.cardCad}>
-                    <Text style={[styles.tituloCard, styles.tituloCardCompact]}>Máquinas Cadastradas</Text>
+                <View style={styles.todosCard}>
+                    <View style={styles.cardCad}>
+                        <Text style={styles.tituloCard}>Informe os dados para cadastrar</Text>
 
-                    {machines.map((machine) => (
-                        <View key={machine.id} style={styles.cardMaq}>
-                            <View style={styles.leftIcon}>
-                                <Wrench color="#1E9FCE" size={24} />
+                        <View style={{ marginBottom: 20, marginTop: 30 }}>
+                            <Text style={styles.label}>Nome da Máquina:</Text>
+                            <TextInput
+                                placeholder="Digite o nome da máquina"
+                                placeholderTextColor={"#6c6c6c"}
+                                style={styles.input}
+                                value={nome}
+                                onChangeText={setNome}
+                            />
+                        </View>
+
+                        <View style={{ marginBottom: 20, marginTop: 10 }}>
+                            <Text style={styles.label}>Descrição da Máquina:</Text>
+                            <TextInput
+                                placeholder="Escreva uma descrição para a máquina"
+                                placeholderTextColor={"#6c6c6c"}
+                                style={styles.input}
+                                value={descricao}
+                                onChangeText={setDescricao}
+                            />
+                        </View>
+
+                        <View style={{ marginBottom: 20, marginTop: 10, zIndex: 2000 }}>
+                            <Text style={styles.label}>Oficina:</Text>
+                            <DropDownPicker
+                                open={open}
+                                value={oficinaSelecionada}
+                                items={oficinas}
+                                setOpen={setOpen}
+                                setValue={setOficinaSelecionada}
+                                setItems={setOficinas}
+                                placeholder="Selecione"
+                                style={styles.input}
+                                dropDownContainerStyle={{
+                                    backgroundColor: '#e6e6e6',
+                                    borderRadius: 10,
+                                    borderColor: '#e6e6e6',
+                                    maxHeight: 200
+                                }}
+                                placeholderStyle={{ color: '#6c6c6c' }}
+                                textStyle={{ color: oficinaSelecionada ? '#000' : '#6c6c6c' }}
+                                disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                                listMode="SCROLLVIEW"
+                            />
+                        </View>
+
+                        <View style={{ marginBottom: 20, marginTop: 10, zIndex: 1000 }}>
+                            <Text style={styles.label}>Conjuntos:</Text>
+                            <DropDownPicker
+                                open={openConjunto}
+                                value={conjuntoSelecionado}
+                                items={conjuntos}
+                                setOpen={setOpenConjunto}
+                                setValue={setConjuntoSelecionado}
+                                setItems={setConjuntos}
+                                multiple={true}
+                                mode="BADGE"
+                                placeholder="Selecione"
+                                style={styles.input}
+                                dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: '#e6e6e6' }}
+                                placeholderStyle={{ color: '#6c6c6c' }}
+                                textStyle={{ color: conjuntoSelecionado.length > 0 ? '#000' : '#6c6c6c' }}
+                                disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                                listMode="SCROLLVIEW"
+                            />
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.botaoCad}
+                            onPress={handleCadastro}
+                            disabled={loadingSubmit}
+                        >
+                            <Text style={{ color: '#fff' }}>
+                                {loadingSubmit ? "Cadastrando..." : "Cadastrar Máquina"}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.cardCad}>
+                        <Text style={[styles.tituloCard, styles.tituloCardCompact]}>Máquinas Cadastradas</Text>
+
+                        {machines.map((machine) => (
+                            <View key={`machine-${machine.id}`} style={styles.cardMaq}>
+                                <View style={styles.leftIcon}>
+                                    <Wrench color="#1E9FCE" size={24} />
+                                </View>
+
+                                <View style={styles.cardContent}>
+                                    <Text style={styles.maqTitle}>{machine.name}</Text>
+                                    <Text style={styles.maqSubTitle}>{machine.location}</Text>
+                                    <Text style={styles.maqId}>ID: {machine.id}</Text>
+                                </View>
+
+                                <View style={styles.editIcons}>
+                                    <TouchableOpacity style={[styles.iconButton]} accessibilityLabel="Editar máquina" onPress={() => openEditModal(machine)}>
+                                        <Pencil size={18} color="#666" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.iconButton, styles.iconDelete]} onPress={() => setModalVisible(true)} accessibilityLabel="Excluir máquina">
+                                        <Trash2 size={18} color="#dc0606ff" />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
+                        ))}
+                    </View>
+                </View>
 
-                            <View style={styles.cardContent}>
-                                <Text style={styles.maqTitle}>{machine.name}</Text>
-                                <Text style={styles.maqSubTitle}>{machine.location}</Text>
-                                <Text style={styles.maqId}>ID: {machine.id}</Text>
-                            </View>
-
-                            <View style={styles.editIcons}>
-                                <TouchableOpacity style={[styles.iconButton]} accessibilityLabel="Editar máquina" onPress={() => openEditModal(machine)}>
-                                    <Pencil size={18} color="#666" />
+                <Modal visible={modalVisible} transparent animationType="fade">
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalBox}>
+                            <Text style={styles.modalTitle}>Deseja realmente deletar?</Text>
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity style={styles.modalDeleteButton} onPress={handleDelete} accessibilityLabel="Deletar">
+                                    <Text style={styles.modalDeleteText}>Deletar</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.iconButton, styles.iconDelete]} onPress={() => setModalVisible(true)} accessibilityLabel="Excluir máquina">
-                                    <Trash2 size={18} color="#dc0606ff" />
+
+                                <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)} accessibilityLabel="Cancelar">
+                                    <Text style={styles.modalCancelText}>Cancelar</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    ))}
-                </View>
-            </View>
+                    </View>
+                </Modal>
 
-            <Modal visible={modalVisible} transparent animationType="fade">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalBox}>
-                        <Text style={styles.modalTitle}>Deseja realmente deletar?</Text>
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity style={styles.modalDeleteButton} onPress={handleDelete} accessibilityLabel="Deletar">
-                                <Text style={styles.modalDeleteText}>Deletar</Text>
-                            </TouchableOpacity>
+                <Modal visible={editModalVisible} transparent animationType="fade">
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalBox}>
+                            <Text style={styles.modalTitle}>Editar máquina</Text>
 
-                            <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)} accessibilityLabel="Cancelar">
-                                <Text style={styles.modalCancelText}>Cancelar</Text>
-                            </TouchableOpacity>
+                            <TextInput
+                                ref={editInputRef}
+                                style={styles.modalEditInput}
+                                value={editName}
+                                onChangeText={setEditName}
+                                placeholder="Novo nome"
+                                placeholderTextColor="#6c6c6c"
+                                onSubmitEditing={handleSaveEdit}
+                            />
+
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity
+                                    style={[styles.modalSaveButton]}
+                                    onPress={handleSaveEdit}
+                                    accessibilityLabel="Salvar"
+                                    disabled={!editName.trim()}
+                                >
+                                    <Text style={styles.modalSaveText}>Salvar</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.modalCancelButton} onPress={() => { setEditModalVisible(false); setSelectedMachine(null); setIsEditing(false); setEditName(""); }} accessibilityLabel="Cancelar">
+                                    <Text style={styles.modalCancelText}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Modal>
+                </Modal>
 
-            <Modal visible={editModalVisible} transparent animationType="fade">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalBox}>
-                        <Text style={styles.modalTitle}>Editar máquina</Text>
-
-                        <TextInput
-                            ref={editInputRef}
-                            style={styles.modalEditInput}
-                            value={editName}
-                            onChangeText={setEditName}
-                            placeholder="Novo nome"
-                            placeholderTextColor="#6c6c6c"
-                            onSubmitEditing={handleSaveEdit}
-                        />
-
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity
-                                style={[styles.modalSaveButton]}
-                                onPress={handleSaveEdit}
-                                accessibilityLabel="Salvar"
-                                disabled={!editName.trim()}
-                            >
-                                <Text style={styles.modalSaveText}>Salvar</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.modalCancelButton} onPress={() => { setEditModalVisible(false); setSelectedMachine(null); setIsEditing(false); setEditName(""); }} accessibilityLabel="Cancelar">
-                                <Text style={styles.modalCancelText}>Cancelar</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
@@ -543,7 +551,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginLeft: 8
     },
-     modalCancelText: {
+    modalCancelText: {
         color: '#333333',
         fontSize: 16,
         fontWeight: '600',

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { Text, View } from "react-native";
 
 export type UserType = {
   id: number;
@@ -26,29 +27,31 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserType | null>(null);
+  const [ loading, setLoading ] = useState(true);
 
-  // 🔹 Carrega o usuário salvo ao iniciar
-  useEffect(() => {
-    (async () => {
-      try {
-        const keepConnected = await AsyncStorage.getItem("keepConnected");
-        const storedUser = await AsyncStorage.getItem("user");
-        const token = await AsyncStorage.getItem("token");
+useEffect(() => {
+  (async () => {
+    try {
+      const keepConnected = await AsyncStorage.getItem("keepConnected");
+      const storedUser = await AsyncStorage.getItem("user");
+      const token = await AsyncStorage.getItem("token");
 
-        // 🔹 Só restaura se o usuário quis manter-se conectado
-        if (keepConnected === "true" && storedUser && token) {
-          setUser(JSON.parse(storedUser));
-          console.log("Sessão restaurada automaticamente.");
-        } else {
-          console.log("Login automático desativado.");
-          await AsyncStorage.removeItem("user");
-          await AsyncStorage.removeItem("token");
-        }
-      } catch (error) {
-        console.error("Erro ao restaurar sessão:", error);
+      if (keepConnected === "true" && storedUser && token) {
+        setUser(JSON.parse(storedUser));
+        console.log("Sessão restaurada automaticamente.");
+      } else {
+        console.log("Login automático desativado.");
+        await AsyncStorage.removeItem("user");
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("keepConnected");
       }
-    })();
-  }, []);
+    } catch (error) {
+      console.error("Erro ao restaurar sessão:", error);
+    } finally {
+      setLoading(false); // 🔹 marca que terminou de carregar
+    }
+  })();
+}, []);
 
   // 🔹 Atualiza dados locais do usuário
   async function updateUser(updatedData: Partial<UserType>) {
@@ -71,6 +74,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.removeItem("keepConnected");
     setUser(null);
     console.log("Logout concluído — sessão limpa manualmente.");
+  }
+
+    if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Carregando...</Text>
+      </View>
+    );
   }
 
   return (

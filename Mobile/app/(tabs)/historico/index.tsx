@@ -41,6 +41,26 @@ export default function Historico() {
         );
     }
 
+     const hoje = new Date();
+    const inicioSemana = new Date();
+    inicioSemana.setDate(hoje.getDate() - hoje.getDay()); // domingo da semana atual
+
+    const totalHoje = historico.filter(item => {
+        const dataItem = new Date(item.createdAt);
+        return (
+            dataItem.getDate() === hoje.getDate() &&
+            dataItem.getMonth() === hoje.getMonth() &&
+            dataItem.getFullYear() === hoje.getFullYear()
+        );
+    }).length;
+
+    const totalSemana = historico.filter(item => {
+        const dataItem = new Date(item.createdAt);
+        return dataItem >= inicioSemana && dataItem <= hoje;
+    }).length;
+
+    const totalGeral = historico.length;
+
     return (
         <ScrollView style={TabsStyles.container}>
             <Logo />
@@ -53,6 +73,21 @@ export default function Historico() {
             </View>
 
             <View style={TabsStyles.todosCard}>
+                <View style={style.cardStats}>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>{totalHoje}</Text>
+                        <Text style={style.statsTexto}>Hoje</Text>
+                    </View>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>{totalSemana}</Text>
+                        <Text style={style.statsTexto}>Esta semana</Text>
+                    </View>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>{totalGeral}</Text>
+                        <Text style={style.statsTexto}>Total</Text>
+                    </View>
+                </View>
+
                 {historico.length === 0 ? (
                     <Text style={{ textAlign: "center", marginTop: 20, color: "#888" }}>
                         Nenhum histórico encontrado.
