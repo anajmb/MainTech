@@ -43,23 +43,24 @@ export default function Equipes() {
 
     async function fetchTeams() {
         try {
-            const res = await api.get('/team/get');
+            const res = await api.get("/team/get");
+            console.log("Equipes carregadas:", res.data); // 👈 teste isso
             setTeamData(res.data);
+        } catch (error) {
+            console.log("Erro ao carregar equipes:", error);
+        }
+    }
+
+    async function fetchEmployees() {
+        try {
+            const res = await api.get('/employees/get');
+            setEmployeesData(res.data);
         } catch (error) {
             console.log(error);
         }
     }
 
     useEffect(() => {
-        fetchTeams();
-        async function fetchEmployees() {
-            try {
-                const res = await api.get('/employees/get');
-                setEmployeesData(res.data);
-            } catch (error) {
-                console.log(error);
-            }
-        }
         fetchTeams();
         fetchEmployees();
     }, []);
@@ -106,6 +107,7 @@ export default function Equipes() {
                 teamId: selectedTeam.id,
                 personId: selectedEmployee.id,
             });
+            await fetchTeams();
             setFeedback(res.data.msg || "Membro adicionado!");
 
             setSelectedTeam(null);
@@ -116,7 +118,6 @@ export default function Equipes() {
             //     : team.members.find(m => m.id === selectedEmployee.id)? {...team, members: [...team.members.filter(m => m.id !== selectedEmployee.id)]} : team
             // ));
 
-            fetchTeams();
         } catch (error: any) {
             setFeedback(error.response?.data?.msg || "Erro ao adicionar membro.");
         }
@@ -211,7 +212,7 @@ export default function Equipes() {
             <ScrollView nestedScrollEnabled>
                 <View style={style.cardAdicionar}>
                     <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
-                    <View style={{ marginTop: 12 }}>
+                    <View style={{ marginTop: 12, marginBottom: 4 }}>
                         <Text style={style.labelAdicionar}>Nome da equipe:</Text>
                         <DropDownPicker
                             open={teamOpen}
@@ -221,12 +222,12 @@ export default function Equipes() {
                             setValue={setTeamValue}
                             setItems={setTeamItems}
                             placeholder="Selecione a equipe"
-                            style={style.inputAdicionar}
+                            style={[style.inputAdicionar, { borderWidth: 0, borderColor: 'transparent' }]}
                             dropDownContainerStyle={{
                                 backgroundColor: '#e6e6e6',
                                 borderRadius: 10,
                                 borderColor: 'transparent',
-                                maxHeight: 300,
+                                maxHeight: 100,
                             }}
                             listMode="SCROLLVIEW" // 👈 importante
                             scrollViewProps={{
@@ -239,7 +240,7 @@ export default function Equipes() {
                             zIndexInverse={999}
                         />
                     </View>
-                    <View style={{ marginTop: 12, marginBottom: 4, zIndex: 1000 }}>
+                    <View style={{ marginTop: 12, marginBottom: 4}}>
                         <Text style={style.labelAdicionar}>Membro:</Text>
                         <DropDownPicker
                             open={employeeOpen}
@@ -256,7 +257,7 @@ export default function Equipes() {
                                 borderColor: 'transparent',
                                 maxHeight: 100, // altura máxima do menu
                             }}
-                            listMode="SCROLLVIEW" 
+                            listMode="SCROLLVIEW"
                             scrollViewProps={{
                                 nestedScrollEnabled: true, // ✅ permite rolar dentro do card
                             }}

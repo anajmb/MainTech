@@ -49,7 +49,7 @@ export default function QRCode() {
         entityId: jsonData.id || null, // 🔹 Agora pega o id da máquina
         entityType: "Escaneado",          // 🔹 Bate com o backend (Task, QRCode ou ServiceOrder)
         action: "Escaneou máquina",    // 🔹 Texto legível
-        description: `Usuário escaneou o QR ${jsonData.name || "desconhecida"}`,
+        description: `Usuário escaneou o QR  da   ${jsonData.name || "desconhecida"}`,
       });
       console.log("Histórico registrado com sucesso!");
     } else {
