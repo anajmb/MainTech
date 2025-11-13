@@ -18,6 +18,21 @@ export interface Employees {
     updateDate: string;
 }
 
+type Role = 'INSPECTOR' | 'MAINTAINER' | 'ADMIN' | string;
+
+export const formatRole = (role: Role): string => {
+    switch (role) {
+        case 'INSPECTOR':
+            return 'Inspetor';
+        case 'MAINTAINER':
+            return 'Manutentor';
+        case 'ADMIN':
+            return 'Administrador';
+        default:
+            return role || 'Desconhecido';
+    }
+};
+
 const getInitials = (name: string): string => {
     if (!name) return '?';
     const names = name.split(' ').filter(Boolean);
@@ -30,15 +45,6 @@ const getInitials = (name: string): string => {
 };
 
 
-const formatRole = (role: Employees['role']): string => {
-    if (role === 'INSPECTOR') {
-        return 'Inspetor';
-    }
-    if (role === 'MAINTAINER') {
-        return 'Manutentor';
-    }
-    return role;
-};
 
 
 
@@ -193,7 +199,7 @@ const style = StyleSheet.create({
         padding: 16,
         marginVertical: 8,
         marginHorizontal: 8,
-       shadowColor: "#000",
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
@@ -227,7 +233,7 @@ const style = StyleSheet.create({
         marginTop: 1,
     },
     input: {
-         backgroundColor: "#e6e6e6",
+        backgroundColor: "#e6e6e6",
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -253,12 +259,12 @@ const style = StyleSheet.create({
         color: "#fff",
         fontSize: 15,
         fontWeight: "400",
-        
+
     },
     cardUsuarios: {
         backgroundColor: "#eeeeee",
         margin: 12,
-       shadowColor: "#000",
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
