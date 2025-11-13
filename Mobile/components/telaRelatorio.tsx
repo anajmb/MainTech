@@ -20,14 +20,18 @@ export default function Secao({ title, children }: SecaoProps) {
 
 interface PayloadItem {
     setId: number;
+    setName: string;
     action: 'change' | 'repair';
     subsetId: number;
+    subsetName: string;
     machineId: number;
 }
 
 interface OrdemServico {
     id: number;
     machineId: number;
+    inspectorId: number;
+    inspectorName: string;
     priority: 'low' | 'medium' | 'high';
     payload: PayloadItem[];
     createdAt: string;
@@ -106,9 +110,13 @@ export function Relatorio({ ordem }: RelatorioProps) {
                         {ordem.payload && ordem.payload.length > 0 ? (
                             ordem.payload.map((item, index) => (
                                 <View key={index} style={styles.itemPayload}>
-                                    <Text style={styles.value}>- {actionLabel[item.action]}</Text>
+                                    <Text style={styles.value}> {actionLabel[item.action]}</Text>
                                     <Text style={styles.subValue}>
-                                        (Conjunto ID: {item.setId}, Sub-Conjunto ID: {item.subsetId})
+                                        Conjunto ID: {item.setId}, Conjunto: {item.setName}
+                                    </Text>
+
+                                    <Text style={styles.subValue}>
+                                        Sub-Conjunto: {item.subsetName}
                                     </Text>
                                 </View>
                             ))
@@ -120,7 +128,7 @@ export function Relatorio({ ordem }: RelatorioProps) {
                     <View>
                         <Text style={styles.label}>Solicitante:</Text>
 
-                        <Text style={styles.value}>N/A</Text>
+                        <Text style={styles.value}>{ordem.inspectorName}</Text>
                     </View>
                 </Secao>
 
@@ -145,7 +153,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     cards: {
-        backgroundColor: '#eeeeee',
+        backgroundColor: '#ffff',
         paddingLeft: 15,
         paddingRight: 15,
     },

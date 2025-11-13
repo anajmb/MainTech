@@ -93,10 +93,8 @@ export default function FazerTarefa() {
     >({});
     const [selectedPrioridade, setSelectedPrioridade] = useState<ChavePrioridade>('medium');
     
-    // States para guardar os dados da tarefa
     const [inspectorId, setInspectorId] = useState<number | null>(null);
     const [inspectorName, setInspectorName] = useState<string | null>(null);
-    // State para guardar o ID da tarefa e repassá-lo
     const [taskId, setTaskId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -115,7 +113,6 @@ export default function FazerTarefa() {
                     return;
                 }
 
-                // Salva o taskId no state assim que o lemos
                 setTaskId(info.taskId); 
 
                 const taskRes = await api.get<ApiTask>(`/tasks/getUnique/${info.taskId}`);
@@ -175,6 +172,12 @@ export default function FazerTarefa() {
             return;
         }
 
+        if (!machineData.location) {
+             Alert.alert("Erro", "Localização da máquina não encontrada. Não é possível enviar.");
+             return;
+        }
+
+
         const result: {
             machineId: number;
             setId: number;
@@ -226,23 +229,22 @@ export default function FazerTarefa() {
             return;
         }
 
-        console.log("Enviando:", {
+        const dataToSend = {
             machineId: machineData.id,
             machineName: machineData.name,
+            location: machineData.location, 
             priority: selectedPrioridade,
             payload: result,
             inspectorId: inspectorId, 
             inspectorName: inspectorName, 
-        });
+        };
+
+        console.log("Enviando:", dataToSend); 
 
         try {
-            const res = await api.post("/serviceOrders/create", {
-                machineId: machineData.id,
-                priority: selectedPrioridade,
-                payload: result,
-                inspectorId: inspectorId, 
-                inspectorName: inspectorName, 
-            });
+
+            const res = await api.post("/serviceOrders/create", dataToSend);
+
 
             Alert.alert("Sucesso", res.data?.msg || "Inspeção enviada com sucesso.");
             router.back();
@@ -324,7 +326,6 @@ export default function FazerTarefa() {
                                             machineData: JSON.stringify(machineData),
                                             selections: JSON.stringify(selectionsBySet),
                                             setId: set.id,
-                                            // ❗️ Adiciona o taskId para a próxima tela
                                             taskId: taskId 
                                         }
                                     }}
