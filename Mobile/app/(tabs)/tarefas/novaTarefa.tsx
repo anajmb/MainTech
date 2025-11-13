@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
         marginBottom: 12
     },
     input: {
-        backgroundColor: "#F5F5F5",
+        backgroundColor: "#e6e6e6",
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
     },
     inputDescricao: {
-        backgroundColor: "#F5F5F5",
+        backgroundColor: "#e6e6e6",
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
     inputDescreva: {
-        backgroundColor: "#F5F5F5",
+        backgroundColor: "#e6e6e6",
         borderRadius: 8,
         marginBottom: 8,
         fontSize: 14,

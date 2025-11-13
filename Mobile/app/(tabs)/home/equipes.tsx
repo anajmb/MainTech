@@ -239,7 +239,7 @@ export default function Equipes() {
                             zIndexInverse={999}
                         />
                     </View>
-                    <View style={{ marginTop: 12, marginBottom: 4, zIndex: 1000 }}>
+                    <View style={{ marginTop: 12, marginBottom: 4 }}>
                         <Text style={style.labelAdicionar}>Membro:</Text>
                         <DropDownPicker
                             open={employeeOpen}

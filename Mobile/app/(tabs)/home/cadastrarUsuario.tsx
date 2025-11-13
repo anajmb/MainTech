@@ -188,14 +188,14 @@ const style = StyleSheet.create({
         left: 10,
     },
     cardCadastro: {
-        backgroundColor: "#fff",
+        backgroundColor: "#eeeeee",
         borderRadius: 16,
         padding: 16,
         marginVertical: 8,
         marginHorizontal: 8,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+       shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 3,
 
@@ -227,14 +227,14 @@ const style = StyleSheet.create({
         marginTop: 1,
     },
     input: {
-        backgroundColor: "#F5F5F5",
+         backgroundColor: "#e6e6e6",
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
         justifyContent: "center",
     },
     inputText: {
-        color: "#8B8686",
+        color: "#6c6c6c",
         fontSize: 14,
     },
     botaoCadastro: {
@@ -253,13 +253,14 @@ const style = StyleSheet.create({
         color: "#fff",
         fontSize: 15,
         fontWeight: "400",
+        
     },
     cardUsuarios: {
-        backgroundColor: "#fff",
+        backgroundColor: "#eeeeee",
         margin: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.10,
+       shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 3,
         borderRadius: 16,
@@ -275,7 +276,7 @@ const style = StyleSheet.create({
     usuarioItem: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor: "#ffffff90",
         borderRadius: 12,
         padding: 12,
         marginBottom: 12,

@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   },
   opcaoForm: {},
   input: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#e6e6e6",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,

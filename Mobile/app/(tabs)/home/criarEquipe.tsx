@@ -126,16 +126,16 @@ const style = StyleSheet.create({
         left: 10,
     },
     cardCriarEquipe: {
-        backgroundColor: "#fff",
-        borderRadius: 16,
-        padding: 16,
-        marginVertical: 8,
+     backgroundColor: "#eeeeee",
+        borderRadius: 10,
+        marginVertical: 12,
         marginHorizontal: 8,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 3,
+        padding: 20,
+        elevation: 4
     },
     tituloCardCriarEquipe: {
         fontSize: 18,
@@ -151,7 +151,7 @@ const style = StyleSheet.create({
         fontWeight: "400",
     },
     input: {
-        backgroundColor: "#F5F5F5",
+       backgroundColor: "#e6e6e6",
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -165,7 +165,7 @@ const style = StyleSheet.create({
         fontWeight: "400",
     },
     inputDescrição: {
-        backgroundColor: "#F5F5F5",
+      backgroundColor: "#e6e6e6",
         borderRadius: 8,
         marginBottom: 8,
         fontSize: 14,
@@ -196,15 +196,16 @@ const style = StyleSheet.create({
         fontWeight: "400",
     },
     cardEquipesCadastradas: {
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        paddingTop: 18,
-        margin: 12,
+       backgroundColor: "#eeeeee",
+        borderRadius: 10,
+        marginVertical: 12,
+        marginHorizontal: 8,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.10,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
-        marginBottom: 70,
+        padding: 20,
+        elevation: 40,
 
     },
     tituloCadastradas: {
@@ -217,16 +218,17 @@ const style = StyleSheet.create({
 
     },
     card: {
-        backgroundColor: "#fff",
-        borderRadius: 20,
-        padding: 16,
-        marginVertical: 8,
+        backgroundColor: "#eeeeee",
+        borderRadius: 10,
+        marginVertical: 12,
         marginHorizontal: 8,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 3,
+        padding: 20,
+        elevation: 4
+
 
     },
     groupEqui: {

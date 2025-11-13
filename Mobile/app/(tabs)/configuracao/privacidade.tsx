@@ -240,17 +240,19 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 8,
     marginTop: 12,
+    
   },
   inputWrapper: {
     position: 'relative',
     marginBottom: 4,
+    
   },
   textInput: {
-    backgroundColor: "#F5F5F5",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     justifyContent: "center",
+    backgroundColor: "#e6e6e6",
   },
   eyeButton: {
     position: 'absolute',
