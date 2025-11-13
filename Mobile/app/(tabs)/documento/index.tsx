@@ -46,6 +46,21 @@ function getStatusStyle(status: OrdemServico['status']) {
   }
 }
 
+type Role = 'INSPECTOR' | 'MAINTAINER' | 'ADMIN' | string;
+
+export const formatRole = (role: Role): string => {
+    switch (role) {
+        case 'INSPECTOR':
+            return 'Inspetor';
+        case 'MAINTAINER':
+            return 'Manutentor';
+        case 'ADMIN':
+            return 'Administrador';
+        default:
+            return role || 'Desconhecido';
+    }
+};
+
 export default function Documento() {
   const [filtro, setFiltro] = useState("todas");
   const [ordens, setOrdens] = useState<OrdemServico[]>([]);
@@ -147,7 +162,7 @@ export default function Documento() {
                     </View>
                   </View>
                   <Text style={[styles.statusText, getStatusStyle(ordem.status)]}>
-                    {ordem.status}
+                    {formatRole(ordem.status)}
                   </Text>
                 </View>
 
