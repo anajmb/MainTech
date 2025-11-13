@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginTop: 25,
-        marginBottom: 20,
+        marginBottom: 200,
         gap: 12,
     },
     btnPrincipal: {

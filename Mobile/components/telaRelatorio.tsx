@@ -30,6 +30,8 @@ interface PayloadItem {
 interface OrdemServico {
     id: number;
     machineId: number;
+    machineName: string;
+    location: string;
     inspectorId: number;
     inspectorName: string;
     priority: 'low' | 'medium' | 'high';
@@ -95,7 +97,7 @@ export function Relatorio({ ordem }: RelatorioProps) {
                         <View style={styles.field}>
                             <Text style={styles.label}>Nome:</Text>
 
-                            <Text style={styles.value}>N/A</Text>
+                            <Text style={styles.value}>{ordem.machineName}</Text>
                         </View>
                         <View style={styles.field}>
                             <Text style={styles.label}>Identificação da Máquina:</Text>
@@ -151,6 +153,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
+        // marginBottom: 500,
     },
     cards: {
         backgroundColor: '#ffff',
