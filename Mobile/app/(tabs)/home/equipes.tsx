@@ -161,128 +161,129 @@ export default function Equipes() {
 
 
             {/* input data */}
+            <View style={TabsStyles.todosCard}>
+                <View style={style.card}>
+                    <ScrollView>
+                        <View>
+                            <Text style={style.cardTitle}>Minha equipe</Text>
+                        </View>
 
-            <View style={style.card}>
-                <ScrollView>
-                    <View>
-                        <Text style={style.cardTitle}>Minha equipe</Text>
-                    </View>
+                        {TeamData.map((team) => (
+                            <View key={team.id} style={{ marginTop: 20 }}>
+                                <View style={style.groupEqui}>
 
-                    {TeamData.map((team) => (
-                        <View key={team.id} style={{ marginTop: 20 }}>
-                            <View style={style.groupEqui}>
+                                    <View style={style.iconeEquipe}>
+                                        <Wrench color="white" />
+                                    </View>
 
-                                <View style={style.iconeEquipe}>
-                                    <Wrench color="white" />
+                                    <View style={style.infoEqui}>
+                                        <Text style={style.tituloEqui}>{team.name}</Text>
+                                        <Text style={style.descricaoEqui}>{team.description}</Text>
+
+                                    </View>
                                 </View>
 
-                                <View style={style.infoEqui}>
-                                    <Text style={style.tituloEqui}>{team.name}</Text>
-                                    <Text style={style.descricaoEqui}>{team.description}</Text>
+                                <View style={style.footerCard}>
+                                    <Text style={style.quantMembro}>
+                                        {team.members ? team.members.length : 0} membros
+                                    </Text>
 
+                                    < TouchableOpacity>
+                                        <Link href={`/home/verEquipe?teamId=${team.id}`}>
+                                            <View>
+                                                <Text style={style.verEquipe}>Ver equipe</Text>
+
+                                            </View>
+                                        </Link>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
+                        ))}
 
-                            <View style={style.footerCard}>
-                                <Text style={style.quantMembro}>
-                                    {team.members ? team.members.length : 0} membros
-                                </Text>
+                    </ScrollView>
 
-                                < TouchableOpacity>
-                                    <Link href={`/home/verEquipe?teamId=${team.id}`}>
-                                        <View>
-                                            <Text style={style.verEquipe}>Ver equipe</Text>
-
-                                        </View>
-                                    </Link>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    ))}
-
-                </ScrollView>
-
-            </View>
-
-
-
-
-            {/* card adicionar membro */}
-            <ScrollView nestedScrollEnabled>
-                <View style={style.cardAdicionar}>
-                    <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
-                    <View style={{ marginTop: 12 }}>
-                        <Text style={style.labelAdicionar}>Nome da equipe:</Text>
-                        <DropDownPicker
-                            open={teamOpen}
-                            value={teamValue}
-                            items={teamItems}
-                            setOpen={setTeamOpen}
-                            setValue={setTeamValue}
-                            setItems={setTeamItems}
-                            placeholder="Selecione a equipe"
-                            style={style.inputAdicionar}
-                            dropDownContainerStyle={{
-                                backgroundColor: '#e6e6e6',
-                                borderRadius: 10,
-                                borderColor: 'transparent',
-                                maxHeight: 300,
-                            }}
-                            listMode="SCROLLVIEW" 
-                            scrollViewProps={{
-                                nestedScrollEnabled: true, 
-                            }}
-                            placeholderStyle={{ color: '#6c6c6c' }}
-                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                            textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
-                            zIndex={1000} 
-                            zIndexInverse={999}
-                        />
-                    </View>
-                    <View style={{ marginTop: 12, marginBottom: 4}}>
-                        <Text style={style.labelAdicionar}>Membro:</Text>
-                        <DropDownPicker
-                            open={employeeOpen}
-                            value={employeeValue}
-                            items={employeeItems}
-                            setOpen={setEmployeeOpen}
-                            setValue={setEmployeeValue}
-                            setItems={setEmployeeItems}
-                            placeholder="Selecione o membro"
-                            style={[style.inputAdicionar, { borderWidth: 0, borderColor: 'transparent' }]}
-                            dropDownContainerStyle={{
-                                backgroundColor: '#e6e6e6',
-                                borderRadius: 10,
-                                borderColor: 'transparent',
-                                maxHeight: 100, 
-                            }}
-                            listMode="SCROLLVIEW" 
-                            scrollViewProps={{
-                                nestedScrollEnabled: true, 
-                            }}
-                            dropDownDirection="BOTTOM" 
-                            placeholderStyle={{ color: '#6c6c6c' }}
-                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                            textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}
-                            zIndex={1000} 
-                            zIndexInverse={999}
-
-                        />
-                    </View>
-                    <TouchableOpacity onPress={handleAddMember}>
-                        <View style={{ alignItems: "center", marginTop: 18 }}>
-                            <View style={style.botaoAdicionar}>
-                                <Text style={style.textoBotaoAdicionar}>Adicionar membro</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    {feedback ? (
-                        <Text style={{ color: feedback.includes("Erro") ? "red" : "green", marginTop: 10, textAlign: "center" }}>
-                            {feedback}
-                        </Text>
-                    ) : null}
                 </View>
-            </ScrollView>
+
+
+
+
+                {/* card adicionar membro */}
+                <ScrollView nestedScrollEnabled>
+                    <View style={style.cardAdicionar}>
+                        <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
+                        <View style={{ marginTop: 12 }}>
+                            <Text style={style.labelAdicionar}>Nome da equipe:</Text>
+                            <DropDownPicker
+                                open={teamOpen}
+                                value={teamValue}
+                                items={teamItems}
+                                setOpen={setTeamOpen}
+                                setValue={setTeamValue}
+                                setItems={setTeamItems}
+                                placeholder="Selecione a equipe"
+                                style={style.inputAdicionar}
+                                dropDownContainerStyle={{
+                                    backgroundColor: '#e6e6e6',
+                                    borderRadius: 10,
+                                    borderColor: 'transparent',
+                                    maxHeight: 300,
+                                }}
+                                listMode="SCROLLVIEW"
+                                scrollViewProps={{
+                                    nestedScrollEnabled: true,
+                                }}
+                                placeholderStyle={{ color: '#6c6c6c' }}
+                                disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                                textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
+                                zIndex={1000}
+                                zIndexInverse={999}
+                            />
+                        </View>
+                        <View style={{ marginTop: 12, marginBottom: 4 }}>
+                            <Text style={style.labelAdicionar}>Membro:</Text>
+                            <DropDownPicker
+                                open={employeeOpen}
+                                value={employeeValue}
+                                items={employeeItems}
+                                setOpen={setEmployeeOpen}
+                                setValue={setEmployeeValue}
+                                setItems={setEmployeeItems}
+                                placeholder="Selecione o membro"
+                                style={[style.inputAdicionar, { borderWidth: 0, borderColor: 'transparent' }]}
+                                dropDownContainerStyle={{
+                                    backgroundColor: '#e6e6e6',
+                                    borderRadius: 10,
+                                    borderColor: 'transparent',
+                                    maxHeight: 100,
+                                }}
+                                listMode="SCROLLVIEW"
+                                scrollViewProps={{
+                                    nestedScrollEnabled: true,
+                                }}
+                                dropDownDirection="BOTTOM"
+                                placeholderStyle={{ color: '#6c6c6c' }}
+                                disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                                textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}
+                                zIndex={1000}
+                                zIndexInverse={999}
+
+                            />
+                        </View>
+                        <TouchableOpacity onPress={handleAddMember}>
+                            <View style={{ alignItems: "center", marginTop: 18 }}>
+                                <View style={style.botaoAdicionar}>
+                                    <Text style={style.textoBotaoAdicionar}>Adicionar membro</Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                        {feedback ? (
+                            <Text style={{ color: feedback.includes("Erro") ? "red" : "green", marginTop: 10, textAlign: "center" }}>
+                                {feedback}
+                            </Text>
+                        ) : null}
+                    </View>
+                </ScrollView>
+            </View>
         </ScrollView >
     )
 }
@@ -300,7 +301,7 @@ const style = StyleSheet.create({
 
     },
     card: {
-       backgroundColor: "#eeeeee",
+        backgroundColor: "#eeeeee",
         borderRadius: 10,
         marginVertical: 12,
         marginHorizontal: 8,
@@ -408,7 +409,7 @@ const style = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#e6e6e6',
         padding: 10,
-        borderColor: '#e6e6e6', 
+        borderColor: '#e6e6e6',
         borderWidth: 1,
     },
     inputTextAdicionar: {

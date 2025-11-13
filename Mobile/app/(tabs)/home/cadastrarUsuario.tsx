@@ -113,73 +113,75 @@ export default function CadastrarUsuario() {
             </View>
 
             {/* Card de cadastro */}
-            <View style={style.cardCadastro}>
-                <Text style={style.tituloCardCadastro}>Informe os dados para liberar o cadastro</Text>
-                <View>
-                    <Text style={style.label}>Nome  Completo</Text>
-                    <TextInput
-                        style={style.input}
-                        placeholder="Nome do Usuário"
-                        placeholderTextColor="#8B8686"
-                        value={name}
-                        onChangeText={setName}
-                    />
-                </View>
-                <View style={{ marginTop: 8 }}>
-                    <Text style={style.label}>CPF</Text>
-                    <TextInput
-                        style={style.input}
-                        placeholder="Digite o CPF"
-                        placeholderTextColor="#8B8686"
-                        value={cpfData}
-                        onChangeText={setCpfData}
-                    />
-                </View>
-                <View style={{ flex: 1 }}>
-                    <Text style={style.labelCargo}>Cargo</Text>
-                    <DropDownPicker
-                        open={openCargo}
-                        value={cargo}
-                        items={cargos}
-                        setOpen={setOpenCargo}
-                        setValue={setCargo}
-                        setItems={setCargos}
-                        placeholder="Selecione"
-                        style={[style.input, { borderWidth: 0, borderColor: 'transparent' }]}
-                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent' }}
-                        placeholderStyle={{ color: '#6c6c6c' }}
-                        disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                        textStyle={{ color: cargo ? '#000' : '#6c6c6c' }}
-                    />
-                </View>
-
-                <TouchableOpacity
-                    style={style.botaoCadastro}
-                    onPress={handlePreRegister}
-                    disabled={isLoading}
-                >
-                    <Text style={style.textoBotaoCadastro}>
-                        {isLoading ? "Cadastrando..." : "Cadastrar usuário"}
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={style.cardUsuarios}>
-                <Text style={style.tituloUsuarios}>Usuários Cadastrados</Text>
-                {employeesData.map((employee) => (
-                    <View style={style.usuarioItem} key={employee.id}>
-                        <View style={style.avatar}>
-                            <Text style={style.avatarText}>{getInitials(employee.name)}</Text>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <Text style={style.nomeUsuario}>{employee.name}</Text>
-                            <Text style={style.emailUsuario}>{employee.email}</Text>
-                        </View>
-                        <View style={style.tagCargo}>
-                            <Text style={style.tagCargoText}>{formatRole(employee.role)}</Text>
-                        </View>
+            <View style={TabsStyles.todosCard}>
+                <View style={style.cardCadastro}>
+                    <Text style={style.tituloCardCadastro}>Informe os dados para liberar o cadastro</Text>
+                    <View>
+                        <Text style={style.label}>Nome  Completo</Text>
+                        <TextInput
+                            style={style.input}
+                            placeholder="Nome do Usuário"
+                            placeholderTextColor="#8B8686"
+                            value={name}
+                            onChangeText={setName}
+                        />
                     </View>
-                ))}
+                    <View style={{ marginTop: 8 }}>
+                        <Text style={style.label}>CPF</Text>
+                        <TextInput
+                            style={style.input}
+                            placeholder="Digite o CPF"
+                            placeholderTextColor="#8B8686"
+                            value={cpfData}
+                            onChangeText={setCpfData}
+                        />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text style={style.labelCargo}>Cargo</Text>
+                        <DropDownPicker
+                            open={openCargo}
+                            value={cargo}
+                            items={cargos}
+                            setOpen={setOpenCargo}
+                            setValue={setCargo}
+                            setItems={setCargos}
+                            placeholder="Selecione"
+                            style={[style.input, { borderWidth: 0, borderColor: 'transparent' }]}
+                            dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent' }}
+                            placeholderStyle={{ color: '#6c6c6c' }}
+                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
+                            textStyle={{ color: cargo ? '#000' : '#6c6c6c' }}
+                        />
+                    </View>
+
+                    <TouchableOpacity
+                        style={style.botaoCadastro}
+                        onPress={handlePreRegister}
+                        disabled={isLoading}
+                    >
+                        <Text style={style.textoBotaoCadastro}>
+                            {isLoading ? "Cadastrando..." : "Cadastrar usuário"}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={style.cardUsuarios}>
+                    <Text style={style.tituloUsuarios}>Usuários Cadastrados</Text>
+                    {employeesData.map((employee) => (
+                        <View style={style.usuarioItem} key={employee.id}>
+                            <View style={style.avatar}>
+                                <Text style={style.avatarText}>{getInitials(employee.name)}</Text>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={style.nomeUsuario}>{employee.name}</Text>
+                                <Text style={style.emailUsuario}>{employee.email}</Text>
+                            </View>
+                            <View style={style.tagCargo}>
+                                <Text style={style.tagCargoText}>{formatRole(employee.role)}</Text>
+                            </View>
+                        </View>
+                    ))}
+                </View>
             </View>
         </ScrollView>
     );
