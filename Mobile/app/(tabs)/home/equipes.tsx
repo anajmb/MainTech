@@ -228,18 +228,18 @@ export default function Equipes() {
                                 borderColor: 'transparent',
                                 maxHeight: 300,
                             }}
-                            listMode="SCROLLVIEW" // 👈 importante
+                            listMode="SCROLLVIEW" 
                             scrollViewProps={{
-                                nestedScrollEnabled: true, // 👈 permite rolar dentro do card
+                                nestedScrollEnabled: true, 
                             }}
                             placeholderStyle={{ color: '#6c6c6c' }}
                             disabledItemLabelStyle={{ color: '#6c6c6c' }}
                             textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
-                            zIndex={1000} // 👈 evita que um dropdown cubra o outro
+                            zIndex={1000} 
                             zIndexInverse={999}
                         />
                     </View>
-                    <View style={{ marginTop: 12, marginBottom: 4 }}>
+                    <View style={{ marginTop: 12, marginBottom: 4}}>
                         <Text style={style.labelAdicionar}>Membro:</Text>
                         <DropDownPicker
                             open={employeeOpen}
@@ -254,17 +254,17 @@ export default function Equipes() {
                                 backgroundColor: '#e6e6e6',
                                 borderRadius: 10,
                                 borderColor: 'transparent',
-                                maxHeight: 100, // altura máxima do menu
+                                maxHeight: 100, 
                             }}
                             listMode="SCROLLVIEW" 
                             scrollViewProps={{
-                                nestedScrollEnabled: true, // ✅ permite rolar dentro do card
+                                nestedScrollEnabled: true, 
                             }}
-                            dropDownDirection="BOTTOM" // 👈 força abrir pra baixo (ajuda a não sair do card)
+                            dropDownDirection="BOTTOM" 
                             placeholderStyle={{ color: '#6c6c6c' }}
                             disabledItemLabelStyle={{ color: '#6c6c6c' }}
                             textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}
-                            zIndex={1000} // 👈 evita sobreposição
+                            zIndex={1000} 
                             zIndexInverse={999}
 
                         />
@@ -380,7 +380,6 @@ const style = StyleSheet.create({
     },
 
 
-    // card adicionar membro
     cardAdicionar: {
         backgroundColor: "#eeeeee",
         borderRadius: 10,
@@ -402,14 +401,14 @@ const style = StyleSheet.create({
     labelAdicionar: {
         fontSize: 15,
         color: "#222",
-        marginBottom: 4,
+        marginBottom: 10,
         fontWeight: "400",
     },
     inputAdicionar: {
         borderRadius: 10,
         backgroundColor: '#e6e6e6',
         padding: 10,
-        borderColor: '#e6e6e6', // Garante que a borda tenha a mesma cor
+        borderColor: '#e6e6e6', 
         borderWidth: 1,
     },
     inputTextAdicionar: {
