@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#eeeeee',
         paddingVertical: 25,
         borderRadius: 12,
-        paddingHorizontal: 5,
+        paddingHorizontal: 45,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
     },
     filtroTitulo: {

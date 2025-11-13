@@ -93,7 +93,7 @@ export default function AgendaScreen() {
 
       marks[isoDate] = {
         selected: isSelected,
-        selectedColor: isOverdue ? "yellow" : "#d10b03",
+        selectedColor: isOverdue ? "#f5eec3" : "#d10b03",
         selectedTextColor: isOverdue ? "#000" : "#fff",
         // só marca o dot se NÃO estiver selecionado
         marked: !isSelected,

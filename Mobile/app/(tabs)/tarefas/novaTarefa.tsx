@@ -128,7 +128,7 @@ export default function NovaTarefa() {
                     <View>
                         <Text style={styles.label}>Titulo</Text>
                         <TextInput placeholder="Digite o título da tarefa"
-                            placeholderTextColor={'#8B8686'}
+                            placeholderTextColor={'#6c6c6c'}
                             style={styles.input}
                             value={title}
                             onChangeText={setTitle} />
@@ -137,7 +137,7 @@ export default function NovaTarefa() {
                         <Text style={styles.label}>Descrição</Text>
                         <TextInput style={styles.inputDescreva}
                             placeholder="Descreva os detalhes"
-                            placeholderTextColor="#8B8686"
+                            placeholderTextColor="#6c6c6c"
                             multiline={true}
                             numberOfLines={8}
                             value={description}
@@ -147,7 +147,7 @@ export default function NovaTarefa() {
                     <View>
                         <Text style={styles.label}>Máquina</Text>
                         <TextInput placeholder="Digite o ID da máquina"
-                            placeholderTextColor={'#8B8686'}
+                            placeholderTextColor={'#6c6c6c'}
                             style={styles.inputDescricao}
                             value={machines}
                             onChangeText={setMachines}
@@ -247,16 +247,14 @@ const styles = StyleSheet.create({
         alignSelf: "center"
     },
     card: {
-        backgroundColor: "#fff",
-        borderRadius: 16,
-        padding: 16,
-        marginVertical: -6,
-        marginHorizontal: 8,
+        backgroundColor: '#eeeeee',
+        padding: 20,
+        borderRadius: 10,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 3,
+        elevation: 4
     },
     label: {
         fontSize: 15,

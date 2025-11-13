@@ -43,24 +43,23 @@ export default function Equipes() {
 
     async function fetchTeams() {
         try {
-            const res = await api.get("/team/get");
-            console.log("Equipes carregadas:", res.data); // 👈 teste isso
+            const res = await api.get('/team/get');
             setTeamData(res.data);
-        } catch (error) {
-            console.log("Erro ao carregar equipes:", error);
-        }
-    }
-
-    async function fetchEmployees() {
-        try {
-            const res = await api.get('/employees/get');
-            setEmployeesData(res.data);
         } catch (error) {
             console.log(error);
         }
     }
 
     useEffect(() => {
+        fetchTeams();
+        async function fetchEmployees() {
+            try {
+                const res = await api.get('/employees/get');
+                setEmployeesData(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
         fetchTeams();
         fetchEmployees();
     }, []);
@@ -107,7 +106,6 @@ export default function Equipes() {
                 teamId: selectedTeam.id,
                 personId: selectedEmployee.id,
             });
-            await fetchTeams();
             setFeedback(res.data.msg || "Membro adicionado!");
 
             setSelectedTeam(null);
@@ -118,6 +116,7 @@ export default function Equipes() {
             //     : team.members.find(m => m.id === selectedEmployee.id)? {...team, members: [...team.members.filter(m => m.id !== selectedEmployee.id)]} : team
             // ));
 
+            fetchTeams();
         } catch (error: any) {
             setFeedback(error.response?.data?.msg || "Erro ao adicionar membro.");
         }
@@ -212,7 +211,7 @@ export default function Equipes() {
             <ScrollView nestedScrollEnabled>
                 <View style={style.cardAdicionar}>
                     <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
-                    <View style={{ marginTop: 12, marginBottom: 4 }}>
+                    <View style={{ marginTop: 12 }}>
                         <Text style={style.labelAdicionar}>Nome da equipe:</Text>
                         <DropDownPicker
                             open={teamOpen}
@@ -222,12 +221,12 @@ export default function Equipes() {
                             setValue={setTeamValue}
                             setItems={setTeamItems}
                             placeholder="Selecione a equipe"
-                            style={[style.inputAdicionar, { borderWidth: 0, borderColor: 'transparent' }]}
+                            style={style.inputAdicionar}
                             dropDownContainerStyle={{
                                 backgroundColor: '#e6e6e6',
                                 borderRadius: 10,
                                 borderColor: 'transparent',
-                                maxHeight: 100,
+                                maxHeight: 300,
                             }}
                             listMode="SCROLLVIEW" // 👈 importante
                             scrollViewProps={{
@@ -240,7 +239,7 @@ export default function Equipes() {
                             zIndexInverse={999}
                         />
                     </View>
-                    <View style={{ marginTop: 12, marginBottom: 4}}>
+                    <View style={{ marginTop: 12, marginBottom: 4, zIndex: 1000 }}>
                         <Text style={style.labelAdicionar}>Membro:</Text>
                         <DropDownPicker
                             open={employeeOpen}
@@ -257,7 +256,7 @@ export default function Equipes() {
                                 borderColor: 'transparent',
                                 maxHeight: 100, // altura máxima do menu
                             }}
-                            listMode="SCROLLVIEW"
+                            listMode="SCROLLVIEW" 
                             scrollViewProps={{
                                 nestedScrollEnabled: true, // ✅ permite rolar dentro do card
                             }}
@@ -301,16 +300,16 @@ const style = StyleSheet.create({
 
     },
     card: {
-        backgroundColor: "#eeeeeeee",
-        borderRadius: 16,
-        padding: 16,
-        marginVertical: 8,
+       backgroundColor: "#eeeeee",
+        borderRadius: 10,
+        marginVertical: 12,
         marginHorizontal: 8,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 3,
+        padding: 20,
+        elevation: 4
 
     },
     cardTitle: {
@@ -384,15 +383,15 @@ const style = StyleSheet.create({
     // card adicionar membro
     cardAdicionar: {
         backgroundColor: "#eeeeee",
-        borderRadius: 16,
-        padding: 18,
+        borderRadius: 10,
         marginVertical: 12,
         marginHorizontal: 8,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.13,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 3,
+        padding: 20,
+        elevation: 4
     },
     tituloAdicionar: {
         fontSize: 18,
@@ -401,7 +400,6 @@ const style = StyleSheet.create({
         marginBottom: 8,
     },
     labelAdicionar: {
-
         fontSize: 15,
         color: "#222",
         marginBottom: 4,
