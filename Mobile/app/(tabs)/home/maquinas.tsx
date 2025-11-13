@@ -131,7 +131,6 @@ export default function Maquinas() {
             setRefreshKey(k => k + 1);
         }
     }
-    // ✅ Corrigido para evitar undefined e garantir atualização correta
     async function handleSaveEdit() {
         if (!selectedMachine) return;
 
@@ -146,12 +145,9 @@ export default function Maquinas() {
         const id = selectedMachine.id;
 
         try {
-            // ✅ Atualiza apenas o campo alterado, mantendo o resto do banco
             const response = await api.put(`/machines/update/${id}`, {
                 name: trimmed,
             });
-
-            // ✅ Atualiza localmente sem precisar refazer o GET
             setMachines(prev =>
                 prev.map(m =>
                     m.id === id ? { ...m, name: trimmed } : m
@@ -416,7 +412,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 15,
         color: "#222",
-        marginBottom: 4,
+        marginBottom: 10,
         fontWeight: "400",
     },
     input: {
