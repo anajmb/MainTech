@@ -1,64 +1,93 @@
 import Logo from "@/components/logo";
-import SetaVoltar from "@/components/setaVoltar";
+import SetaVoltar from "@/components/setaVoltar"; // ❗️ Verifique se a importação está correta (com ou sem {})
 import { TabsStyles } from "@/styles/globalTabs";
-import { Link } from "expo-router";
-import { Download, FileText } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import { Link, useFocusEffect } from "expo-router"; // ❗️ Importe useFocusEffect
+import { Download, FileText, UserCheck } from "lucide-react-native";
+import React, { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { api } from "../../../lib/axios"; 
+import { api } from "../../../lib/axios";
+import { useAuth } from "@/contexts/authContext"; // ❗️ Importe useAuth
 
-
+// --- MUDANÇA 1: Interface atualizada ---
 interface OrdemServico {
   id: number;
   machineId: number;
+  machineName: string;
+  location: string;
   priority: 'low' | 'medium' | 'high';
-  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'; 
-  payload: any; 
-  createdAt: string; 
+  // Adicionados os novos status
+  status: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED';
+  payload: any;
+  createdAt: string;
+  inspectorName: string;
+  maintainerName?: string;
 }
+// --- Fim da Mudança 1 ---
 
-// --- NOVO --- Função simples para formatar a data
 function formatarData(isoString: string) {
   try {
     const data = new Date(isoString);
-    const dia = data.getDate().toString().padStart(2, '0');
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-    const ano = data.getFullYear();
-    return `${dia}/${mes}/${ano}`;
+    return data.toLocaleDateString('pt-BR');
   } catch (e) {
     return "Data inválida";
   }
 }
 
+function getStatusStyle(status: OrdemServico['status']) {
+  switch (status) {
+    case 'PENDING': return styles.statusPending;
+    case 'ASSIGNED': return styles.statusAssigned;
+    case 'IN_PROGRESS':
+    case 'IN_REVIEW':
+      return styles.statusInProgress;
+    case 'COMPLETED':
+      return styles.statusCompleted;
+    default: return {};
+  }
+}
+
 export default function Documento() {
   const [filtro, setFiltro] = useState("todas");
-
   const [ordens, setOrdens] = useState<OrdemServico[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth(); // Pega o usuário logado
 
-  useEffect(() => {
-    async function fetchOrdens() {
+  // --- MUDANÇA 2: Usar 'useFocusEffect' ---
+  // Isso garante que a lista recarregue toda vez que você voltar para esta tela
+  const fetchOrdens = useCallback(() => {
+    async function loadData() {
       try {
         setLoading(true);
-        const response = await api.get("/serviceOrders/get"); 
+        // ❗️ CHAMA A ROTA CORRETA (agora é a raiz '/')
+        const response = await api.get("/serviceOrders/get");
+
+        // O backend já filtrou (Manutentor só recebe o dele, Admin vê tudo)
         setOrdens(response.data || []);
-      } catch (error) {
-        console.log("Erro ao buscar ordens:", error);
+
+      } catch (error: any) {
+        console.log("Erro ao buscar ordens:", error.response?.data || error.message);
         Alert.alert("Erro", "Não foi possível carregar as ordens de serviço.");
       } finally {
         setLoading(false);
       }
     }
+    loadData();
+  }, []);
 
-    fetchOrdens();
-  }, []); 
+  useFocusEffect(fetchOrdens);
+  // --- Fim da Mudança 2 ---
 
+  // --- MUDANÇA 3: Filtros atualizados ---
   const ordensFiltradas = ordens.filter((doc) => {
     if (filtro === "todas") return true;
-    if (filtro === "analise") return doc.status === "PENDING" || doc.status === "IN_PROGRESS";
+    // "Em análise" agora inclui PENDING, ASSIGNED, IN_PROGRESS, e IN_REVIEW
+    if (filtro === "analise") {
+      return doc.status !== "COMPLETED";
+    }
     if (filtro === "concluida") return doc.status === "COMPLETED";
     return true;
   });
+  // --- Fim da Mudança 3 ---
 
   return (
     <ScrollView style={TabsStyles.container}>
@@ -68,7 +97,9 @@ export default function Documento() {
         <SetaVoltar />
         <View style={TabsStyles.conjHeaderPrincipal}>
           <Text style={TabsStyles.tituloPrincipal}>Documentos</Text>
-          <Text style={TabsStyles.subtituloPrincipal}>Veja as O.S.</Text>
+          <Text style={TabsStyles.subtituloPrincipal}>
+            {user?.role === 'ADMIN' ? "Todas as O.S." : "Minhas O.S."}
+          </Text>
         </View>
       </View>
 
@@ -88,31 +119,46 @@ export default function Documento() {
         {loading ? (
           <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 30 }} />
         ) : ordensFiltradas.length === 0 ? (
-          <Text style={styles.textoVazio}>Nenhuma ordem de serviço encontrada para este filtro.</Text>
+          <Text style={styles.textoVazio}>Nenhuma ordem de serviço encontrada.</Text>
         ) : (
           ordensFiltradas.map((ordem) => (
             <Link
               key={ordem.id}
               href={{
                 pathname: "/(tabs)/documento/ordemServicoManu",
-
-                params: { id: ordem.id.toString() }, 
+                params: { id: ordem.id.toString() },
               }}
               asChild
             >
               <TouchableOpacity style={styles.infosDocumentos}>
-                <View style={{ flexDirection: "row", gap: 15 }}>
-                  <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", marginTop: 3 }}>
-                    <FileText color={"#fff"} />
+                <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                  <View style={{ flexDirection: "row", gap: 15 }}>
+                    <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", alignSelf: 'flex-start' }}>
+                      <FileText color={"#fff"} />
+                    </View>
+                    <View>
+                      <Text style={styles.documentosNome}>Ordem de serviço #{ordem.id}</Text>
+                      <Text style={styles.documentosDescricao}>
+                        Máquina: {ordem.machineName || 'N/A'}
+                      </Text>
+                      <Text style={styles.documentosDescricao}>
+                        Criada em: {formatarData(ordem.createdAt)}
+                      </Text>
+                    </View>
                   </View>
-                  {/* --- MODIFICADO --- Usando dados reais */}
-                  <Text style={styles.documentosNome}>Ordem de serviço {ordem.id}</Text>
+                  <Text style={[styles.statusText, getStatusStyle(ordem.status)]}>
+                    {ordem.status}
+                  </Text>
                 </View>
-                {/* --- MODIFICADO --- Usando dados reais */}
-                <Text style={styles.documentosDescricao}>
-                  Criada em: {formatarData(ordem.createdAt)}
-                </Text>
-                <Download style={styles.downloadIcon} />
+
+                {ordem.maintainerName && (
+                  <View style={styles.maintainerInfo}>
+                    <UserCheck size={16} color="#000000ff" />
+                    <Text style={styles.maintainerText}>
+                      Atribuído a: {ordem.maintainerName}
+                    </Text>
+                  </View>
+                )}
               </TouchableOpacity>
             </Link>
           ))
@@ -122,14 +168,8 @@ export default function Documento() {
   );
 }
 
+// (Os estilos são os mesmos que você me enviou na outra mensagem)
 const styles = StyleSheet.create({
-  input: {
-    backgroundColor: "transparent",
-    padding: 10,
-    position: "relative",
-    borderRadius: 10,
-    textAlign: "auto",
-  },
   filtro: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -151,33 +191,74 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   infosDocumentos: {
-    backgroundColor: "#eeeeee",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: '#eee',
     padding: 20,
     borderRadius: 10,
     elevation: 2,
     flexDirection: "column",
+    gap: 15,
   },
   documentosNome: {
-    marginTop: 8,
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
+    marginBottom: 5,
   },
   documentosDescricao: {
     fontSize: 13,
     color: "#666",
-    marginTop: 8,
-    marginLeft: 55, 
   },
   downloadIcon: {
     color: "#333",
-    marginLeft: "auto",
+    position: 'absolute',
+    right: 15,
+    top: 15,
   },
-
   textoVazio: {
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
     color: '#666',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+    alignSelf: 'flex-start'
+  },
+  statusPending: {
+    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+    color: '#dc3545',
+  },
+  statusAssigned: {
+    backgroundColor: 'rgba(23, 162, 184, 0.1)',
+    color: '#17a2b8',
+  },
+  statusInProgress: {
+    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+    color: '#ffc107',
+  },
+  statusCompleted: {
+    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+    color: '#28a745',
+  },
+  maintainerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    paddingTop: 10,
+    marginTop: 5,
+  },
+  maintainerText: {
+    fontSize: 14,
+    color: '#000000ff',
+    fontWeight: '500',
   }
 });
