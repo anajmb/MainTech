@@ -57,7 +57,11 @@ export default function OrdemServico() {
 
     // Usamos useFocusEffect para garantir que os dados sejam recarregados
     // se o usuário sair e voltar para esta tela.
-    useFocusEffect(fetchOrdem);
+    useFocusEffect(
+        useCallback(() => {
+            fetchOrdem();
+        }, [fetchOrdem])
+    );
     // --- Fim da Mudança 2 ---
 
 
@@ -132,5 +136,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 20,
     },
+    
     // Removidos os estilos de botões que não são mais usados nesta página
 });

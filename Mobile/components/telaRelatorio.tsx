@@ -400,11 +400,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     titleSecao: {
-        backgroundColor: '#CE221E',
+        backgroundColor: '#a50702',
         color: 'white',
         padding: 12,
         fontSize: 16,
         fontWeight: '500',
+        borderRadius: 3,
+       
+        
     },
     contentSecao: {
         padding: 15,
