@@ -6,7 +6,7 @@ import ChartWebView from "../../../components/chartWebView";
 import type { ChartConfiguration } from 'chart.js';
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/axios";
-import { useAuth } from "@/contexts/authContext"; 
+import { useAuth } from "@/contexts/authContext";
 
 // --- INTERFACES ---
 interface Task {
@@ -18,13 +18,13 @@ interface Task {
 interface ServiceOrder {
     id: number;
     status: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED';
-    updatedAt: string; 
+    updatedAt: string;
     maintainerId?: number; // Adicionado para garantir tipagem
 }
 
 export default function Dashboard() {
-    const { user } = useAuth(); 
-    
+    const { user } = useAuth();
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
     const [loading, setLoading] = useState(true);
@@ -37,8 +37,8 @@ export default function Dashboard() {
         try {
             if (user.role === 'ADMIN') {
                 const [tasksRes, osRes] = await Promise.all([
-                    api.get("/tasks/get"), 
-                    api.get("/serviceOrders/get") 
+                    api.get("/tasks/get"),
+                    api.get("/serviceOrders/get")
                 ]);
                 setTasks(tasksRes.data);
                 setServiceOrders(osRes.data);
@@ -72,7 +72,7 @@ export default function Dashboard() {
     const adminTotalTasks = tasks.length;
     const adminTasksCompleted = tasks.filter(t => t.status === "COMPLETED").length;
     const adminTaskPercent = adminTotalTasks > 0 ? (adminTasksCompleted / adminTotalTasks) * 100 : 0;
-    
+
     const adminTotalOS = serviceOrders.length;
     const adminOSCompletedCount = serviceOrders.filter(os => os.status === "COMPLETED").length;
 
@@ -100,12 +100,12 @@ export default function Dashboard() {
     } else if (user?.role === 'MAINTAINER') {
         // MAINTAINER: Filtra explicitamente se necessário, mas o backend já deve ter filtrado.
         // Vamos assumir que 'serviceOrders' contém apenas as OSs dele.
-        
+
         userTotal = serviceOrders.length; // Total de OS atribuídas a ele
 
         // Considera "Feito" se estiver CONCLUÍDO ou EM REVISÃO (trabalho entregue)
         userCompleted = serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW").length;
-        
+
         userLabelTotal = "Manutenções";
 
         // Gráficos Maintainer (Baseado em OS)
@@ -121,9 +121,9 @@ export default function Dashboard() {
 
 
     // ---- CONFIGURAÇÃO DOS GRÁFICOS ----
-    
+
     // Seleciona os dados corretos para o gráfico
-    const graphDataToUse = (user?.role === 'ADMIN') ? 
+    const graphDataToUse = (user?.role === 'ADMIN') ?
         // Admin vê tasks completas no gráfico (exemplo)
         (() => {
             let data = new Array(7).fill(0);
@@ -131,7 +131,7 @@ export default function Dashboard() {
                 data[new Date(t.updateDate).getDay()] += 1;
             });
             return data;
-        })() 
+        })()
         : userGraphDataWeek;
 
     const pieDataToUse = (user?.role === 'ADMIN') ?
@@ -202,7 +202,7 @@ export default function Dashboard() {
             </View>
 
             <Text style={styles.sectionTitle}>Métricas principais</Text>
-            
+
             {/* --- RENDERIZAÇÃO CONDICIONAL DOS CARDS --- */}
 
             {user?.role === 'ADMIN' ? (
@@ -212,12 +212,12 @@ export default function Dashboard() {
                     <View style={styles.metricsRow}>
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
-                                <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Total de OS</Text>
+                                <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
+                                <Text style={styles.metricLabel}>Tasks Concluídas</Text>
                             </View>
                             <View style={styles.metricValueArea}>
-                                <Text style={styles.metricValue}>{adminTotalOS}</Text>
-                                <Text style={styles.metricSub}>Registradas</Text>
+                                <Text style={styles.metricValue}>{adminTaskPercent.toFixed(0)}%</Text>
+                                <Text style={styles.metricSub}>Taxa de sucesso</Text>
                             </View>
                         </View>
 
@@ -237,15 +237,15 @@ export default function Dashboard() {
                     <View style={styles.metricsRow}>
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
-                                <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Tasks Concluídas</Text>
+                                <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
+                                <Text style={styles.metricLabel}>Total de OS</Text>
                             </View>
                             <View style={styles.metricValueArea}>
-                                <Text style={styles.metricValue}>{adminTaskPercent.toFixed(0)}%</Text>
-                                <Text style={styles.metricSub}>Taxa de sucesso</Text>
+                                <Text style={styles.metricValue}>{adminTotalOS}</Text>
+                                <Text style={styles.metricSub}>Registradas</Text>
                             </View>
                         </View>
-                        
+
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
                                 <Clock color="#438BE9" size={20} style={styles.metricIcon} />
@@ -352,13 +352,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 8,
         width: "100%",
-        justifyContent: "center" 
+        justifyContent: "center"
     },
     metricIcon: {
         marginRight: 6,
     },
     metricLabel: {
-        fontSize: 13, 
+        fontSize: 13,
         color: "#444",
         textAlign: "center",
         fontWeight: "500"
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 12,
         width: "90%",
-        height: 300, 
+        height: 300,
         padding: 15,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
