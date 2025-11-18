@@ -7,15 +7,6 @@ import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, Loc
 import { useEffect, useState, useCallback } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/contexts/authContext";
-// CORREÇÃO: Removidas importações 'api' e 'removeToken' pois não estavam sendo usadas.
-// const router = useRouter(); // CORREÇÃO: Removida esta linha, pois 'router' já é definido dentro do componente.
-
-
-// add switch buttons na notificação e na acessibilidade -> FEITO
-// vamos ter uma página Ajuda e Suporte?
-// ao clicar no texto o link não funciona, só no fundo -> o do perfil funciona -> CORRIGIDO (estava invertido)
-// o scroll da página não vai até o final -> CORRIGIDO
-// add um subtitulo -> FEITO
 
 export default function Configuracao() {
 
@@ -111,7 +102,7 @@ export default function Configuracao() {
                     {/* 🔥 8. Subtítulo adicionado */}
                     <Text style={TabsStyles.subtituloPrincipal}>Gerencie sua conta e preferências</Text>
                 </View>
-                _     </View>
+            </View>
 
             <View style={styles.cardContainer}>
 
@@ -199,7 +190,7 @@ export default function Configuracao() {
                                         onValueChange={handleToggleNotifications}
                                         value={inAppNotificationsEnabled}
                                         style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                                         />
+                                    />
                                 </TouchableOpacity>
                             </View>
                         </View>

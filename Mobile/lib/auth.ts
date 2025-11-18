@@ -11,7 +11,6 @@ export async function saveToken(token: string) {
 
 export async function getToken(): Promise<string | null> {
     const token = await AsyncStorage.getItem(TOKEN_KEY);
-    if (token) api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     return token;
 }
 
