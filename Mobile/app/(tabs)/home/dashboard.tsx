@@ -38,7 +38,7 @@ export default function Dashboard() {
             if (user.role === 'ADMIN') {
                 const [tasksRes, osRes] = await Promise.all([
                     api.get("/tasks/get"), 
-                    api.get("/serviceOrders") 
+                    api.get("/serviceOrders/get") 
                 ]);
                 setTasks(tasksRes.data);
                 setServiceOrders(osRes.data);
