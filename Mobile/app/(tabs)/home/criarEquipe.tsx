@@ -322,6 +322,7 @@ const style = StyleSheet.create({
     cardEquipesCadastradas: {
         backgroundColor: "#eeeeee",
         borderRadius: 10,
+        
         marginVertical: 12,
         marginHorizontal: 8,
         shadowColor: "#000",
