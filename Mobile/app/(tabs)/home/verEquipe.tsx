@@ -79,45 +79,47 @@ export default function VerEquipe() {
         </View>
       </View>
 
-      <View>
-        <Text style={style.fraseEquipe}>
-          {getDescriptionByTeam(teamData?.name)}
-        </Text>
-      </View>
-
-      {!loading && teamData?.members?.length ? (
-        teamData.members.map((member) => (
-          <View style={style.usuarioItem} key={member.id}>
-            <View style={style.avatar}>
-              <Text style={style.avatarText}>
-                {member.person.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
-              </Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={style.nomeUsuario}>{member.person.name}</Text>
-              <Text style={style.emailUsuario}>{member.person.email}</Text>
-            </View>
-            <View style={style.tagCargo}>
-              <Text style={style.tagCargoText}>
-                {member.person.role}
-              </Text>
-            </View>
-            <TouchableOpacity style={style.menuIcon} onPress={() => {}}>
-              <MoreVertical color="#000" size={16} />
-            </TouchableOpacity>
-          </View>
-        ))
-      ) : (
-        !loading && (
-          <Text style={{ textAlign: "center", marginTop: 30, color: "#777" }}>
-            Nenhum membro encontrado nesta equipe.
+      <View style={TabsStyles.todosCard}>
+        <View>
+          <Text style={style.fraseEquipe}>
+            {getDescriptionByTeam(teamData?.name)}
           </Text>
-        )
-      )}
+        </View>
+
+        {!loading && teamData?.members?.length ? (
+          teamData.members.map((member) => (
+            <View style={style.usuarioItem} key={member.id}>
+              <View style={style.avatar}>
+                <Text style={style.avatarText}>
+                  {member.person.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={style.nomeUsuario}>{member.person.name}</Text>
+                <Text style={style.emailUsuario}>{member.person.email}</Text>
+              </View>
+              <View style={style.tagCargo}>
+                <Text style={style.tagCargoText}>
+                  {member.person.role}
+                </Text>
+              </View>
+              <TouchableOpacity style={style.menuIcon} onPress={() => { }}>
+                <MoreVertical color="#000" size={16} />
+              </TouchableOpacity>
+            </View>
+          ))
+        ) : (
+          !loading && (
+            <Text style={{ textAlign: "center", marginTop: 30, color: "#777" }}>
+              Nenhum membro encontrado nesta equipe.
+            </Text>
+          )
+        )}
+      </View>
     </ScrollView>
   );
 }

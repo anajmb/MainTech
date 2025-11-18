@@ -62,11 +62,11 @@ export default function Tarefas() {
 
     return (
         <View style={TabsStyles.container}>
-            
+
             <FlatList
                 data={tasks}
                 keyExtractor={(item) => item.id.toString()}
-                
+
                 ListHeaderComponent={
                     <>
                         <Logo />
@@ -104,33 +104,33 @@ export default function Tarefas() {
                     </>
                 }
 
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (user.role === "INSPECTOR") {
+                renderItem={({ item }) => {
+                    const isCompleted = item.status === "COMPLETED";
 
-                                // --- Esta é a linha importante ---
-                                // Ela envia o ID da Tarefa (item.id)
-                                const paramsParaEnviar = { taskId: item.id }; 
-                                // --- Fim ---
-
-                                router.push({
-                                    pathname: "/tarefas/fazerTarefaInspe", // Verifique se este é o nome correto do arquivo
-                                    params: { codigo: JSON.stringify(paramsParaEnviar) }
-                                });
-                            }
-                        }}
-                        activeOpacity={user.role === "INSPECTOR" ? 0.7 : 1}
-                    >
-                        <TasksCards
-                            id={item.id}
-                            title={item.title}
-                            description={item.description}
-                            updateDate={item.updateDate}
-                            status={item.status}
-                        />
-                    </TouchableOpacity>
-                )}
+                    return (
+                        <TouchableOpacity
+                            disabled={isCompleted || user.role !== "INSPECTOR"}
+                            onPress={() => {
+                                if (user.role === "INSPECTOR" && !isCompleted) {
+                                    const paramsParaEnviar = { taskId: item.id };
+                                    router.push({
+                                        pathname: "/tarefas/fazerTarefaInspe",
+                                        params: { codigo: JSON.stringify(paramsParaEnviar) },
+                                    });
+                                }
+                            }}
+                            activeOpacity={isCompleted ? 1 : 0.7}
+                        >
+                            <TasksCards
+                                id={item.id}
+                                title={item.title}
+                                description={item.description}
+                                updateDate={item.updateDate}
+                                status={item.status}
+                            />
+                        </TouchableOpacity>
+                    );
+                }}
 
                 ListEmptyComponent={
                     loading ? (
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#eeeeee',
         paddingVertical: 25,
         borderRadius: 12,
-        paddingHorizontal: 5,
+        paddingHorizontal: 45,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
     },
     filtroTitulo: {
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#CF0000'
     },
     emptyContainer: {
-        flex: 15, 
+        flex: 15,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 50,

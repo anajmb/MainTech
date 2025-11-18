@@ -2,86 +2,120 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { Calendar, LocaleConfig, DateObject } from "react-native-calendars";
 import { api } from "../../../lib/axios";
-import { TabsStyles } from "@/styles/globalTabs";
-
-// mudar a cor do dia de hoje
+import { useAuth } from "@/contexts/authContext";
 
 LocaleConfig.locales["pt-br"] = {
   monthNames: [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto",
+    "Setembro", "Outubro", "Novembro", "Dezembro",
   ],
   monthNamesShort: [
-    "jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"
+    "jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez",
   ],
   dayNames: [
-    "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"
+    "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado",
   ],
   dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
   today: "Hoje",
 };
 LocaleConfig.defaultLocale = "pt-br";
 
-interface Task {
+interface TaskItem {
   id: number;
   title: string;
+  status: string;
   expirationDate: string;
-  inspector?: { person?: { name: string } };
+  inspector?: { id: number; person?: { name: string } };
 }
 
+interface ServiceOrderItem {
+  id: number;
+  status: string;
+  createdAt: string;
+  inspectorId?: number;
+  inspectorName?: string;
+}
+
+type CalendarItem = TaskItem | ServiceOrderItem;
+
 export default function AgendaScreen() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [items, setItems] = useState<CalendarItem[]>([]);
   const [markedDates, setMarkedDates] = useState<any>({});
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+  const [filteredItems, setFilteredItems] = useState<CalendarItem[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    fetchTasks();
+    fetchItems();
   }, []);
 
-  const fetchTasks = async () => {
+  const fetchItems = async () => {
     try {
-      const response = await api.get("/tasks/get");
-      const data = response.data;
+      let data: CalendarItem[] = [];
 
-      if (Array.isArray(data)) {
-        setTasks(data);
-        markTaskDates(data);
+      if (user?.role === "INSPECTOR") {
+        const res = await api.get("/tasks/get");
+        data = res.data.filter((task: TaskItem) => task.inspector?.id === user.id);
+      } else if (user?.role === "MAINTAINER") {
+        const res = await api.get("/serviceOrders/get");
+        data = res.data.filter((os: ServiceOrderItem) => os.inspectorId === user.id);
+      } else if (user?.role === "ADMIN") {
+        const resTasks = await api.get("/tasks/get");
+        const resOS = await api.get("/serviceOrders/get");
+        data = [...resTasks.data, ...resOS.data];
       }
+
+      // remover concluídas
+      data = data.filter((item) =>
+        ("status" in item ? item.status !== "COMPLETED" : true)
+      );
+
+      setItems(data);
+      markDates(data, selectedDate);
     } catch (error) {
-      console.error("Erro ao buscar tarefas:", error);
+      console.error("Erro ao buscar itens:", error);
     }
   };
 
-  const markTaskDates = (data: Task[]) => {
+  const markDates = (data: CalendarItem[], selected: string | null) => {
     const marks: any = {};
 
-    data.forEach((task) => {
-      if (!task.expirationDate) return;
+    data.forEach((item) => {
+      let dateStr = "expirationDate" in item ? item.expirationDate : item.createdAt;
+      if (!dateStr) return;
 
-      // Converte a data para o formato local YYYY-MM-DD (sem hora)
-      const localDate = new Date(task.expirationDate);
-      const dateString = localDate.toISOString().split("T")[0];
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return;
 
-      marks[dateString] = {
-        marked: true,
-        dotColor: "#fff",
+      const isoDate = date.toISOString().split("T")[0];
+      const isOverdue = new Date() > date;
+      const isSelected = selected === isoDate;
+
+      marks[isoDate] = {
+        selected: isSelected,
+        selectedColor: isOverdue ? "#f5eec3" : "#d10b03",
+        selectedTextColor: isOverdue ? "#000" : "#fff",
+        // só marca o dot se NÃO estiver selecionado
+        marked: !isSelected,
+        dotColor: !isSelected ? (isOverdue ? "yellow" : "#fff") : undefined,
       };
     });
 
     setMarkedDates(marks);
   };
 
+
   const handleDayPress = (day: DateObject) => {
     setSelectedDate(day.dateString);
 
-    const filtered = tasks.filter((task) => {
-      const localDate = new Date(task.expirationDate)
-        .toISOString()
-        .split("T")[0];
-      return localDate === day.dateString;
+    const filtered = items.filter((item) => {
+      const dateStr = "expirationDate" in item ? item.expirationDate : item.createdAt;
+      if (!dateStr) return false;
+      return new Date(dateStr).toISOString().split("T")[0] === day.dateString;
     });
 
-    setFilteredTasks(filtered);
+    setFilteredItems(filtered);
+    markDates(items, day.dateString); // atualizar cores
   };
 
   return (
@@ -103,59 +137,55 @@ export default function AgendaScreen() {
               monthTextColor: "#fff",
               textMonthFontWeight: "bold",
               textMonthFontSize: 18,
-              selectedDayBackgroundColor: "#d10b03",
-              selectedDayTextColor: "#fff",
               todayTextColor: "#f7c6c6",
               dayTextColor: "#fff",
               arrowColor: "#fff",
               textDisabledColor: "#b36b6b",
             }}
             hideExtraDays
-            markedDates={{
-              ...markedDates,
-              ...(selectedDate
-                ? { [selectedDate]: { selected: true, selectedColor: "#d10b03" } }
-                : {}),
-            }}
+            markedDates={markedDates}
             onDayPress={handleDayPress}
           />
         </View>
       </View>
 
-        <ScrollView style={styles.eventContainer}>
-          <Text style={styles.sectionTitle}>Meus eventos</Text>
+      <ScrollView style={styles.eventContainer}>
+        <Text style={styles.sectionTitle}>Meus eventos</Text>
 
-          {filteredTasks.length === 0 ? (
-            <Text style={{ color: "#777", textAlign: "center" }}>
-              {selectedDate
-                ? "Nenhuma tarefa neste dia."
-                : "Selecione uma data para ver as tarefas."}
-            </Text>
-          ) : (
-            filteredTasks.map((task) => {
-              const date = new Date(task.expirationDate);
-              const day = date.getDate();
-              const month = date.toLocaleString("pt-BR", { month: "long" });
-              const responsible = task.inspector?.person?.name || "Não informado";
+        {filteredItems.length === 0 ? (
+          <Text style={{ color: "#777", textAlign: "center" }}>
+            {selectedDate ? "Nenhum evento neste dia." : "Selecione uma data para ver os eventos."}
+          </Text>
+        ) : (
+          filteredItems.map((item) => {
+            const dateStr = "expirationDate" in item ? item.expirationDate : item.createdAt;
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            const month = date.toLocaleString("pt-BR", { month: "long" });
 
-              return (
-                <View key={task.id} style={styles.eventCard}>
-                  <View style={styles.eventDate}>
-                    <Text style={styles.day}>{day}</Text>
-                    <Text style={styles.month}>{month}</Text>
-                  </View>
-                  <View style={styles.eventInfo}>
-                    <Text style={styles.eventTitle}>{task.title}</Text>
-                    <Text style={styles.eventSubtitle}>
-                      Responsável: {responsible}
-                    </Text>
-                  </View>
+            let responsible = "Não informado";
+            if ("inspector" in item && item.inspector?.person?.name) {
+              responsible = item.inspector.person.name;
+            } else if ("inspectorName" in item && item.inspectorName) {
+              responsible = item.inspectorName;
+            }
+
+            return (
+              <View key={item.id} style={styles.eventCard}>
+                <View style={styles.eventDate}>
+                  <Text style={styles.day}>{day}</Text>
+                  <Text style={styles.month}>{month}</Text>
                 </View>
-              );
-            })
-          )}
-        </ScrollView>
-      </View>
+                <View style={styles.eventInfo}>
+                  <Text style={styles.eventTitle}>{"title" in item ? item.title : "Ordem de Serviço"}</Text>
+                  <Text style={styles.eventSubtitle}>Responsável: {responsible}</Text>
+                </View>
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -199,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 12,
   },
-  day: { fontSize: 18, color: "#fff", fontWeight: "bold" },
+  day: { fontSize: 18, fontWeight: "bold", color: "#fff" },
   month: { fontSize: 12, color: "#fff" },
   eventInfo: { flex: 1 },
   eventTitle: { fontSize: 14, color: "#a50702", fontWeight: "600" },

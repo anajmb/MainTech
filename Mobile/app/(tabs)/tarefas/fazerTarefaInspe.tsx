@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter, Link } from "expo-router"; 
+import { useLocalSearchParams, useRouter, Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { api } from "../../../lib/axios";
 
@@ -18,19 +18,19 @@ import {
 // --- Interfaces para a API ---
 interface ApiPerson {
     id: number;
-    name: string; 
+    name: string;
 }
 
 interface ApiInspector {
     id: number;
-    person: ApiPerson; 
+    person: ApiPerson;
 }
 
 interface ApiTask {
     id: number;
     inspectorId: number;
     machineId: number;
-    inspector: ApiInspector; 
+    inspector: ApiInspector;
 }
 
 // --- Interfaces locais (não precisam mudar) ---
@@ -38,7 +38,7 @@ interface MachineTask {
     id: number;
     title: string;
     description: string;
-    inspectorId: number; 
+    inspectorId: number;
     machineId: number;
     status: string;
     expirationDate: string;
@@ -92,11 +92,9 @@ export default function FazerTarefa() {
         Record<number, { changes: number[]; repairs: number[] }>
     >({});
     const [selectedPrioridade, setSelectedPrioridade] = useState<ChavePrioridade>('medium');
-    
-    // States para guardar os dados da tarefa
+
     const [inspectorId, setInspectorId] = useState<number | null>(null);
     const [inspectorName, setInspectorName] = useState<string | null>(null);
-    // State para guardar o ID da tarefa e repassá-lo
     const [taskId, setTaskId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -107,7 +105,7 @@ export default function FazerTarefa() {
             }
             try {
                 const info = JSON.parse(codigo as string);
-                
+
                 if (!info.taskId) {
                     setLoading(false);
                     Alert.alert("Erro", "ID da Tarefa (taskId) não recebido no parâmetro 'codigo'.");
@@ -115,15 +113,14 @@ export default function FazerTarefa() {
                     return;
                 }
 
-                // Salva o taskId no state assim que o lemos
-                setTaskId(info.taskId); 
+                setTaskId(info.taskId);
 
                 const taskRes = await api.get<ApiTask>(`/tasks/getUnique/${info.taskId}`);
                 const task = taskRes.data;
 
                 if (!task.inspector || !task.inspector.person || !task.inspector.person.name) {
                     Alert.alert(
-                        "Erro de API", 
+                        "Erro de API",
                         "A resposta da tarefa não incluiu 'inspector.person.name'."
                     );
                     setLoading(false);
@@ -132,9 +129,9 @@ export default function FazerTarefa() {
                 }
 
                 setInspectorId(task.inspector.id);
-                setInspectorName(task.inspector.person.name); 
-                
-                const machineId = task.machineId; 
+                setInspectorName(task.inspector.person.name);
+
+                const machineId = task.machineId;
                 const machineRes = await api.get(`/machines/getUnique/${machineId}`);
                 setMachineData(machineRes.data || null);
 
@@ -151,10 +148,10 @@ export default function FazerTarefa() {
             setLoading(false);
         }
         else if (!machineData) {
-            loadTaskAndMachineData(); 
+            loadTaskAndMachineData();
         }
 
-    }, [codigo, updatedSelections, machineData, router]); 
+    }, [codigo, updatedSelections, machineData, router]);
 
     useEffect(() => {
         if (updatedSelections) {
@@ -174,6 +171,12 @@ export default function FazerTarefa() {
             Alert.alert("Erro", "Não foi possível identificar o inspetor. Tente novamente.");
             return;
         }
+
+        if (!machineData.location) {
+            Alert.alert("Erro", "Localização da máquina não encontrada. Não é possível enviar.");
+            return;
+        }
+
 
         const result: {
             machineId: number;
@@ -226,26 +229,30 @@ export default function FazerTarefa() {
             return;
         }
 
-        console.log("Enviando:", {
+        const dataToSend = {
             machineId: machineData.id,
             machineName: machineData.name,
+            location: machineData.location,
             priority: selectedPrioridade,
             payload: result,
-            inspectorId: inspectorId, 
-            inspectorName: inspectorName, 
-        });
+            inspectorId: inspectorId,
+            inspectorName: inspectorName,
+        };
+
+        console.log("Enviando:", dataToSend);
 
         try {
-            const res = await api.post("/serviceOrders/create", {
-                machineId: machineData.id,
-                priority: selectedPrioridade,
-                payload: result,
-                inspectorId: inspectorId, 
-                inspectorName: inspectorName, 
-            });
 
-            Alert.alert("Sucesso", res.data?.msg || "Inspeção enviada com sucesso.");
-            router.back();
+            const res = await api.post("/serviceOrders/create", dataToSend);
+
+            if (taskId) {
+                console.log(`Atualizando Task ${taskId} para COMPLETED`);
+                await api.patch(`/tasks/complete/${taskId}`);
+            }
+
+            Alert.alert("Sucesso", res.data?.msg || "Inspeção enviada e tarefa concluída.");
+            
+            router.push('/(tabs)/tarefas');
 
         } catch (error: any) {
             console.log("Erro ao enviar:", error?.response ?? error);
@@ -324,8 +331,7 @@ export default function FazerTarefa() {
                                             machineData: JSON.stringify(machineData),
                                             selections: JSON.stringify(selectionsBySet),
                                             setId: set.id,
-                                            // ❗️ Adiciona o taskId para a próxima tela
-                                            taskId: taskId 
+                                            taskId: taskId
                                         }
                                     }}
                                     asChild

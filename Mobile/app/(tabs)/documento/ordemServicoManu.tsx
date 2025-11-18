@@ -1,62 +1,81 @@
-import SetaVoltar from "@/components/setaVoltar";
+import SetaVoltar from "@/components/setaVoltar"; // Importação Default (como no seu arquivo SetaVoltar)
 import { TabsStyles } from "@/styles/globalTabs";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Alert } from "react-native"; // --- NOVO ---
-import React, { useEffect, useState } from "react";
-import { Relatorio } from "../../../components/telaRelatorio";
-import { useLocalSearchParams } from "expo-router";
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator, Alert } from "react-native";
+import React, { useEffect, useState, useCallback } from "react"; // Importe o useCallback
+import { Relatorio } from "../../../components/telaRelatorio"; // Importando o componente Relatorio
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router"; // Importe useRouter e useFocusEffect
 import { api } from "../../../lib/axios";
 
+// --- MUDANÇA 1: Interface ATUALIZADA ---
+// (Deve ser idêntica à interface do seu componente Relatorio)
 interface OrdemServico {
     id: number;
     machineId: number;
+    machineName: string; 
+    location: string; 
     priority: 'low' | 'medium' | 'high';
     payload: any[];
     createdAt: string;
-    status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+    updatedAt: string; 
+    inspectorId: number; 
+    inspectorName: string; 
+    maintainerId?: number;
+    maintainerName?: string;
+    serviceNotes?: string;
+    materialsUsed?: string;
+    status?: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED'; 
 }
-
-const prioridadeLabel = {
-    low: "Baixa Prioridade",
-    medium: "Média Prioridade",
-    high: "Alta Prioridade"
-};
-
-const statusLabel = {
-    PENDING: "Pendente",
-    IN_PROGRESS: "Em Andamento",
-    COMPLETED: "Concluído"
-};
+// --- Fim da Mudança 1 ---
 
 export default function OrdemServico() {
 
     const { id } = useLocalSearchParams<{ id: string }>();
+    const router = useRouter(); // Hook para navegação
 
     const [ordem, setOrdem] = useState<OrdemServico | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    // --- MUDANÇA 2: fetchOrdem agora usa useCallback ---
+    const fetchOrdem = useCallback(async () => {
         if (!id) {
             setLoading(false);
             Alert.alert("Erro", "Nenhum ID de ordem de serviço foi fornecido.");
             return;
         }
-
-        async function fetchOrdem() {
-            try {
-                setLoading(true);
-
-                const response = await api.get(`/serviceOrders/getUnique/${id}`);
-                setOrdem(response.data);
-            } catch (error) {
-                console.log(error);
-                Alert.alert("Erro", "Falha ao carregar dados da ordem de serviço.");
-            } finally {
-                setLoading(false);
-            }
+        try {
+            setLoading(true);
+            // Rota correta (como você tinha)
+            const response = await api.get(`/serviceOrders/getUnique/${id}`); 
+            setOrdem(response.data);
+        } catch (error: any) {
+            console.log("Erro ao buscar OS:", error.response?.data);
+            Alert.alert("Erro", "Falha ao carregar dados da ordem de serviço.");
+        } finally {
+            setLoading(false);
         }
-
-        fetchOrdem();
     }, [id]);
+
+    // Usamos useFocusEffect para garantir que os dados sejam recarregados
+    // se o usuário sair e voltar para esta tela.
+    useFocusEffect(
+        useCallback(() => {
+            fetchOrdem();
+        }, [fetchOrdem])
+    );
+    // --- Fim da Mudança 2 ---
+
+
+    // --- MUDANÇA 3: Função 'onUpdate' real ---
+    // Esta função é passada para o Relatorio.tsx.
+    // Quando o Relatorio.tsx (filho) terminar uma ação (atribuir, submeter),
+    // ele chamará esta função, que navegará de volta.
+    const handleUpdate = () => {
+        // A tela anterior (Documentos) já usa useFocusEffect,
+        // então ela será recarregada automaticamente quando voltarmos.
+        router.back();
+    };
+    // --- Fim da Mudança 3 ---
+
 
     if (loading) {
         return (
@@ -78,120 +97,45 @@ export default function OrdemServico() {
         );
     }
 
-    const prioridade = ordem.priority ? prioridadeLabel[ordem.priority] : "N/A";
-    const status = ordem.status ? statusLabel[ordem.status] : "N/A";
-    const dataCriacao = ordem.createdAt ? new Date(ordem.createdAt).toLocaleDateString('pt-BR') : "N/A";
+    // (As labels de prioridade e status foram removidas daqui,
+    // pois o componente 'Relatorio' já cuida disso)
 
     return (
         <ScrollView style={TabsStyles.container}>
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
-
                     <Text style={TabsStyles.tituloPrincipal}>Ordem de Serviço #{ordem.id}</Text>
-
-                    <Text style={TabsStyles.subtituloPrincipal}>{prioridade}</Text>
+                    <Text style={TabsStyles.subtituloPrincipal}>{ordem.machineName || "Detalhes"}</Text>
                 </View>
             </View>
 
-            {/* --- CORREÇÃO AQUI ---
-                O componente 'Relatorio' espera a prop 'ordem' (o objeto inteiro),
-                e não a prop 'payload'.
-            */}
-            <Relatorio ordem={ordem} />
+            {/* --- MUDANÇA 4: Passando a prop 'onUpdate' correta --- */}
+            {/* Agora o componente Relatorio tem o 'ordem' e a função 'handleUpdate' */}
+            <Relatorio ordem={ordem} onUpdate={handleUpdate} />
+            {/* --- Fim da Mudança 4 --- */}
 
-            <View style={styles.botoesContainer}>
-                <TouchableOpacity style={styles.btnPrincipal}>
-                    <Text style={styles.botaoumText}>Salvar Alterações</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnSecundario}>
-                    <Text style={styles.botaoText}>Rejeitar</Text>
-                </TouchableOpacity>
-            </View>
+
+            {/* --- MUDANÇA 5: Botões antigos REMOVIDOS --- */}
+            {/* O componente 'Relatorio' agora cuida de todos os botões */}
+            
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    // --- NOVO --- Estilos de Loading
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
-
-    // --- NOVO --- Card de Informações
-    infoCard: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
-        marginHorizontal: 15, // Adapte se necessário
-        marginBottom: 20,
-        elevation: 3,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    infoCardTitulo: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-        paddingBottom: 10,
-    },
-    infoLinha: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    infoLabel: {
-        fontSize: 15,
-        color: '#666',
-        fontWeight: '500',
-    },
     infoValor: {
         fontSize: 15,
         color: '#000',
         fontWeight: 'bold',
+        textAlign: 'center',
+        padding: 20,
     },
-
-    // --- Seus Estilos Originais ---
-    botoesContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 25,
-        marginBottom: 20,
-        gap: 12,
-    },
-    btnPrincipal: {
-        backgroundColor: '#A50702',
-        borderRadius: 10, // quadrado
-        paddingVertical: 10,
-        width: 150, // menor
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "center",
-    },
-    btnSecundario: {
-        backgroundColor: "#C5C5C5",
-        borderRadius: 10, // quadrado
-        paddingVertical: 10,
-        width: 150, // menor
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "center",
-    },
-    botaoText: {
-        color: "#5C5C5C",
-        fontSize: 15,
-        fontWeight: "400",
-    },
-    botaoumText: {
-        color: "#fff",
-        fontSize: 15,
-        fontWeight: "400",
-    },
+    
+    // Removidos os estilos de botões que não são mais usados nesta página
 });

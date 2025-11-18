@@ -5,10 +5,12 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { useEffect, useState, useRef } from 'react';
 import { Pencil, Trash2, Wrench } from "lucide-react-native";
 import { api } from "../../../lib/axios";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Machines {
     id: number;
     name: string;
+    description: string;
     location: string;
     qrCode: string
 }
@@ -45,7 +47,7 @@ export default function Maquinas() {
     const [refreshKey, setRefreshKey] = useState(0);
 
     const [oficinas, setOficinas] = useState([
-        { label: 'Selecione', value: '', disabled: true },
+        { key: "default", label: 'Selecione', value: '', disabled: true },
         { label: 'Oficina de Manutenção', value: 'oficina1' },
         { label: 'Oficina de Usinagem', value: 'oficina2' },
         { label: 'Oficina de Soldagem', value: 'oficina3' },
@@ -69,14 +71,17 @@ export default function Maquinas() {
                 const response = await api.get('/sets/get');
                 const data: SetFromAPI[] = response.data;
                 const formattedSets = data.map(set => ({
+                    key: `set-${set.id}`,
                     label: set.name,
                     value: set.id.toString(),
                     disabled: false
                 }));
+
                 setConjuntos([
-                    { label: 'Selecione', value: '', disabled: true },
+                    { key: 'default', label: 'Selecione', value: '', disabled: true },
                     ...formattedSets
                 ]);
+
             } catch (error) {
                 console.error('Error fetching sets:', error);
                 setConjuntos([
@@ -126,11 +131,12 @@ export default function Maquinas() {
             setRefreshKey(k => k + 1);
         }
     }
-
-    // Corrigido: usa retorno da API quando disponível e garante atualização local imediata
     async function handleSaveEdit() {
         if (!selectedMachine) return;
-        const trimmed = editName.trim();
+
+        // Garante que editName sempre é string antes de trim()
+        const trimmed = (editName ?? "").trim();
+
         if (!trimmed) {
             Alert.alert('Erro', 'Nome não pode ficar vazio.');
             return;
@@ -138,33 +144,28 @@ export default function Maquinas() {
 
         const id = selectedMachine.id;
 
-        // Atualiza otimisticamente na UI para feedback imediato
-        setMachines(prev => prev.map(m => m.id === id ? { ...m, name: trimmed } : m));
-
         try {
-            const response = await api.put(`/machines/update/${id}`, { name: trimmed });
-            // Se a API retornar o objeto atualizado, use ele; caso contrário, já atualizamos otimisticamente
-            const updated = response?.data;
-            if (updated && typeof updated === 'object') {
-                setMachines(prev => prev.map(m => m.id === id ? { ...m, ...updated } : m));
-            }
-            // Feedback ao usuário
-            Alert.alert('Sucesso', 'Nome atualizado.');
+            const response = await api.put(`/machines/update/${id}`, {
+                name: trimmed,
+            });
+            setMachines(prev =>
+                prev.map(m =>
+                    m.id === id ? { ...m, name: trimmed } : m
+                )
+            );
+
+            Alert.alert('Sucesso', 'Máquina atualizada.');
         } catch (err: any) {
-            console.error('Erro ao atualizar máquina:', err?.response?.data || err?.message || err);
-            Alert.alert('Erro', 'Não foi possível salvar a alteração. Verifique a conexão.');
-            // Recarrega lista local para garantir consistência
-            setRefreshKey(k => k + 1);
+            console.error('Erro ao atualizar máquina:', err.response?.data || err.message);
+            Alert.alert('Erro', 'Não foi possível atualizar a máquina.');
         } finally {
-            // limpa estados e fecha modal
             setEditModalVisible(false);
             setSelectedMachine(null);
             setEditName("");
             setIsEditing(false);
-            // força refetch para garantir sincronização com servidor
-            setRefreshKey(k => k + 1);
         }
     }
+
 
     async function handleCadastro() {
         if (!nome.trim() || !descricao.trim() || !oficinaSelecionada || conjuntoSelecionado.length === 0) {
@@ -200,6 +201,8 @@ export default function Maquinas() {
     }
 
     return (
+        // <SafeAreaView>
+
         <ScrollView style={TabsStyles.container}>
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
@@ -294,7 +297,7 @@ export default function Maquinas() {
                     <Text style={[styles.tituloCard, styles.tituloCardCompact]}>Máquinas Cadastradas</Text>
 
                     {machines.map((machine) => (
-                        <View key={machine.id} style={styles.cardMaq}>
+                        <View key={`machine-${machine.id}`} style={styles.cardMaq}>
                             <View style={styles.leftIcon}>
                                 <Wrench color="#1E9FCE" size={24} />
                             </View>
@@ -307,7 +310,7 @@ export default function Maquinas() {
 
                             <View style={styles.editIcons}>
                                 <TouchableOpacity style={[styles.iconButton]} accessibilityLabel="Editar máquina" onPress={() => openEditModal(machine)}>
-                                    <Pencil size={18} color="#666" />
+                                    <Pencil size={18} color="#666" style={{ marginRight: -12 }} />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.iconButton, styles.iconDelete]} onPress={() => setModalVisible(true)} accessibilityLabel="Excluir máquina">
                                     <Trash2 size={18} color="#dc0606ff" />
@@ -369,6 +372,7 @@ export default function Maquinas() {
             </Modal>
 
         </ScrollView>
+
     );
 }
 
@@ -378,6 +382,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         gap: 30,
         paddingBottom: 90,
+
     },
     cardCad: {
         backgroundColor: '#eeeeee',
@@ -389,20 +394,26 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 4
     },
+
     tituloCard: {
-        fontSize: 20,
+        fontSize: 18,
         textAlign: "center",
-        color: "#6c6c6c",
-        marginTop: 20
+        marginTop: 20,
+        color: "#222",
+        fontWeight: "500",
     },
     tituloCardCompact: {
-        marginTop: 6,
-        marginBottom: 16,
+        fontSize: 18,
+        textAlign: "center",
+        marginTop: 20,
+        color: "#222",
+        fontWeight: "500",
     },
     label: {
-        fontSize: 13,
-        textAlign: 'left',
-        marginBottom: 12
+        fontSize: 15,
+        color: "#222",
+        marginBottom: 10,
+        fontWeight: "400",
     },
     input: {
         borderRadius: 10,
@@ -426,15 +437,17 @@ const styles = StyleSheet.create({
     cardMaq: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor: "#eeeeee",
         borderRadius: 8,
         padding: 16,
+        marginTop: 25,
         marginVertical: 8,
         elevation: 2,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 1,
+
         },
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
@@ -543,7 +556,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginLeft: 8
     },
-     modalCancelText: {
+    modalCancelText: {
         color: '#333333',
         fontSize: 16,
         fontWeight: '600',

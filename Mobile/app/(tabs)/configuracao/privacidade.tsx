@@ -2,7 +2,10 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Lock, Shield, TriangleAlert, Eye, EyeOff } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
-import { useState } from "react";
+import { use, useState } from "react";
+import { useAuth } from "@/contexts/authContext";
+import { api } from "@/lib/axios";
+import { getToken } from "@/lib/auth";
 
 const dicasDeSeguranca = [
   "Use senhas únicas e complexas;",
@@ -16,6 +19,7 @@ export default function Privacidade() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const {user} = useAuth();
 
   // valores dos inputs
   const [currentPwd, setCurrentPwd] = useState("");
@@ -24,27 +28,41 @@ export default function Privacidade() {
 
   const canSubmit = currentPwd.trim() !== "" && newPwd.trim() !== "" && confirmPwd.trim() !== "";
 
-  function handleChangePassword() {
-    if (!canSubmit) {
-      return Alert.alert("Preencher campos", "Por favor preencha todos os campos para alterar a senha.");
-    }
+  
+async function handleChangePassword() {
+  if (!canSubmit) {
+    return Alert.alert("Preencher campos", "Por favor preencha todos os campos para alterar a senha.");
+  }
 
-    if (newPwd !== confirmPwd) {
-      return Alert.alert("Senhas não conferem", "A nova senha e a confirmação devem ser iguais.");
-    }
+  if (newPwd !== confirmPwd) {
+    return Alert.alert("Senhas não conferem", "A nova senha e a confirmação devem ser iguais.");
+  }
 
-    //Chamando lógica para alterar a senha
-    // placeholder de sucesso
+  try {
+    // garante que o token esteja configurado no axios
+    await getToken();
+
+    const response = await api.put(`/employees/change-password/${user!.id}` , {
+      currentPassword: currentPwd,
+      newPassword: newPwd,
+    });
+
     Alert.alert("Sucesso", "Senha alterada com sucesso.");
-
-    // limpar campos
     setCurrentPwd("");
     setNewPwd("");
     setConfirmPwd("");
     setShowCurrent(false);
     setShowNew(false);
     setShowConfirm(false);
+  } catch (error: any) {
+    console.log("Erro ao alterar senha:", error.response?.data || error.message);
+    Alert.alert(
+      "Erro",
+      error.response?.data?.msg || "Ocorreu um erro ao tentar alterar a senha."
+    );
   }
+}
+
 
   return (
     <ScrollView style={TabsStyles.container}>
@@ -240,17 +258,19 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 8,
     marginTop: 12,
+    
   },
   inputWrapper: {
     position: 'relative',
     marginBottom: 4,
+    
   },
   textInput: {
-    backgroundColor: "#F5F5F5",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     justifyContent: "center",
+    backgroundColor: "#e6e6e6",
   },
   eyeButton: {
     position: 'absolute',

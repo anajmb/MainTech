@@ -1,7 +1,7 @@
 import { Tabs, useRouter } from "expo-router";
 import { FileText, Focus, History, House, Settings, SquareCheckBig } from 'lucide-react-native';
 import { useAuth } from "@/contexts/authContext";
-import { ActivityIndicator, View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { ActivityIndicator, View, TouchableOpacity, StyleSheet } from "react-native";
 
 export default function TabsLayout() {
   const { user } = useAuth();
@@ -9,11 +9,10 @@ export default function TabsLayout() {
 
   if (!user) return <ActivityIndicator size="large" />;
 
-  function CustomTabBar(props: any) {
-    const { state, descriptors, navigation } = props;
-
+  function CustomTabBar({ state, descriptors, navigation }: any) {
     if (!user) return null;
 
+    // Definindo abas permitidas para cada role
     const allowed = new Set<string>(['home', 'configuracao']);
     if (user.role !== "MAINTAINER") {
       allowed.add('tarefas');
@@ -35,15 +34,18 @@ export default function TabsLayout() {
           const originalIndex = state.routes.findIndex((r: any) => r.key === route.key);
           const focused = state.index === originalIndex;
           const descriptor = descriptors[route.key];
+
           const onPress = () => {
             if (focused) {
-              // já está na aba -> força ir pro index dessa aba
-              // ajuste o href conforme sua estrutura; aqui usamos o padrão /(tabs)/<name>
-              router.push(`/(tabs)/${route.name}` as any);
-
+              // Aba já focada → resetar stack para tela raiz da aba
+              navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
+              navigation.navigate(route.name, { screen: route.name });
             } else {
-              // não está na aba -> navega normalmente
-              navigation.navigate(route.name);
+              navigation.jumpTo(route.name);
             }
           };
 
@@ -74,65 +76,63 @@ export default function TabsLayout() {
           borderRadius: 20,
           alignItems: 'center'
         },
-      }} >
-      <Tabs.Screen name="home"
+      }}
+    >
+      <Tabs.Screen
+        name="home"
         options={{
           title: "Início",
-          tabBarLabel: "",
-          tabBarIcon: ({ color }) => <House size={25} color={color} />
+          tabBarIcon: ({ color }) => <House size={25} color={color} />,
         }}
       />
+
       {user.role !== "MAINTAINER" && (
-        <Tabs.Screen name="tarefas"
+        <Tabs.Screen
+          name="tarefas"
           options={{
             title: "Tarefas",
-            tabBarLabel: "",
-            tabBarIcon: ({ color }) => <SquareCheckBig size={25} color={color} />
+            tabBarIcon: ({ color }) => <SquareCheckBig size={25} color={color} />,
           }}
         />
       )}
 
       {user.role !== "MAINTAINER" && (
-        <Tabs.Screen name="QRCode"
+        <Tabs.Screen
+          name="QRCode"
           options={{
             title: "QRCode",
-            tabBarLabel: "",
-            tabBarIcon: () => <Focus size={35} color="#bf201c" strokeWidth={1.8} />
+            tabBarIcon: () => <Focus size={35} color="#BF201C" strokeWidth={1.8} />,
           }}
         />
       )}
 
       {user.role !== "INSPECTOR" && (
-
-        <Tabs.Screen name="documento"
+        <Tabs.Screen
+          name="documento"
           options={{
             title: "Documento",
-            tabBarLabel: "",
-            tabBarIcon: ({ color }) => <FileText size={25} color={color} />
+            tabBarIcon: ({ color }) => <FileText size={25} color={color} />,
           }}
         />
       )}
 
       {user.role !== "ADMIN" && (
-
-        <Tabs.Screen name="historico"
+        <Tabs.Screen
+          name="historico"
           options={{
             title: "Histórico",
-            tabBarLabel: "",
-            tabBarIcon: ({ color }) => <History size={25} color={color} />
+            tabBarIcon: ({ color }) => <History size={25} color={color} />,
           }}
         />
       )}
 
-
-      <Tabs.Screen name="configuracao"
+      <Tabs.Screen
+        name="configuracao"
         options={{
           title: "Configurações",
-          tabBarLabel: "",
-          tabBarIcon: ({ color }) => <Settings size={25} color={color} />
+          tabBarIcon: ({ color }) => <Settings size={25} color={color} />,
         }}
       />
-
     </Tabs>
   );
 }
@@ -155,5 +155,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 10,
-  }
+  },
 });

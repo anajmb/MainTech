@@ -41,6 +41,26 @@ export default function Historico() {
         );
     }
 
+     const hoje = new Date();
+    const inicioSemana = new Date();
+    inicioSemana.setDate(hoje.getDate() - hoje.getDay()); // domingo da semana atual
+
+    const totalHoje = historico.filter(item => {
+        const dataItem = new Date(item.createdAt);
+        return (
+            dataItem.getDate() === hoje.getDate() &&
+            dataItem.getMonth() === hoje.getMonth() &&
+            dataItem.getFullYear() === hoje.getFullYear()
+        );
+    }).length;
+
+    const totalSemana = historico.filter(item => {
+        const dataItem = new Date(item.createdAt);
+        return dataItem >= inicioSemana && dataItem <= hoje;
+    }).length;
+
+    const totalGeral = historico.length;
+
     return (
         <ScrollView style={TabsStyles.container}>
             <Logo />
@@ -53,6 +73,21 @@ export default function Historico() {
             </View>
 
             <View style={TabsStyles.todosCard}>
+                <View style={style.cardStats}>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>{totalHoje}</Text>
+                        <Text style={style.statsTexto}>Hoje</Text>
+                    </View>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>{totalSemana}</Text>
+                        <Text style={style.statsTexto}>Esta semana</Text>
+                    </View>
+                    <View style={style.statsItem}>
+                        <Text style={style.statsNum}>{totalGeral}</Text>
+                        <Text style={style.statsTexto}>Total</Text>
+                    </View>
+                </View>
+
                 {historico.length === 0 ? (
                     <Text style={{ textAlign: "center", marginTop: 20, color: "#888" }}>
                         Nenhum histórico encontrado.
@@ -138,26 +173,27 @@ const style = StyleSheet.create({
         marginTop: -10,
     },
     subtituloHistorico: {
-        fontSize: 13,
+        fontSize: 13.5,
         color: "#888",
         marginTop: -8,
-        marginLeft: 51,
+        marginLeft: 43,
     },
     dataHistorico: {
-        fontSize: 12,
+        fontSize: 13,
         color: "#888",
-        marginLeft: 51,
+        marginLeft: 44,
+        marginTop: 15,
     },
     horaHistorico: {
-        fontSize: 12,
+        fontSize: 13,
         color: "#888",
-        marginLeft: 115,
-        marginTop: -11.5,
+        marginLeft: 110,
+        marginTop: -12.5,
     },
     ConcluidoText: {
         color: "#CE221E",
         fontSize: 15,
         fontWeight: "400",
-        marginLeft: 240,
+        marginLeft: 236,
     },
 });
