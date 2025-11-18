@@ -259,6 +259,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                     <View style={styles.row}>
                         <View style={styles.field}>
                             <Text style={styles.label}>Nome:</Text>
+                            
                             <Text style={styles.value}>{ordem.machineName}</Text>
                         </View>
                         <View style={styles.field}>
@@ -394,24 +395,28 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffff',
         paddingLeft: 15,
         paddingRight: 15,
+        paddingBottom: 15,
+        marginBottom: 1.2,
     },
     dateCards: {
         display: 'flex',
         flexDirection: 'row',
+        gap: 0.5,
+        marginBottom: 0.5,
     },
     titleSecao: {
         backgroundColor: '#a50702',
         color: 'white',
         padding: 12,
         fontSize: 16,
-        fontWeight: '500',
-        borderRadius: 3,
+        fontWeight: '400',
+        borderRadius: 1,
        
         
     },
     contentSecao: {
         padding: 15,
-        gap: 30
+        gap: 25
     },
     row: {
         flexDirection: 'row',
@@ -421,9 +426,9 @@ const styles = StyleSheet.create({
         flex: 1
     },
     label: {
-        fontSize: 14,
+        fontSize: 13.9,
         color: '#6c757d',
-        marginBottom: 6
+        marginBottom: 6,
     },
     value: {
         fontSize: 16,
@@ -436,7 +441,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingTop: 10,
         fontSize: 16,
-        minHeight: 120,
+        minHeight: 80,
         textAlignVertical: 'top',
         borderWidth: 1,
         borderColor: '#dee2e6'
@@ -444,14 +449,14 @@ const styles = StyleSheet.create({
     textInputDisabled: {
         backgroundColor: '#e9ecef',
         color: '#6c757d',
+        
     },
     itemPayload: {
         backgroundColor: '#fff',
         borderRadius: 6,
-        padding: 10,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#eee'
+        paddingTop: 10,
+        gap: 5,
+        marginBottom: 0.5,
     },
     subValue: {
         fontSize: 14,
