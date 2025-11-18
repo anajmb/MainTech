@@ -1,4 +1,6 @@
+// ...existing code...
 import SetaVoltar from "@/components/setaVoltar";
+import Logo from "@/components/logo";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -33,7 +35,8 @@ export default function NovaTarefa() {
 
     return (
         <ScrollView style={TabsStyles.container}>
-            {/* Logo */}
+            <Logo />
+
             <View style={TabsStyles.headerPrincipal}>
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
@@ -56,36 +59,30 @@ export default function NovaTarefa() {
                                 onChangeText={setIdInput}
                             />
                         </View>
-                        <View style={{ alignItems: 'center', marginTop: 10 }}>
+                        <View style={{ alignItems: 'center', marginTop: 8 }}>
                             <TouchableOpacity
                                 style={styles.confirmBtn}
                                 onPress={() => {
                                     if (idInput.trim()) {
-
                                         const dataParaEnviar = JSON.stringify({ id: idInput });
-
                                         router.push({
                                             pathname: "/QRCode/infoMaq",
-                                            params: { codigo: dataParaEnviar } // Enviamos o JSON
+                                            params: { codigo: dataParaEnviar }
                                         })
                                     }
                                 }}
                                 activeOpacity={0.8}
                             >
-                                <Text style={{ color: "#fff", fontSize: 18, fontWeight: "400" }}>
-                                    Confirmar
-                                </Text>
+                                <Text style={styles.confirmText}>Confirmar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
 
-
-                        <View style={styles.card}>
-                            <View>
-                                <Text style={styles.qrCodeCard}> QRCodes gerados</Text>
-                    {machines.map((machine) =>
-                                <View style={styles.subCard}>
-
+                    <View style={styles.card}>
+                        <View>
+                            <Text style={styles.qrCodeCard}>QRCodes gerados</Text>
+                            {machines.map((machine) =>
+                                <View style={styles.subCard} key={machine.id}>
                                     <Image
                                         style={styles.image}
                                         source={{ uri: `${machine.qrCode}` }}
@@ -96,10 +93,9 @@ export default function NovaTarefa() {
                                         <Text style={styles.maqId}>ID: {machine.id}</Text>
                                     </View>
                                 </View>
-
-)}
-                            </View>
+                            )}
                         </View>
+                    </View>
                 </View>
             </View>
         </ScrollView>
@@ -108,77 +104,82 @@ export default function NovaTarefa() {
 
 const styles = StyleSheet.create({
     containerCard: {
-        gap: 30,
+        gap: 18, // reduzido para harmonizar com home
     },
     titleCard: {
-        fontSize: 20,
+        fontSize: 16, // reduzido para ficar mais harmônico
         textAlign: "center",
         color: "#6c6c6c",
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: 12, // ajuste de espaçamento
+        marginBottom: 12,
     },
     qrCodeCard: {
-        fontSize: 19,
+        fontSize: 17,
         fontWeight: "500",
         color: "gray",
-        marginBottom: 20,
+        marginBottom: 14,
         textAlign: "center",
     },
     card: {
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
         backgroundColor: '#eeeeee',
-        padding: 20,
-        borderRadius: 10,
+        padding: 14, // card menor
+        borderRadius: 8,
+        marginBottom: 12,
     },
     label: {
-        fontSize: 15,
+        fontSize: 14,
         textAlign: 'left',
-        marginBottom: 8,
+        marginBottom: 6,
         marginLeft: 4
     },
     tituloCard: {
         fontSize: 15,
-        fontWeight: 600
+        fontWeight: "600"
     },
     input: {
-        borderRadius: 10,
+        borderRadius: 8,
         backgroundColor: '#e6e6e6',
-        padding: 10,
+        padding: 8, // input mais compacto
         textAlign: 'left'
     },
     subCard: {
         backgroundColor: "#fff",
-        padding: 20,
-        borderRadius: 10,
-        marginBottom: 15,
+        padding: 12, // reduzido
+        borderRadius: 8,
+        marginBottom: 12,
         flexDirection: "row",
-        marginVertical: 8,
+        marginVertical: 6,
         elevation: 2,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 1,
         },
-        shadowOpacity: 0.22,
-        shadowRadius: 2.22,
+        shadowOpacity: 0.18,
+        shadowRadius: 2,
     },
     confirmBtn: {
         backgroundColor: "#A50702",
         color: "#fff",
-        borderRadius: 10,
-        paddingVertical: 12,
-        width: "62%",
-        marginTop: 25,
-        marginBottom: 30,
+        borderRadius: 8,
+        paddingVertical: 10, // botão menor
+        width: "48%", // largura reduzida para harmonizar
+        marginTop: 12,
+        marginBottom: 18,
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center"
     },
+    confirmText: {
+        color: "#fff",
+        fontSize: 15, // tamanho do texto reduzido
+        fontWeight: "400"
+    },
     image: {
-        width: 100,
-        height: 100,
+        width: 72, // tamanho reduzido para harmonizar
+        height: 72,
         resizeMode: 'contain',
-        marginRight: 20,
+        marginRight: 14,
     },
 
     cardContent: {
@@ -187,21 +188,17 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff"
     },
     maqTitle: {
-        fontSize: 18,
+        fontSize: 16, // reduzido
         color: "#000000",
         flexWrap: "wrap",
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
     },
     maqSubTitle: {
-
         marginTop: 4,
-        fontSize: 13,
+        fontSize: 12,
         color: "#5e5e5eff",
-
     },
     maqId: {
         marginTop: 3,
-        fontSize: 12,
+        fontSize: 11,
     },
 });
