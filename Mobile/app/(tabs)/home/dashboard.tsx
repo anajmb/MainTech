@@ -1,5 +1,5 @@
 import { StyleSheet, ScrollView, Text, View, ActivityIndicator, Alert } from "react-native";
-import { CheckCircle, ListTodo, Clock, ClipboardList, BarChartBig, ChartPie } from "lucide-react-native";
+import { CheckCircle, ListTodo, ClipboardList, BarChartBig, ChartPie, FileCheck, FolderCheck } from "lucide-react-native";
 import { TabsStyles } from "@/styles/globalTabs";
 import SetaVoltar from "@/components/setaVoltar";
 import ChartWebView from "../../../components/chartWebView";
@@ -88,7 +88,7 @@ export default function Dashboard() {
     if (user?.role === 'INSPECTOR') {
         userTotal = tasks.length;
         userCompleted = tasks.filter(t => t.status === "COMPLETED").length;
-        userLabelTotal = "Inspeções";
+        userLabelTotal = "Checklists";
 
         // Gráficos Inspector (Baseado em Tasks)
         tasks.filter(t => t.status === "COMPLETED").forEach(t => {
@@ -106,7 +106,7 @@ export default function Dashboard() {
         // Considera "Feito" se estiver CONCLUÍDO ou EM REVISÃO (trabalho entregue)
         userCompleted = serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW").length;
 
-        userLabelTotal = "Manutenções";
+        userLabelTotal = "ordens";
 
         // Gráficos Maintainer (Baseado em OS)
         serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW").forEach(os => {
@@ -213,7 +213,7 @@ export default function Dashboard() {
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
                                 <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Tasks Concluídas</Text>
+                                <Text style={styles.metricLabel}>Tarefas Concluídas</Text>
                             </View>
                             <View style={styles.metricValueArea}>
                                 <Text style={styles.metricValue}>{adminTaskPercent.toFixed(0)}%</Text>
@@ -224,7 +224,7 @@ export default function Dashboard() {
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
                                 <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Total de Tasks</Text>
+                                <Text style={styles.metricLabel}>Total de tarefas</Text>
                             </View>
                             <View style={styles.metricValueArea}>
                                 <Text style={styles.metricValue}>{adminTotalTasks}</Text>
@@ -237,38 +237,38 @@ export default function Dashboard() {
                     <View style={styles.metricsRow}>
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
-                                <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Total de OS</Text>
-                            </View>
-                            <View style={styles.metricValueArea}>
-                                <Text style={styles.metricValue}>{adminTotalOS}</Text>
-                                <Text style={styles.metricSub}>Registradas</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.metricBox}>
-                            <View style={styles.metricHeader}>
-                                <Clock color="#438BE9" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>OS Completas</Text>
+                                <FolderCheck color="#438BE9" size={20} style={styles.metricIcon} />
+                                <Text style={styles.metricLabel}>O.S. Completas</Text>
                             </View>
                             <View style={styles.metricValueArea}>
                                 <Text style={styles.metricValue}>{adminOSCompletedCount}</Text>
                                 <Text style={styles.metricSub}>Finalizadas</Text>
                             </View>
                         </View>
+                        
+                        <View style={styles.metricBox}>
+                            <View style={styles.metricHeader}>
+                                <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
+                                <Text style={styles.metricLabel}>Ordens de serviço</Text>
+                            </View>
+                            <View style={styles.metricValueArea}>
+                                <Text style={styles.metricValue}>{adminTotalOS}</Text>
+                                <Text style={styles.metricSub}>Registradas</Text>
+                            </View>
+                        </View>
                     </View>
-                </>
+                </> 
             ) : (
                 /* === LAYOUT DO INSPETOR/MANUTENTOR (2 Cards) === */
                 <View style={styles.metricsRow}>
                     <View style={styles.metricBox}>
                         <View style={styles.metricHeader}>
                             <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
-                            <Text style={styles.metricLabel}>Conclusão</Text>
+                            <Text style={styles.metricLabel}>Concluídas</Text>
                         </View>
                         <View style={styles.metricValueArea}>
                             <Text style={styles.metricValue}>{userPercentage.toFixed(0)}%</Text>
-                            <Text style={styles.metricSub}>Meus itens</Text>
+                            <Text style={styles.metricSub}>Taxa de sucesso</Text>
                         </View>
                     </View>
 
@@ -303,7 +303,7 @@ export default function Dashboard() {
                 <View style={styles.graphCard}>
                     <View style={styles.graphText}>
                         <ChartPie color="#AA9EFF" size={22} style={styles.graphicIcon} />
-                        <Text style={styles.sectionsubTitle}>Status Atual</Text>
+                        <Text style={styles.sectionsubTitle}>Atividades realizadas</Text>
                     </View>
                     <ChartWebView config={pieChartConfig} />
                 </View>
@@ -332,10 +332,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     metricBox: {
-        backgroundColor: "#eeeeee69",
+        backgroundColor: "#eeeeee",
         borderRadius: 10,
-        paddingVertical: 15,
-        paddingHorizontal: 10,
+        paddingVertical: 20,
+        paddingHorizontal: 15,
         width: "47%",
         minHeight: 100,
         justifyContent: "center",
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     metricHeader: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 8,
+        marginBottom: 12,
         width: "100%",
         justifyContent: "center"
     },
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#8f8787ff",
         textAlign: "center",
-        marginTop: 4,
+        marginTop: 10,
     },
     graphicTitleArea: {
         marginTop: 10,
