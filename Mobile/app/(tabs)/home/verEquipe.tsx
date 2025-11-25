@@ -164,10 +164,10 @@ const style = StyleSheet.create({
     marginRight: 4,
   },
   tituloPrincipal: {
-    fontSize: 28,
-    flexWrap: "wrap",
-    width: "85%",
-    overflow: "hidden",
+    fontSize: 25,
+    // flexWrap: "wrap",
+    // width: "85%",
+    // overflow: "hidden",
   },
   fraseEquipe: {
     fontSize: 16,
