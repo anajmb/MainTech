@@ -210,8 +210,9 @@ export default function Maquinas() {
                     <Text style={TabsStyles.tituloPrincipal}>Cadastrar máquinas</Text>
                 </View>
             </View>
-
             <View style={styles.todosCard}>
+
+
                 <View style={styles.cardCad}>
                     <Text style={styles.tituloCard}>Informe os dados para cadastrar</Text>
 
@@ -319,57 +320,58 @@ export default function Maquinas() {
                         </View>
                     ))}
                 </View>
+
+                <Modal visible={modalVisible} transparent animationType="fade">
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalBox}>
+                            <Text style={styles.modalTitle}>Deseja realmente deletar?</Text>
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity style={styles.modalDeleteButton} onPress={handleDelete} accessibilityLabel="Deletar">
+                                    <Text style={styles.modalDeleteText}>Deletar</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)} accessibilityLabel="Cancelar">
+                                    <Text style={styles.modalCancelText}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+
+                <Modal visible={editModalVisible} transparent animationType="fade">
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalBox}>
+                            <Text style={styles.modalTitle}>Editar máquina</Text>
+
+                            <TextInput
+                                ref={editInputRef}
+                                style={styles.modalEditInput}
+                                value={editName}
+                                onChangeText={setEditName}
+                                placeholder="Novo nome"
+                                placeholderTextColor="#6c6c6c"
+                                onSubmitEditing={handleSaveEdit}
+                            />
+
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity
+                                    style={[styles.modalSaveButton]}
+                                    onPress={handleSaveEdit}
+                                    accessibilityLabel="Salvar"
+                                    disabled={!editName.trim()}
+                                >
+                                    <Text style={styles.modalSaveText}>Salvar</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.modalCancelButton} onPress={() => { setEditModalVisible(false); setSelectedMachine(null); setIsEditing(false); setEditName(""); }} accessibilityLabel="Cancelar">
+                                    <Text style={styles.modalCancelText}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+
+                </Modal>
             </View>
-
-            <Modal visible={modalVisible} transparent animationType="fade">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalBox}>
-                        <Text style={styles.modalTitle}>Deseja realmente deletar?</Text>
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity style={styles.modalDeleteButton} onPress={handleDelete} accessibilityLabel="Deletar">
-                                <Text style={styles.modalDeleteText}>Deletar</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)} accessibilityLabel="Cancelar">
-                                <Text style={styles.modalCancelText}>Cancelar</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-
-            <Modal visible={editModalVisible} transparent animationType="fade">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalBox}>
-                        <Text style={styles.modalTitle}>Editar máquina</Text>
-
-                        <TextInput
-                            ref={editInputRef}
-                            style={styles.modalEditInput}
-                            value={editName}
-                            onChangeText={setEditName}
-                            placeholder="Novo nome"
-                            placeholderTextColor="#6c6c6c"
-                            onSubmitEditing={handleSaveEdit}
-                        />
-
-                        <View style={styles.modalActions}>
-                            <TouchableOpacity
-                                style={[styles.modalSaveButton]}
-                                onPress={handleSaveEdit}
-                                accessibilityLabel="Salvar"
-                                disabled={!editName.trim()}
-                            >
-                                <Text style={styles.modalSaveText}>Salvar</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.modalCancelButton} onPress={() => { setEditModalVisible(false); setSelectedMachine(null); setIsEditing(false); setEditName(""); }} accessibilityLabel="Cancelar">
-                                <Text style={styles.modalCancelText}>Cancelar</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
 
         </ScrollView>
 

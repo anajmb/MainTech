@@ -72,15 +72,15 @@ export default function Dashboard() {
     const adminTotalTasks = tasks.length;
     const adminTasksCompleted = tasks.filter(t => t.status === "COMPLETED").length;
     const adminTaskPercent = adminTotalTasks > 0 ? (adminTasksCompleted / adminTotalTasks) * 100 : 0;
-    
+
     const adminTotalOS = serviceOrders.length;
     const adminOSCompletedCount = serviceOrders.filter(os => os.status === "COMPLETED").length;
-    
+
     // 2. Variáveis para INSPECTOR / MAINTAINER
     let userTotal = 0;
     let userCompleted = 0;
     let userLabelTotal = "";
-    
+
     // Para os gráficos do usuário
     let userGraphDataWeek = new Array(7).fill(0);
     let userPieData = [0, 0]; // [Concluídas, Pendentes]
@@ -132,11 +132,11 @@ export default function Dashboard() {
         userLabelTotal = "Ordens";
 
         // Gráficos Maintainer (Baseado em OS)
-        serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW"  &&
-      isInCurrentWeek(os.updatedAt)).forEach(os => {
-            const day = new Date(os.updatedAt).getDay();
-            userGraphDataWeek[day] += 1;
-        });
+        serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW" &&
+            isInCurrentWeek(os.updatedAt)).forEach(os => {
+                const day = new Date(os.updatedAt).getDay();
+                userGraphDataWeek[day] += 1;
+            });
         userPieData = [userCompleted, userTotal - userCompleted];
     }
 
@@ -216,6 +216,7 @@ export default function Dashboard() {
     return (
         <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 30 }}>
             <View style={TabsStyles.headerPrincipal}>
+
                 <SetaVoltar />
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Dashboard</Text>
@@ -224,23 +225,75 @@ export default function Dashboard() {
                     </Text>
                 </View>
             </View>
+            <View style={TabsStyles.todosCard}>
 
-            <Text style={styles.sectionTitle}>Métricas principais</Text>
+                <Text style={styles.sectionTitle}>Métricas principais</Text>
 
-            {/* --- RENDERIZAÇÃO CONDICIONAL DOS CARDS --- */}
+                {/* --- RENDERIZAÇÃO CONDICIONAL DOS CARDS --- */}
 
-            {user?.role === 'ADMIN' ? (
-                /* === LAYOUT DO ADMIN (4 Cards) === */
-                <>
-                    {/* Linha 1: Totais */}
+                {user?.role === 'ADMIN' ? (
+                    /* === LAYOUT DO ADMIN (4 Cards) === */
+                    <>
+                        {/* Linha 1: Totais */}
+                        <View style={styles.metricsRow}>
+                            <View style={styles.metricBox}>
+                                <View style={styles.metricHeader}>
+                                    <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
+                                    <Text style={styles.metricLabel}>Tarefas Concluídas</Text>
+                                </View>
+                                <View style={styles.metricValueArea}>
+                                    <Text style={styles.metricValue}>{adminTaskPercent.toFixed(0)}%</Text>
+                                    <Text style={styles.metricSub}>Taxa de sucesso</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.metricBox}>
+                                <View style={styles.metricHeader}>
+                                    <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
+                                    <Text style={styles.metricLabel}>Total de tarefas</Text>
+                                </View>
+                                <View style={styles.metricValueArea}>
+                                    <Text style={styles.metricValue}>{adminTotalTasks}</Text>
+                                    <Text style={styles.metricSub}>Checklists</Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        {/* Linha 2: Conclusão */}
+                        <View style={styles.metricsRow}>
+                            <View style={styles.metricBox}>
+                                <View style={styles.metricHeader}>
+                                    <FolderCheck color="#438BE9" size={20} style={styles.metricIcon} />
+                                    <Text style={styles.metricLabel}>O.S. Completas</Text>
+                                </View>
+                                <View style={styles.metricValueArea}>
+                                    <Text style={styles.metricValue}>{adminOSCompletedCount}</Text>
+                                    <Text style={styles.metricSub}>Finalizadas</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.metricBox}>
+                                <View style={styles.metricHeader}>
+                                    <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
+                                    <Text style={styles.metricLabel}>Ordens de serviço</Text>
+                                </View>
+                                <View style={styles.metricValueArea}>
+                                    <Text style={styles.metricValue}>{adminTotalOS}</Text>
+                                    <Text style={styles.metricSub}>Registradas</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </>
+                ) : (
+                    /* === LAYOUT DO INSPETOR/MANUTENTOR (2 Cards) === */
                     <View style={styles.metricsRow}>
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
                                 <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Tarefas Concluídas</Text>
+                                <Text style={styles.metricLabel}>Concluídas</Text>
                             </View>
                             <View style={styles.metricValueArea}>
-                                <Text style={styles.metricValue}>{adminTaskPercent.toFixed(0)}%</Text>
+                                <Text style={styles.metricValue}>{userPercentage.toFixed(0)}%</Text>
                                 <Text style={styles.metricSub}>Taxa de sucesso</Text>
                             </View>
                         </View>
@@ -248,88 +301,38 @@ export default function Dashboard() {
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
                                 <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Total de tarefas</Text>
+                                <Text style={styles.metricLabel}>Total</Text>
                             </View>
                             <View style={styles.metricValueArea}>
-                                <Text style={styles.metricValue}>{adminTotalTasks}</Text>
-                                <Text style={styles.metricSub}>Checklists</Text>
+                                <Text style={styles.metricValue}>{userTotal}</Text>
+                                <Text style={styles.metricSub}>{userLabelTotal}</Text>
                             </View>
                         </View>
                     </View>
+                )}
 
-                    {/* Linha 2: Conclusão */}
-                    <View style={styles.metricsRow}>
-                        <View style={styles.metricBox}>
-                            <View style={styles.metricHeader}>
-                                <FolderCheck color="#438BE9" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>O.S. Completas</Text>
-                            </View>
-                            <View style={styles.metricValueArea}>
-                                <Text style={styles.metricValue}>{adminOSCompletedCount}</Text>
-                                <Text style={styles.metricSub}>Finalizadas</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.metricBox}>
-                            <View style={styles.metricHeader}>
-                                <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
-                                <Text style={styles.metricLabel}>Ordens de serviço</Text>
-                            </View>
-                            <View style={styles.metricValueArea}>
-                                <Text style={styles.metricValue}>{adminTotalOS}</Text>
-                                <Text style={styles.metricSub}>Registradas</Text>
-                            </View>
-                        </View>
-                    </View>
-                </>
-            ) : (
-                /* === LAYOUT DO INSPETOR/MANUTENTOR (2 Cards) === */
-                <View style={styles.metricsRow}>
-                    <View style={styles.metricBox}>
-                        <View style={styles.metricHeader}>
-                            <CheckCircle color="#11C463" size={20} style={styles.metricIcon} />
-                            <Text style={styles.metricLabel}>Concluídas</Text>
-                        </View>
-                        <View style={styles.metricValueArea}>
-                            <Text style={styles.metricValue}>{userPercentage.toFixed(0)}%</Text>
-                            <Text style={styles.metricSub}>Taxa de sucesso</Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.metricBox}>
-                        <View style={styles.metricHeader}>
-                            <ListTodo color="#AC53F3" size={20} style={styles.metricIcon} />
-                            <Text style={styles.metricLabel}>Total</Text>
-                        </View>
-                        <View style={styles.metricValueArea}>
-                            <Text style={styles.metricValue}>{userTotal}</Text>
-                            <Text style={styles.metricSub}>{userLabelTotal}</Text>
-                        </View>
-                    </View>
-                </View>
-            )}
-
-            <View style={styles.graphicTitleArea}>
-                <Text style={styles.sectionTitleGraphic}>Gráficos</Text>
-            </View>
-
-            <View style={styles.graphCardsColumn}>
-                {/* GRÁFICO DE BARRAS */}
-                <View style={styles.graphCard}>
-                    <View style={styles.graphText}>
-                        <BarChartBig color="#CE221E" size={22} style={styles.graphicIcon} />
-                        <Text style={styles.sectionsubTitle}>Atividade semanal</Text>
-                    </View>
-                    <ChartWebView config={weeklyActivityConfig} />
+                <View style={styles.graphicTitleArea}>
+                    <Text style={styles.sectionTitleGraphic}>Gráficos</Text>
                 </View>
 
-                {/* GRÁFICO DE PIZZA */}
-                <View style={styles.graphCard}>
-                    <View style={styles.graphText}>
-                        <ChartPie color="#AA9EFF" size={22} style={styles.graphicIcon} />
-                        <Text style={styles.sectionsubTitle}>Atividades realizadas</Text>
+                <View style={styles.graphCardsColumn}>
+                    {/* GRÁFICO DE BARRAS */}
+                    <View style={styles.graphCard}>
+                        <View style={styles.graphText}>
+                            <BarChartBig color="#CE221E" size={22} style={styles.graphicIcon} />
+                            <Text style={styles.sectionsubTitle}>Atividade semanal</Text>
+                        </View>
+                        <ChartWebView config={weeklyActivityConfig} />
                     </View>
-                    <ChartWebView config={pieChartConfig} />
+
+                    {/* GRÁFICO DE PIZZA */}
+                    <View style={styles.graphCard}>
+                        <View style={styles.graphText}>
+                            <ChartPie color="#AA9EFF" size={22} style={styles.graphicIcon} />
+                            <Text style={styles.sectionsubTitle}>Atividades realizadas</Text>
+                        </View>
+                        <ChartWebView config={pieChartConfig} />
+                    </View>
                 </View>
             </View>
         </ScrollView>

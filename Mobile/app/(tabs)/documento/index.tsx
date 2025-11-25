@@ -118,6 +118,7 @@ export default function Documento() {
         </View>
       </View>
 
+
       <View style={styles.filtro}>
         <TouchableOpacity onPress={() => setFiltro("todas")}>
           <Text style={[styles.filtroTitulo, filtro === "todas" && { color: "#fff", backgroundColor: "#CF0000" }]}>Todas</Text>
@@ -130,6 +131,7 @@ export default function Documento() {
         </TouchableOpacity>
       </View>
 
+      <View style={TabsStyles.todosCard}>
       <View style={styles.documentosList}>
         {loading ? (
           <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 30 }} />
@@ -143,7 +145,7 @@ export default function Documento() {
                 pathname: "/(tabs)/documento/ordemServicoManu",
                 params: { id: ordem.id.toString() },
               }}
-              asChild
+              asChild 
             >
               <TouchableOpacity style={styles.infosDocumentos}>
                 <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
@@ -179,12 +181,14 @@ export default function Documento() {
           ))
         )}
       </View>
+      </View>
     </ScrollView>
   );
 }
 
 // (Os estilos são os mesmos que você me enviou na outra mensagem)
 const styles = StyleSheet.create({
+  
   filtro: {
     flexDirection: "row",
     justifyContent: "space-around",

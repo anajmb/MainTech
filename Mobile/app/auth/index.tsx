@@ -20,6 +20,17 @@ export default function Login() {
   const { loginUser } = useAuth();
   const toggleSwitch = () => setIsAgree((previous) => !previous);
 
+
+  const formatCPF = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  };
+
+  const limparCPF = (value: string) => value.replace(/\D/g, "");
+
   const handleLogin = async () => {
     if (!cpfData.trim() || !passwordData.trim()) {
       Alert.alert("Erro", "Preencha CPF e senha.");
@@ -28,7 +39,9 @@ export default function Login() {
 
     setIsLoading(true);
     try {
-      const payload = { cpf: cpfData.trim(), password: passwordData.trim() };
+      const cpfLimpo = limparCPF(cpfData);
+      const payload = { cpf: cpfLimpo, password: passwordData.trim() };
+
       console.log("LOGIN PAYLOAD ->", payload);
 
       const res = await api.post("/employees/login", payload);
@@ -128,10 +141,12 @@ export default function Login() {
                 placeholder="___.___.___-__"
                 placeholderTextColor="#B9B9B9"
                 value={cpfData}
-                onChangeText={setCpfData}
+                onChangeText={(text) => setCpfData(formatCPF(text))}
                 keyboardType="numeric"
                 autoCapitalize="none"
+                maxLength={14}
               />
+
             </View>
 
             <View style={{ gap: 8 }}>
@@ -145,7 +160,6 @@ export default function Login() {
                   secureTextEntry={!showPassword}
                   value={passwordData}
                   onChangeText={setPasswordData}
-                  autoCapitalize="none"
                 />
                 <TouchableOpacity
                   style={styles.eyeFechado}

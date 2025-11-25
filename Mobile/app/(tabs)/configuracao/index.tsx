@@ -7,6 +7,7 @@ import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, Loc
 import { useEffect, useState, useCallback } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/contexts/authContext";
+import Logo from "@/components/logo";
 
 export default function Configuracao() {
 
@@ -90,8 +91,9 @@ export default function Configuracao() {
 
     return (
 
-        <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 120 }}>
 
+        <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 120 }}>
+ <Logo />
             <View style={TabsStyles.headerPrincipal}>
                 <View>
                     <SetaVoltar />

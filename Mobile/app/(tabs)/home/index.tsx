@@ -86,6 +86,7 @@ function AdminHome() {
           />
         </View>
       </View>
+       
       {/* Ações rápidas */}
       <View style={TabsStyles.todosCard}>
 
@@ -206,6 +207,9 @@ function UsersHome() {
           />
         </View>
       </View>
+
+      <View style={TabsStyles.todosCard}>
+
       {/* Ações rápidas para Inspetor/Manutentor: Máquinas -> Históricos, Equipes -> Minha equipe */}
       <View>
         <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
@@ -254,7 +258,10 @@ function UsersHome() {
           </View> */}
            <AtividadesRecentes />
         </View>
+
       </View>
+      </View>
+
     </ScrollView>
   )
 }
