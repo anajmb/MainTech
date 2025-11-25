@@ -12,9 +12,25 @@ export default function RedefinirSenha() {
   const [confirm, setConfirm] = useState("");
   const router = useRouter();
 
-  const handleResetPassword = async () => {
+    const validarSenhaForte = (senha: string) => {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    return regex.test(senha);
+  };
+
+
+    const handleResetPassword = async () => {
     if (password !== confirm) {
       Alert.alert("Erro", "As senhas não coincidem");
+      return;
+    }
+
+    if (!validarSenhaForte(password)) {
+      Alert.alert(
+        "Senha fraca",
+        "A senha deve conter no mínimo:\n• 8 caracteres\n• 1 letra maiúscula\n• 1 número\n• 1 caractere especial"
+      );
       return;
     }
 
@@ -26,6 +42,7 @@ export default function RedefinirSenha() {
       Alert.alert("Erro", error.response?.data?.error || "Falha ao redefinir senha");
     }
   };
+
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}

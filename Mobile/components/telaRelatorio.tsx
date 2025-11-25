@@ -1,25 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
-import { useAuth } from "@/contexts/authContext"; 
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator, Modal, FlatList } from "react-native";
+import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
-import { Picker } from '@react-native-picker/picker'; // Importe o Picker
-
+ 
+// --- TIPAGEM ---
 type SecaoProps = {
     title?: string;
-    children: React.ReactNode
+    children: React.ReactNode;
+    noBottomBorder?: boolean;
 }
-
-export default function Secao({ title, children }: SecaoProps) {
-    return (
-        <View >
-            {title && <Text style={styles.titleSecao}>{title}</Text>}
-            <View style={styles.cards}>
-                <View style={styles.contentSecao}>{children}</View>
-            </View>
-        </View>
-    )
-}
-
+ 
 interface PayloadItem {
     setId: number;
     setName: string;
@@ -28,16 +18,13 @@ interface PayloadItem {
     subsetName: string;
     machineId: number;
 }
-
-// Interface para a lista de manutentores
+ 
 interface Maintainer {
     id: number;
     name: string;
-    // Adicionamos 'role' para a busca, mas não precisamos usar em todo lugar
-    role?: string; 
+    role?: string;
 }
-
-// Interface da Ordem de Serviço
+ 
 interface OrdemServico {
     id: number;
     machineId: number;
@@ -48,51 +35,61 @@ interface OrdemServico {
     priority: 'low' | 'medium' | 'high';
     payload: PayloadItem[];
     createdAt: string;
-    updatedAt: string; 
-    
+    updatedAt: string;
     maintainerId?: number;
     maintainerName?: string;
     serviceNotes?: string;
     materialsUsed?: string;
-    
     status?: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED';
 }
-
-// --- MUDANÇA 1: Prop 'availableMaintainers' REMOVIDA ---
+ 
 type RelatorioProps = {
     ordem: OrdemServico | null;
-    onUpdate: () => void; 
+    onUpdate: () => void;
 }
-
+ 
 const prioridadeLabel = {
     low: "Baixa Criticidade",
     medium: "Média Criticidade",
     high: "Alta Criticidade"
 };
-
+ 
 const actionLabel = {
     change: "Troca Necessária",
     repair: "Reparo Necessário"
 };
-
+ 
+// --- COMPONENTE SEÇÃO ---
+export default function Secao({ title, children, noBottomBorder }: SecaoProps) {
+    return (
+        <View style={styles.secaoContainer}>
+            {title && (
+                <View style={styles.headerContainer}>
+                    <Text style={styles.titleSecao}>{title}</Text>
+                </View>
+            )}
+            <View style={[styles.contentContainer, noBottomBorder && { borderBottomWidth: 0 }]}>
+                {children}
+            </View>
+        </View>
+    )
+}
+ 
 export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
-
     const { user } = useAuth();
-    
-    // States para o preenchimento do Manutentor
+   
     const [serviceNotes, setServiceNotes] = useState('');
     const [materialsUsed, setMaterialsUsed] = useState('');
     const [loading, setLoading] = useState(false);
-    
-    // --- MUDANÇA 2: States para a lista de Manutentores (Atribuição) ---
+   
+    // States para Manutentores e Modal de Seleção
     const [manutentores, setManutentores] = useState<Maintainer[]>([]);
     const [selectedMaintainerId, setSelectedMaintainerId] = useState<number | null>(null);
-
-    // Roles
+    const [modalVisible, setModalVisible] = useState(false);
+ 
     const isMaintainer = user?.role === 'MAINTAINER';
     const isAdmin = user?.role === 'ADMIN';
-
-    // Efeito para preencher os campos de texto (Relatório do Manutentor)
+ 
     useEffect(() => {
         if (ordem) {
             setServiceNotes(ordem.serviceNotes || '');
@@ -100,27 +97,17 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             setSelectedMaintainerId(ordem.maintainerId || null);
         }
     }, [ordem]);
-
-    // --- MUDANÇA 3: Novo Efeito para BUSCAR e FILTRAR os Manutentores ---
+ 
     useEffect(() => {
-        // Só busca a lista se o usuário for Admin e a OS estiver pendente
         if (isAdmin && ordem?.status === 'PENDING') {
-            
             async function fetchMaintainers() {
                 try {
-                    // 1. Busca TODOS os funcionários (como você pediu)
                     const response = await api.get('/employees/get');
-                    
-                    const allEmployees: Maintainer[] = response.data; 
-                    
-                    // 2. FILTRA apenas os Manutentores
+                    const allEmployees: Maintainer[] = response.data;
                     const filteredMaintainers = allEmployees.filter(
                         (emp) => emp.role === 'MAINTAINER'
                     );
-
-                    // 3. Salva no state
                     setManutentores(filteredMaintainers);
-
                 } catch (error) {
                     console.error("Erro ao buscar manutentores:", error);
                     Alert.alert("Erro", "Não foi possível carregar a lista de manutentores.");
@@ -128,43 +115,44 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             }
             fetchMaintainers();
         }
-    }, [isAdmin, ordem?.status]); // Dispara quando a OS carregar e o status for 'PENDING'
-    // --- Fim da Mudança 3 ---
-
-
+    }, [isAdmin, ordem?.status]);
+ 
     if (!ordem) {
         return (
             <Secao title="Relatório da Intervenção">
-                <Text style={styles.value}>Carregando dados da ordem...</Text>
+                <View style={styles.infoRow}>
+                    <Text style={styles.value}>Carregando dados da ordem...</Text>
+                </View>
             </Secao>
         )
     }
-
-    // Lógicas de permissão (permanecem iguais)
-    const isEditable = isMaintainer && 
+ 
+    const isEditable = isMaintainer &&
                        (ordem.status === 'ASSIGNED' || ordem.status === 'IN_PROGRESS') &&
                        ordem.maintainerId === user?.id;
-    const canViewReport = ordem.status === 'IN_REVIEW' || ordem.status === 'COMPLETED';
-
+ 
     const dataEmissao = ordem.createdAt ? new Date(ordem.createdAt).toLocaleDateString('pt-BR') : "N/A";
     const dataConclusao = ordem.status === 'COMPLETED' ? new Date(ordem.updatedAt).toLocaleDateString('pt-BR') : 'Pendente';
     const prioridade = ordem.priority ? prioridadeLabel[ordem.priority] : "N/A";
-    
-    // --- MUDANÇA 4: 'handleAssignMaintainer' atualizado ---
-    // Agora usa o 'manutentores' (do state) em vez de 'availableMaintainers' (da prop)
+   
+    // Helper para pegar o nome do manutentor selecionado para exibir no input
+    const getSelectedMaintainerName = () => {
+        if (!selectedMaintainerId) return "Selecione uma opção...";
+        const found = manutentores.find(m => m.id === selectedMaintainerId);
+        return found ? found.name : "Manutentor desconhecido";
+    };
+ 
     const handleAssignMaintainer = async () => {
         if (!selectedMaintainerId) {
-            Alert.alert("Erro", "Por favor, selecione um mantenedor da lista.");
+            Alert.alert("Erro", "Por favor, selecione um manutentor da lista.");
             return;
         }
-        
-        // Busca o nome do manutentor na lista do state
         const selectedMaintainer = manutentores.find(m => m.id === selectedMaintainerId);
         if (!selectedMaintainer) {
-             Alert.alert("Erro", "Mantenedor selecionado inválido.");
+             Alert.alert("Erro", "Manutentor selecionado inválido.");
             return;
         }
-
+ 
         setLoading(true);
         try {
             await api.patch(`/serviceOrders/assign/${ordem.id}`, {
@@ -172,7 +160,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                 maintainerName: selectedMaintainer.name
             });
             Alert.alert("Sucesso", "Ordem de Serviço atribuída.");
-            onUpdate(); 
+            onUpdate();
         } catch (error: any) {
             console.error("Erro ao atribuir:", error.response?.data);
             Alert.alert("Erro", error.response?.data?.msg || "Não foi possível atribuir a OS.");
@@ -180,10 +168,8 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             setLoading(false);
         }
     };
-    // --- Fim da Mudança 4 ---
-    
+   
     const handleSubmitWork = async () => {
-        // (Esta função permanece a mesma)
         if (!serviceNotes || !materialsUsed) {
             Alert.alert("Erro", "Por favor, preencha os campos 'Serviço Realizado' e 'Materiais Utilizados'.");
             return;
@@ -195,7 +181,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                 materialsUsed
             });
             Alert.alert("Sucesso", "Relatório enviado para aprovação.");
-            onUpdate(); 
+            onUpdate();
         } catch (error: any) {
             console.error("Erro ao submeter:", error.response?.data);
             Alert.alert("Erro", error.response?.data?.msg || "Não foi possível submeter o relatório.");
@@ -203,14 +189,13 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             setLoading(false);
         }
     };
-
+ 
     const handleApproveWork = async () => {
-        // (Esta função permanece a mesma)
         setLoading(true);
         try {
             await api.patch(`/serviceOrders/approve/${ordem.id}`);
             Alert.alert("Sucesso", "Ordem de Serviço concluída.");
-            onUpdate(); 
+            onUpdate();
         } catch (error: any) {
             console.error("Erro ao aprovar:", error.response?.data);
             Alert.alert("Erro", error.response?.data?.msg || "Não foi possível aprovar a OS.");
@@ -218,309 +203,468 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             setLoading(false);
         }
     };
-
+ 
     const getStatusStyle = (status?: string) => {
-        // (Esta função permanece a mesma)
         switch (status) {
             case 'PENDING': return styles.statusPending;
             case 'ASSIGNED': return styles.statusAssigned;
             case 'IN_PROGRESS': return styles.statusInProgress;
-            case 'IN_REVIEW': return styles.statusInProgress; // Em Revisão (Amarelo)
+            case 'IN_REVIEW': return styles.statusInProgress;
             case 'COMPLETED': return styles.statusCompleted;
             default: return {};
         }
     };
-
+ 
     return (
-        <>
-            <View style={styles.mainContainer}>
-
-                {/* (Seção de Datas... sem mudança) */}
-                <View style={styles.dateCards}>
-                    <View style={{ flex: 1 }}>
-                        <Secao title="Data de Emissão:">
-                            <Text style={styles.value}>{dataEmissao}</Text>
-                        </Secao>
+        <View style={styles.mainContainer}>
+ 
+            {/* SEÇÃO 1: DATAS DA ORDEM */}
+            <Secao title="Datas da Ordem">
+                <View style={styles.tableRow}>
+                    <View style={[styles.tableCell, styles.borderRight, { flex: 0.5 }]}>
+                        <Text style={styles.label}>Data da emissão:</Text>
+                        <Text style={styles.valueCentered}>{dataEmissao}</Text>
                     </View>
-                    <View style={{ flex: 1 }}>
-                        <Secao title="Data de conclusão: ">
-                            <Text style={styles.value}>{dataConclusao}</Text>
-                        </Secao>
+                    <View style={[styles.tableCell, { flex: 0.5 }]}>
+                        <Text style={styles.label}>Data da conclusão:</Text>
+                        <Text style={styles.valueCentered}>{dataConclusao}</Text>
                     </View>
                 </View>
-
-                {/* (Seção de Prioridade... sem mudança) */}
-                <Secao title="Prioridade da anomalia">
-                    <Text style={styles.value}>{prioridade}</Text>
-                </Secao>
-
-                {/* (Seção de Diagnóstico... sem mudança) */}
-                <Secao title="Equipamento e Diagnóstico">
-                    <View style={styles.row}>
-                        <View style={styles.field}>
-                            <Text style={styles.label}>Nome:</Text>
-                            
-                            <Text style={styles.value}>{ordem.machineName}</Text>
-                        </View>
-                        <View style={styles.field}>
-                            <Text style={styles.label}>Identificação da Máquina:</Text>
-                            <Text style={styles.value}>#{ordem.machineId}</Text>
-                        </View>
+            </Secao>
+ 
+            {/* SEÇÃO 2: PRIORIDADE */}
+            <Secao title="Prioridade da anomalia:">
+                <View style={styles.infoRowNoBorder}>
+                     <Text style={styles.valueCentered}>{prioridade}</Text>
+                </View>
+            </Secao>
+ 
+            {/* SEÇÃO 3: EQUIPAMENTO */}
+            <Secao title="Equipamento e Diagnóstico">
+                <View style={styles.tableRow}>
+                    <View style={[styles.tableCell, styles.borderRight, { flex: 0.4 }]}>
+                        <Text style={styles.label}>Nome:</Text>
+                        <Text style={styles.value}>{ordem.machineName}</Text>
                     </View>
-                    <View>
-                        <Text style={styles.label}>Itens para Intervenção (Diagnóstico):</Text>
-                        {ordem.payload && ordem.payload.length > 0 ? (
-                            ordem.payload.map((item, index) => (
-                                <View key={index} style={styles.itemPayload}>
-                                    <Text style={styles.value}> {actionLabel[item.action]}</Text>
-                                    <Text style={styles.subValue}>
-                                        Conjunto ID: {item.setId}, Conjunto: {item.setName}
-                                    </Text>
-                                    <Text style={styles.subValue}>
-                                        Sub-Conjunto: {item.subsetName}
-                                    </Text>
-                                </View>
-                            ))
-                        ) : (
-                            <Text style={styles.value}>Nenhum item de inspeção registrado.</Text>
-                        )}
+                    <View style={[styles.tableCell, { flex: 0.6 }]}>
+                        <Text style={styles.label} numberOfLines={1} adjustsFontSizeToFit>Identificação da Máquina:</Text>
+                        <Text style={styles.value}>#{ordem.machineId}</Text>
                     </View>
-                    <View>
-                        <Text style={styles.label}>Solicitante (Inspetor):</Text>
-                        <Text style={styles.value}>{ordem.inspectorName}</Text>
-                    </View>
-                </Secao>
-                
-                {/* --- MUDANÇA 5: Seção de Atribuição (ADMIN) --- */}
-                {isAdmin && ordem.status === 'PENDING' && (
-                    <Secao title="Atribuir Ordem de Serviço">
-                        <View>
-                            <Text style={styles.label}>Selecione o Mantenedor:</Text>
-                            <View style={styles.pickerContainer}>
-                                <Picker
-                                    selectedValue={selectedMaintainerId}
-                                    onValueChange={(itemValue) => setSelectedMaintainerId(itemValue)}
-                                    style={styles.picker}
-                                >
-                                    <Picker.Item label="-- Selecione um mantenedor --" value={null} />
-                                    {/* Mapeia a lista do 'manutentores' (do state) */}
-                                    {manutentores.map((m) => (
-                                        <Picker.Item key={m.id} label={m.name} value={m.id} />
-                                    ))}
-                                </Picker>
+                </View>
+ 
+                {/* Linha 2: Diagnóstico */}
+                <View style={styles.tableRowVertical}>
+                    <Text style={styles.label}>Diagnóstico atual:</Text>
+                    {ordem.payload && ordem.payload.length > 0 ? (
+                        ordem.payload.map((item, index) => (
+                            <View key={index} style={styles.payloadItem}>
+                                <Text style={styles.valueBullet}>• {actionLabel[item.action]}</Text>
+                                <Text style={styles.subValue}>
+                                    Conjunto: {item.setName} | Sub: {item.subsetName}
+                                </Text>
                             </View>
-                        </View>
-                    </Secao>
-                )}
-                {/* --- Fim da Mudança 5 --- */}
-
-                {/* Seção de Intervenção (Manutenção) */}
-                <Secao title="Relatório de Manutenção">
-                    <View style={styles.row}>
-                        <View style={styles.field}>
-                            <Text style={styles.label}>Mantenedor Atribuído:</Text>
-                            <Text style={styles.value}>{ordem.maintainerName || (ordem.status === 'PENDING' ? "Aguardando atribuição" : "N/A")}</Text>
-                        </View>
-                        <View style={styles.field}>
-                            <Text style={styles.label}>Status:</Text>
-                            <Text style={[styles.value, getStatusStyle(ordem.status)]}>{ordem.status}</Text>
-                        </View>
-                    </View>
-                    
-                    <View>
-                        <Text style={styles.label}>Serviço Realizado:</Text>
-                        <TextInput 
-                            style={[styles.textInput, !isEditable && styles.textInputDisabled]} 
-                            placeholder={isEditable ? "Descreva os detalhes..." : (canViewReport ? "" : "Aguardando manutenção")} 
-                            multiline 
-                            editable={isEditable}
-                            value={serviceNotes} 
-                            onChangeText={setServiceNotes} 
-                        />
-                    </View>
-                    <View>
-                        <Text style={styles.label}>Materiais Utilizados:</Text>
-                        <TextInput 
-                            style={[styles.textInput, !isEditable && styles.textInputDisabled]} 
-                            placeholder={isEditable ? "Descreva os materiais..." : (canViewReport ? "" : "Aguardando manutenção")} 
-                            multiline 
-                            editable={isEditable}
-                            value={materialsUsed} 
-                            onChangeText={setMaterialsUsed} 
-                        />
-                    </View>
-                </Secao>
-
-                {/* (Botões Condicionais... sem mudança) */}
-                <View style={styles.actionButtonContainer}>
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#A50702" />
+                        ))
                     ) : (
-                        <>
-                            {isAdmin && ordem.status === 'PENDING' && (
-                                <TouchableOpacity style={styles.buttonAssign} onPress={handleAssignMaintainer}>
-                                    <Text style={styles.buttonText}>Confirmar Atribuição</Text>
-                                </TouchableOpacity>
-                            )}
-
-                            {isEditable && (
-                                <TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmitWork}>
-                                    <Text style={styles.buttonText}>Submeter para Aprovação</Text>
-                                </TouchableOpacity>
-                            )}
-
-                            {isAdmin && ordem.status === 'IN_REVIEW' && (
-                                <TouchableOpacity style={styles.buttonApprove} onPress={handleApproveWork}>
-                                    <Text style={styles.buttonText}>Aprovar e Concluir OS</Text>
-                                </TouchableOpacity>
-                            )}
-                        </>
+                        <Text style={styles.value}>Nenhum item de inspeção registrado.</Text>
                     )}
                 </View>
+ 
+                {/* Linha 3: Solicitante */}
+                <View style={[styles.tableRowVertical, { borderBottomWidth: 0 }]}>
+                    <Text style={styles.label}>Solicitante:</Text>
+                    <Text style={styles.value}>{ordem.inspectorName}</Text>
+                </View>
+            </Secao>
+           
+            {/* SEÇÃO 4: ATRIBUIÇÃO (ADMIN) COM INPUT SELECT CUSTOMIZADO */}
+            {isAdmin && ordem.status === 'PENDING' && (
+                <Secao title="Atribuir Ordem de Serviço">
+                    <View style={styles.formContainer}>
+                        <Text style={styles.labelDark}>Selecione o Manutentor:</Text>
+                       
+                        {/* INPUT SELECT (Trigger do Modal) */}
+                        <TouchableOpacity
+                            style={styles.inputSelect}
+                            onPress={() => setModalVisible(true)}
+                        >
+                            <Text style={selectedMaintainerId ? styles.inputText : styles.inputPlaceholder}>
+                                {getSelectedMaintainerName()}
+                            </Text>
+                            {/* Ícone seta para baixo simples */}
+                            <Text style={styles.inputIcon}>▼</Text>
+                        </TouchableOpacity>
+ 
+                        {/* MODAL DE LISTAGEM */}
+                        <Modal
+                            visible={modalVisible}
+                            transparent={true}
+                            animationType="fade"
+                            onRequestClose={() => setModalVisible(false)}
+                        >
+                            <TouchableOpacity
+                                style={styles.modalOverlay}
+                                activeOpacity={1}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <View style={styles.modalContent}>
+                                    <View style={styles.modalHeader}>
+                                        <Text style={styles.modalTitle}>Manutentores Disponíveis</Text>
+                                        <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                            <Text style={styles.closeButton}>Fechar</Text>
+                                        </TouchableOpacity>
+                                    </View>
+ 
+                                    <FlatList
+                                        data={manutentores}
+                                        keyExtractor={(item) => item.id.toString()}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                style={styles.modalItem}
+                                                onPress={() => {
+                                                    setSelectedMaintainerId(item.id);
+                                                    setModalVisible(false);
+                                                }}
+                                            >
+                                                <Text style={[
+                                                    styles.modalItemText,
+                                                    selectedMaintainerId === item.id && styles.modalItemSelected
+                                                ]}>
+                                                    {item.name}
+                                                </Text>
+                                                {selectedMaintainerId === item.id && <Text style={styles.checkIcon}>✓</Text>}
+                                            </TouchableOpacity>
+                                        )}
+                                        ListEmptyComponent={
+                                            <Text style={styles.emptyListText}>Nenhum manutentor encontrado.</Text>
+                                        }
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                        </Modal>
+ 
+                    </View>
+                </Secao>
+            )}
+ 
+            {/* SEÇÃO 5: RELATÓRIO DE INTERVENÇÃO */}
+            <Secao title="Relatório da Intervenção">
+                 {/* Manutentor e Data */}
+                 <View style={styles.tableRow}>
+                    <View style={[styles.tableCell, styles.borderRight, { flex: 0.5 }]}>
+                        <Text style={styles.label}>Manutentor:</Text>
+                        <Text style={styles.value}>{ordem.maintainerName || "Aguardando..."}</Text>
+                    </View>
+                    <View style={[styles.tableCell, { flex: 0.5 }]}>
+                        <Text style={styles.label}>Status:</Text>
+                        <Text style={[styles.value, getStatusStyle(ordem.status)]}>{ordem.status}</Text>
+                    </View>
+                </View>
+ 
+                {/* Inputs */}
+                <View style={styles.formPadding}>
+                    <Text style={styles.labelDark}>Serviço Realizado:</Text>
+                    <TextInput
+                        style={[styles.textInput, !isEditable && styles.textInputDisabled]}
+                        placeholder={isEditable ? "Descreva os detalhes..." : "Aguardando preenchimento"}
+                        multiline
+                        editable={isEditable}
+                        value={serviceNotes}
+                        onChangeText={setServiceNotes}
+                    />
+ 
+                    <View style={{ height: 15 }} />
+ 
+                    <Text style={styles.labelDark}>Materiais Utilizados:</Text>
+                    <TextInput
+                        style={[styles.textInput, !isEditable && styles.textInputDisabled]}
+                        placeholder={isEditable ? "Descreva os materiais..." : "Aguardando preenchimento"}
+                        multiline
+                        editable={isEditable}
+                        value={materialsUsed}
+                        onChangeText={setMaterialsUsed}
+                    />
+                </View>
+            </Secao>
+ 
+            {/* BOTÕES DE AÇÃO */}
+            <View style={styles.actionButtonContainer}>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#A50702" />
+                ) : (
+                    <>
+                        {isAdmin && ordem.status === 'PENDING' && (
+                            <TouchableOpacity style={styles.buttonAssign} onPress={handleAssignMaintainer}>
+                                <Text style={styles.buttonText}>CONFIRMAR ATRIBUIÇÃO</Text>
+                            </TouchableOpacity>
+                        )}
+ 
+                        {isEditable && (
+                            <TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmitWork}>
+                                <Text style={styles.buttonText}>SUBMETER PARA APROVAÇÃO</Text>
+                            </TouchableOpacity>
+                        )}
+ 
+                        {isAdmin && ordem.status === 'IN_REVIEW' && (
+                            <TouchableOpacity style={styles.buttonApprove} onPress={handleApproveWork}>
+                                <Text style={styles.buttonText}>APROVAR E CONCLUIR OS</Text>
+                            </TouchableOpacity>
+                        )}
+                    </>
+                )}
             </View>
-        </>
+        </View>
     )
 }
-
-
+                               
 const styles = StyleSheet.create({
     mainContainer: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        marginBottom: 200,
+        marginBottom: 100,
+        paddingHorizontal: 5,
+        paddingTop: 10,
     },
-    cards: {
-        backgroundColor: '#ffff',
-        paddingLeft: 15,
-        paddingRight: 15,
-        paddingBottom: 15,
-        marginBottom: 1.2,
+    secaoContainer: {
+        marginBottom: 15,
+        backgroundColor: 'transparent',
     },
-    dateCards: {
-        display: 'flex',
-        flexDirection: 'row',
-        gap: 0.5,
-        marginBottom: 0.5,
+    headerContainer: {
+        backgroundColor: '#A50702',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
     },
     titleSecao: {
-        backgroundColor: '#a50702',
         color: 'white',
-        padding: 12,
-        fontSize: 16,
-        fontWeight: '400',
-        borderRadius: 1,
-       
-        
+        fontSize: 15,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
-    contentSecao: {
-        padding: 15,
-        gap: 25
-    },
-    row: {
-        flexDirection: 'row',
-        gap: 15
-    },
-    field: {
-        flex: 1
-    },
-    label: {
-        fontSize: 13.9,
-        color: '#6c757d',
-        marginBottom: 6,
-    },
-    value: {
-        fontSize: 16,
-        color: '#212529',
-        fontWeight: '500'
-    },
-    textInput: {
-        backgroundColor: '#f8f9fa',
-        borderRadius: 8,
-        paddingHorizontal: 15,
-        paddingTop: 10,
-        fontSize: 16,
-        minHeight: 80,
-        textAlignVertical: 'top',
+    contentContainer: {
+        backgroundColor: '#fff',
         borderWidth: 1,
-        borderColor: '#dee2e6'
+        borderColor: '#ddd',
+        borderTopWidth: 0,
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12,
+        overflow: 'hidden',
     },
-    textInputDisabled: {
-        backgroundColor: '#e9ecef',
-        color: '#6c757d',
-        
+   
+    tableRow: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderColor: '#eee',
     },
-    itemPayload: {
-        backgroundColor: '#fff',
-        borderRadius: 6,
-        paddingTop: 10,
-        gap: 5,
-        marginBottom: 0.5,
+    tableRowVertical: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderColor: '#eee',
     },
-    subValue: {
-        fontSize: 14,
-        color: '#666',
-        marginTop: 4,
-        marginLeft: 10,
+    tableCell: {
+        padding: 12,
+        justifyContent: 'center',
     },
-    actionButtonContainer: {
+    borderRight: {
+        borderRightWidth: 1,
+        borderRightColor: '#eee',
+    },
+    infoRow: {
         padding: 15,
-        backgroundColor: '#fff',
-        borderTopWidth: 1,
-        borderTopColor: '#eee'
+        justifyContent: 'center',
     },
-    buttonAssign: {
-        backgroundColor: '#CE221E', 
+    infoRowNoBorder: {
         padding: 15,
-        borderRadius: 8,
+        justifyContent: 'center',
         alignItems: 'center',
     },
-    buttonSubmit: {
-        backgroundColor: '#CE221E', 
+ 
+    label: {
+        fontSize: 12,
+        color: '#666',
+        marginBottom: 4,
+        fontWeight: '500',
+        fontStyle: 'italic',
+    },
+    labelDark: {
+        fontSize: 14,
+        color: '#333',
+        marginBottom: 10,
+        fontWeight: 'bold',
+    },
+    value: {
+        fontSize: 15,
+        color: '#212529',
+        fontWeight: '600',
+    },
+    valueCentered: {
+        fontSize: 15,
+        color: '#212529',
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    valueBullet: {
+        fontSize: 14,
+        color: '#212529',
+        fontWeight: '600',
+        marginTop: 4,
+    },
+    subValue: {
+        fontSize: 13,
+        color: '#666',
+        marginLeft: 10,
+        marginBottom: 4,
+    },
+    payloadItem: {
+        marginBottom: 8,
+    },
+ 
+    // Formulários
+    formContainer: {
+        padding: 20,
+    },
+    formPadding: {
         padding: 15,
-        borderRadius: 8,
+    },
+   
+    inputSelect: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 12,
+        backgroundColor: '#fefefe',
+        height: 56,
+        paddingHorizontal: 15,
+    },
+    inputText: {
+        fontSize: 16,
+        color: '#212529',
+    },
+    inputPlaceholder: {
+        fontSize: 16,
+        color: '#999',
+    },
+    inputIcon: {
+        fontSize: 14,
+        color: '#666',
+    },
+ 
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        maxHeight: '80%',
+        paddingBottom: 10,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#212529',
+    },
+    closeButton: {
+        color: '#A50702',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    modalItem: {
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    modalItemText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    modalItemSelected: {
+        fontWeight: 'bold',
+        color: '#A50702',
+    },
+    checkIcon: {
+        color: '#A50702',
+        fontWeight: 'bold',
+    },
+    emptyListText: {
+        padding: 20,
+        textAlign: 'center',
+        color: '#666',
+    },
+ 
+    textInput: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        paddingHorizontal: 10,
+        paddingTop: 10,
+        fontSize: 15,
+        minHeight: 100,
+        textAlignVertical: 'top',
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
+    textInputDisabled: {
+        backgroundColor: '#f0f0f0',
+        color: '#6c757d',
+    },
+ 
+    actionButtonContainer: {
+        marginTop: 20,
+        marginBottom: 30,
+        paddingHorizontal: 5,
+    },
+    buttonAssign: {
+        backgroundColor: '#A50702',
+        paddingVertical: 15,
+        borderRadius: 12,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
+    },
+    buttonSubmit: {
+        backgroundColor: '#A50702',
+        paddingVertical: 15,
+        borderRadius: 12,
         alignItems: 'center',
     },
     buttonApprove: {
-        backgroundColor: '#1f8036ff', // Verde (Aprovar)
-        padding: 15,
-        borderRadius: 8,
+        backgroundColor: '#28a745',
+        paddingVertical: 15,
+        borderRadius: 12,
         alignItems: 'center',
     },
     buttonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
-    },
-   
-    pickerContainer: {
-        borderWidth: 1,
-        borderColor: '#dee2e6',
-        borderRadius: 8,
-        backgroundColor: '#f8f9fa',
-        marginBottom: 15,
-    },
-    picker: {
-        height: 50,
-        width: '100%',
-        color: '#212529',
+        letterSpacing: 1,
     },
  
-    statusPending: {
-        color: '#dc3545', 
-        fontWeight: 'bold',
-    },
-     statusAssigned: {
-        color: '#117e8fff', 
-        fontWeight: 'bold',
-    },
-    statusInProgress: {
-        color: '#ffc107', 
-        fontWeight: 'bold',
-    },
-    statusCompleted: {
-        color: '#28a745', 
-        fontWeight: 'bold',
-    }
+    // Status
+    statusPending: { color: '#dc3545' },
+    statusAssigned: { color: '#17a2b8' },
+    statusInProgress: { color: '#ffc107' },
+    statusCompleted: { color: '#28a745' }
 });

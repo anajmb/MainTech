@@ -29,6 +29,15 @@ export default function Privacidade() {
   const canSubmit = currentPwd.trim() !== "" && newPwd.trim() !== "" && confirmPwd.trim() !== "";
 
   
+
+    const validarSenhaForte = (senha: string) => {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    return regex.test(senha);
+  };
+
+
 async function handleChangePassword() {
   if (!canSubmit) {
     return Alert.alert("Preencher campos", "Por favor preencha todos os campos para alterar a senha.");
@@ -38,8 +47,14 @@ async function handleChangePassword() {
     return Alert.alert("Senhas não conferem", "A nova senha e a confirmação devem ser iguais.");
   }
 
+  if (!validarSenhaForte(newPwd)) {
+    return Alert.alert(
+      "Senha fraca",
+      "A senha deve conter no mínimo:\n• 8 caracteres\n• 1 letra maiúscula\n• 1 número\n• 1 caractere especial"
+    );
+  }
+
   try {
-    // garante que o token esteja configurado no axios
     await getToken();
 
     const response = await api.put(`/employees/change-password/${user!.id}` , {

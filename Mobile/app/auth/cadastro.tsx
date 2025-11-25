@@ -39,18 +39,25 @@ export default function Cadastro() {
       .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
   };
 
-      const formatPhone = (value: string) => {
-        return value
-            .replace(/\D/g, "")
-            .replace(/^(\d{2})(\d)/g, "($1) $2")
-            .replace(/(\d{5})(\d)/, "$1-$2")
-            .slice(0, 15);
-    };
- 
+  const formatPhone = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/^(\d{2})(\d)/g, "($1) $2")
+      .replace(/(\d{5})(\d)/, "$1-$2")
+      .slice(0, 15);
+  };
+
 
   // Remove pontuações antes de enviar para API
   const limparCPF = (value: string) => value.replace(/\D/g, "");
   const limparTelefone = (value: string) => value.replace(/\D/g, "");
+
+  const validarSenhaForte = (senha: string) => {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    return regex.test(senha);
+  };
 
   const handleCadastro = async () => {
   if (!cpfData || !name || !email || !phone || !date || !password) {
@@ -58,19 +65,27 @@ export default function Cadastro() {
     return;
   }
 
-  const cpfLimpo = limparCPF(cpfData); // <= aqui!
+  if (!validarSenhaForte(password)) {
+    Alert.alert(
+      "Senha fraca",
+      "A senha deve conter no mínimo:\n• 8 caracteres\n• 1 letra maiúscula\n• 1 número\n• 1 caractere especial"
+    );
+    return;
+  }
 
-  setIsLoading(true);
+    const cpfLimpo = limparCPF(cpfData); // <= aqui!
 
-  try {
-    const res = await api.post("/employees/completeRegister", {
-      name,
-      cpf: cpfLimpo,   // <= agora envia sem pontos e hífen
-      email,
-      phone: limparTelefone(phone),
-      birthDate: date,
-      password,
-    });
+    setIsLoading(true);
+
+    try {
+      const res = await api.post("/employees/completeRegister", {
+        name,
+        cpf: cpfLimpo,   // <= agora envia sem pontos e hífen
+        email,
+        phone: limparTelefone(phone),
+        birthDate: date,
+        password,
+      });
 
       Alert.alert("Sucesso", "Cadastro feito com sucesso!", [
         {

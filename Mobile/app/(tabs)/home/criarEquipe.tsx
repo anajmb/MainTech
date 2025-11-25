@@ -138,6 +138,7 @@ export default function CriarEquipe() {
                     <Text style={TabsStyles.subtituloPrincipal}>Informe os dados da equipe</Text>
                 </View>
             </View>
+            <View style={TabsStyles.todosCard}>
 
             {/* Card de cadastro */}
             <View style={style.cardCriarEquipe}>
@@ -240,6 +241,7 @@ export default function CriarEquipe() {
                 )}
             </View>
 
+            </View>
         </ScrollView>
     )
 }

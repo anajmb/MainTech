@@ -74,6 +74,20 @@ export default function CadastrarUsuario() {
         fetchEmployees();
     }, []);
 
+
+    // Formata CPF
+    const formatCPF = (value: string) => {
+        return value
+            .replace(/\D/g, "")
+            .replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    };
+
+    // Remove a máscara
+    const limparCPF = (value: string) => value.replace(/\D/g, "");
+
+
     const handlePreRegister = async () => {
         if (!name || !cpfData || !cargo) {
             alert("Preencha todos os campos!");
@@ -83,7 +97,7 @@ export default function CadastrarUsuario() {
         try {
             await api.post('/employees/preRegister', {
                 name: name,
-                cpf: cpfData,
+                cpf: limparCPF(cpfData),
                 role: cargo,
             });
             alert("Usuário pré-cadastrado com sucesso!");
@@ -130,11 +144,14 @@ export default function CadastrarUsuario() {
                         <Text style={style.label}>CPF</Text>
                         <TextInput
                             style={style.input}
-                            placeholder="Digite o CPF"
+                            placeholder="___.___.___-__"
                             placeholderTextColor="#8B8686"
                             value={cpfData}
-                            onChangeText={setCpfData}
+                            onChangeText={(text) => setCpfData(formatCPF(text))}
+                            keyboardType="numeric"
+                            maxLength={14}
                         />
+
                     </View>
                     <View style={{ flex: 1 }}>
                         <Text style={style.labelCargo}>Cargo</Text>
