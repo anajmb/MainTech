@@ -109,6 +109,7 @@ export default function OrdemServico() {
                     <Text style={TabsStyles.subtituloPrincipal}>{ordem.machineName || "Detalhes"}</Text>
                 </View>
             </View>
+             <View style={TabsStyles.todosCard}>
 
             {/* --- MUDANÇA 4: Passando a prop 'onUpdate' correta --- */}
             {/* Agora o componente Relatorio tem o 'ordem' e a função 'handleUpdate' */}
@@ -118,7 +119,7 @@ export default function OrdemServico() {
 
             {/* --- MUDANÇA 5: Botões antigos REMOVIDOS --- */}
             {/* O componente 'Relatorio' agora cuida de todos os botões */}
-            
+            </View>
         </ScrollView>
     );
 };
