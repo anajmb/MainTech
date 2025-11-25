@@ -3,9 +3,10 @@ import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
 import { Wrench, UserPlus, Users, Scroll } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { useAuth } from "@/contexts/authContext";
 
 // mudar ou tirar icone dos times, pq esta vindo os mesmos para todas as equipes
 
@@ -21,7 +22,6 @@ export interface Employees {
     name: string;
     email: string;
 }
-
 
 
 export default function Equipes() {
@@ -40,29 +40,39 @@ export default function Equipes() {
     const [employeeValue, setEmployeeValue] = useState<number | null>(null);
     const [employeeItems, setEmployeeItems] = useState<{ label: string; value: number }[]>([]);
     const [feedback, setFeedback] = useState<string>("");
+    const { user } = useAuth();
 
+
+    
     async function fetchTeams() {
+        if (!user?.id) return;
+        
         try {
-            const res = await api.get('/team/get');
-            setTeamData(res.data);
+        const res = await api.get(`/team/getByUser/${user.id}`);
+
+        // getByUser retorna APENAS UMA equipe, então envolvemos em array
+        setTeamData([res.data]);
+
+    } catch (error) {
+        console.log("Erro ao buscar equipe do usuário:", error);
+    }
+} 
+
+useEffect(() => {
+    fetchTeams(); // agora busca só a equipe do usuário
+
+    async function fetchEmployees() {
+        try {
+            const res = await api.get('/employees/get');
+            setEmployeesData(res.data);
         } catch (error) {
             console.log(error);
         }
     }
 
-    useEffect(() => {
-        fetchTeams();
-        async function fetchEmployees() {
-            try {
-                const res = await api.get('/employees/get');
-                setEmployeesData(res.data);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchTeams();
-        fetchEmployees();
-    }, []);
+    fetchEmployees();
+}, []);
+
 
 
     useEffect(() => {

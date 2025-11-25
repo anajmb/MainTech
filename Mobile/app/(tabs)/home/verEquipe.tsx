@@ -16,10 +16,25 @@ export interface Team {
     person: {
       name: string;
       email: string;
-      role: string;
+      role: 'INSPECTOR' | 'MAINTAINER';
     };
   }[];
 }
+
+type Role = 'INSPECTOR' | 'MAINTAINER' | 'ADMIN' | string;
+
+export const formatRole = (role: Role): string => {
+    switch (role) {
+        case 'INSPECTOR':
+            return 'Inspetor';
+        case 'MAINTAINER':
+            return 'Manutentor';
+        case 'ADMIN':
+            return 'Administrador';
+        default:
+            return role || 'Desconhecido';
+    }
+};
 
 export default function VerEquipe() {
   const { user } = useAuth();
@@ -82,7 +97,7 @@ export default function VerEquipe() {
       <View style={TabsStyles.todosCard}>
         <View>
           <Text style={style.fraseEquipe}>
-            {getDescriptionByTeam(teamData?.name)}
+            {(teamData?.description)}
           </Text>
         </View>
 
@@ -104,7 +119,7 @@ export default function VerEquipe() {
               </View>
               <View style={style.tagCargo}>
                 <Text style={style.tagCargoText}>
-                  {member.person.role}
+                  {formatRole(member.person.role)}
                 </Text>
               </View>
               <TouchableOpacity style={style.menuIcon} onPress={() => { }}>

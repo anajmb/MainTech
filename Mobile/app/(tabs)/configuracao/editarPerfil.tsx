@@ -1,23 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import {Alert,Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Calendar, Camera, IdCard, Mail, Phone, User } from "lucide-react-native";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useAuth } from "@/contexts/authContext";
-
 import { api } from "@/lib/axios";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 

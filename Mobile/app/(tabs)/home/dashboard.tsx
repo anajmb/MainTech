@@ -72,26 +72,49 @@ export default function Dashboard() {
     const adminTotalTasks = tasks.length;
     const adminTasksCompleted = tasks.filter(t => t.status === "COMPLETED").length;
     const adminTaskPercent = adminTotalTasks > 0 ? (adminTasksCompleted / adminTotalTasks) * 100 : 0;
-
+    
     const adminTotalOS = serviceOrders.length;
     const adminOSCompletedCount = serviceOrders.filter(os => os.status === "COMPLETED").length;
-
+    
     // 2. Variáveis para INSPECTOR / MAINTAINER
     let userTotal = 0;
     let userCompleted = 0;
     let userLabelTotal = "";
-
+    
     // Para os gráficos do usuário
     let userGraphDataWeek = new Array(7).fill(0);
     let userPieData = [0, 0]; // [Concluídas, Pendentes]
+
+
+    function isInCurrentWeek(dateString: string) {
+
+        const date = new Date(dateString);
+        const now = new Date();
+
+        // Zerar horas para comparar apenas dias
+        const day = now.getDay(); // 0 = domingo
+        const diffToStart = day;
+        const diffToEnd = 6 - day;
+
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - diffToStart);
+        weekStart.setHours(0, 0, 0, 0);
+
+        const weekEnd = new Date(now);
+        weekEnd.setDate(now.getDate() + diffToEnd);
+        weekEnd.setHours(23, 59, 59, 999);
+
+        return date >= weekStart && date <= weekEnd;
+    }
 
     if (user?.role === 'INSPECTOR') {
         userTotal = tasks.length;
         userCompleted = tasks.filter(t => t.status === "COMPLETED").length;
         userLabelTotal = "Checklists";
 
+
         // Gráficos Inspector (Baseado em Tasks)
-        tasks.filter(t => t.status === "COMPLETED").forEach(t => {
+        tasks.filter(t => t.status === "COMPLETED" && isInCurrentWeek(t.updateDate)).forEach(t => {
             const day = new Date(t.updateDate).getDay();
             userGraphDataWeek[day] += 1;
         });
@@ -106,10 +129,11 @@ export default function Dashboard() {
         // Considera "Feito" se estiver CONCLUÍDO ou EM REVISÃO (trabalho entregue)
         userCompleted = serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW").length;
 
-        userLabelTotal = "ordens";
+        userLabelTotal = "Ordens";
 
         // Gráficos Maintainer (Baseado em OS)
-        serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW").forEach(os => {
+        serviceOrders.filter(os => os.status === "COMPLETED" || os.status === "IN_REVIEW"  &&
+      isInCurrentWeek(os.updatedAt)).forEach(os => {
             const day = new Date(os.updatedAt).getDay();
             userGraphDataWeek[day] += 1;
         });
@@ -127,7 +151,7 @@ export default function Dashboard() {
         // Admin vê tasks completas no gráfico (exemplo)
         (() => {
             let data = new Array(7).fill(0);
-            tasks.filter(t => t.status === "COMPLETED").forEach(t => {
+            tasks.filter(t => t.status === "COMPLETED" && isInCurrentWeek(t.updateDate)).forEach(t => {
                 data[new Date(t.updateDate).getDay()] += 1;
             });
             return data;
@@ -245,7 +269,7 @@ export default function Dashboard() {
                                 <Text style={styles.metricSub}>Finalizadas</Text>
                             </View>
                         </View>
-                        
+
                         <View style={styles.metricBox}>
                             <View style={styles.metricHeader}>
                                 <ClipboardList color="#D6231C" size={20} style={styles.metricIcon} />
@@ -257,7 +281,7 @@ export default function Dashboard() {
                             </View>
                         </View>
                     </View>
-                </> 
+                </>
             ) : (
                 /* === LAYOUT DO INSPETOR/MANUTENTOR (2 Cards) === */
                 <View style={styles.metricsRow}>
