@@ -19,7 +19,7 @@ export default function RedefinirSenha() {
 
             await api.post("/auth/send-code", { email }); 
             Alert.alert("Sucesso", "Código enviado para seu e-mail!");
-            router.push({ pathname: "/recuperarCodigo", params: { email } });
+            router.push({ pathname: "./recuperarCodigo", params: { email } });
 
         } catch (error) {
             console.log(error);
