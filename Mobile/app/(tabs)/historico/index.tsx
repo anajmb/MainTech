@@ -127,7 +127,7 @@ export default function Historico() {
 
 const style = StyleSheet.create({
     cardStats: {
-        backgroundColor: "#fff",
+        backgroundColor: '#eeeeee',
         borderRadius: 16,
         flexDirection: "row",
         justifyContent: "space-between",
@@ -135,10 +135,12 @@ const style = StyleSheet.create({
         paddingVertical: 18,
         paddingHorizontal: 24,
         marginHorizontal: 8,
-        marginTop: 18, marginBottom: 18,
+        marginTop: 18,
+        marginBottom: 30,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.10, shadowRadius: 4, elevation: 3,
+        
     },
     statsItem: {
         alignItems: "center",
@@ -155,11 +157,11 @@ const style = StyleSheet.create({
         color: "#888",
     },
     cardHistorico: {
-        backgroundColor: "#fff",
+        backgroundColor: '#eeeeee',
         borderRadius: 16,
         padding: 18,
         marginHorizontal: 8,
-        marginBottom: 18,
+        marginBottom: -5,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.10,
@@ -173,7 +175,7 @@ const style = StyleSheet.create({
         marginTop: -10,
     },
     subtituloHistorico: {
-        fontSize: 13.5,
+        fontSize: 13,
         color: "#888",
         marginTop: -8,
         marginLeft: 43,
