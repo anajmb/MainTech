@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../../lib/axios";
 import { useAuth } from "@/contexts/authContext";
+import TresPontinhos from "@/hooks/tresPontinhos";
 
 export interface Team {
   id: number;
@@ -24,16 +25,16 @@ export interface Team {
 type Role = 'INSPECTOR' | 'MAINTAINER' | 'ADMIN' | string;
 
 export const formatRole = (role: Role): string => {
-    switch (role) {
-        case 'INSPECTOR':
-            return 'Inspetor';
-        case 'MAINTAINER':
-            return 'Manutentor';
-        case 'ADMIN':
-            return 'Administrador';
-        default:
-            return role || 'Desconhecido';
-    }
+  switch (role) {
+    case 'INSPECTOR':
+      return 'Inspetor';
+    case 'MAINTAINER':
+      return 'Manutentor';
+    case 'ADMIN':
+      return 'Administrador';
+    default:
+      return role || 'Desconhecido';
+  }
 };
 
 export default function VerEquipe() {
@@ -83,8 +84,8 @@ export default function VerEquipe() {
               <Wrench color="white" />
             </View>
             <View>
-              <Text style={TabsStyles.tituloPrincipal}>
-                {teamData?.name || "Equipe"}
+              <Text style={style.tituloPrincipal}>
+                {teamData?.name}
               </Text>
               <Text style={TabsStyles.subtituloPrincipal}>
                 {teamData?.members?.length || 0} membros
@@ -113,18 +114,31 @@ export default function VerEquipe() {
                     .toUpperCase()}
                 </Text>
               </View>
+
               <View style={{ flex: 1 }}>
                 <Text style={style.nomeUsuario}>{member.person.name}</Text>
                 <Text style={style.emailUsuario}>{member.person.email}</Text>
               </View>
+
               <View style={style.tagCargo}>
                 <Text style={style.tagCargoText}>
                   {formatRole(member.person.role)}
                 </Text>
               </View>
-              <TouchableOpacity style={style.menuIcon} onPress={() => { }}>
-                <MoreVertical color="#000" size={16} />
-              </TouchableOpacity>
+
+              {user?.role === "ADMIN" && (
+                <View style={style.menuIcon}>
+                  <TresPontinhos
+                    memberId={member.id}
+                    onRemoved={() => {
+                      setTeamData((prev) => ({
+                        ...prev!,
+                        members: prev!.members.filter((m) => m.id !== member.id),
+                      }));
+                    }}
+                  />
+                </View>
+              )}
             </View>
           ))
         ) : (
@@ -149,10 +163,16 @@ const style = StyleSheet.create({
     alignItems: "center",
     marginRight: 4,
   },
+  tituloPrincipal: {
+    fontSize: 28,
+    flexWrap: "wrap",
+    width: "85%",
+    overflow: "hidden",
+  },
   fraseEquipe: {
     fontSize: 16,
     color: "#858585",
-    marginTop: 0,
+    marginBottom: 5,
     marginLeft: 15,
     marginRight: 15,
   },
@@ -167,7 +187,6 @@ const style = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 3,
-    marginTop: 30,
     marginLeft: 1,
     marginRight: 1,
     marginBottom: 5,
@@ -214,7 +233,7 @@ const style = StyleSheet.create({
   },
   menuIcon: {
     position: "absolute",
-    top: 10,
+    top: 8,
     right: 15,
   },
 });

@@ -1,85 +1,86 @@
 import { EllipsisVertical } from "lucide-react-native";
-import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Pressable } from "react-native";
+import React, { useState, useRef } from "react";
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, Modal } from "react-native";
+import { api } from "@/lib/axios";
 
-export default function TresPontinhos() {
+export default function TresPontinhos({
+  memberId,
+  onRemoved,
+}: {
+  memberId: number;
+  onRemoved?: () => void;
+}) {
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
 
-  const toggle = () => setOpen((v) => !v);
+  const iconRef = useRef<View>(null);
+
+  const removeMember = async () => {
+    try {
+      await api.delete(`/teamMember/delete/${memberId}`);
+      close();
+      if (onRemoved) onRemoved(); // remove da UI
+    } catch (error) {
+      console.log("Erro ao remover membro:", error);
+    }
+  };
+
+  const toggle = () => {
+    if (!open) {
+      iconRef.current?.measureInWindow((x, y, width, height) => {
+        setPos({
+          x: x - 100,
+          y: y + height + 5,
+        });
+      });
+    }
+    setOpen((v) => !v);
+  };
+
   const close = () => setOpen(false);
 
-  const handleRemover = () => {
-    // coloque aqui a lógica para remover membro
-    close();
-  };
-
-  const handleMudarEquipe = () => {
-    // coloque aqui a lógica para mudar de equipe
-    close();
-  };
-
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={toggle} style={styles.button} activeOpacity={0.7}>
-        <EllipsisVertical size={19} />
+    <View ref={iconRef}>
+      <TouchableOpacity onPress={toggle} style={{ padding: 4 }}>
+        <EllipsisVertical size={20} />
       </TouchableOpacity>
 
-      {open && (
-        <>
-          {/* backdrop para fechar ao tocar fora */}
-          <Pressable style={styles.backdrop} onPress={close} />
-
-          <View style={styles.menu}>
-            <TouchableOpacity onPress={handleRemover} style={styles.menuItem} activeOpacity={0.7}>
-              <Text style={styles.menuText}>Remover membro</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={handleMudarEquipe} style={styles.menuItem} activeOpacity={0.7}>
-              <Text style={styles.menuText}>Mudar de equipe</Text>
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
+      <Modal transparent visible={open} animationType="fade" onRequestClose={close}>
+        <Pressable style={styles.fullscreen} onPress={close} />
+        <View style={[styles.menu, { top: pos.y, left: pos.x }]}>
+          <TouchableOpacity style={styles.menuItem} onPress={removeMember}>
+            <Text style={styles.text}>Remover membro</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    position: "relative",
-  },
-  button: {
-    padding: 6,
-    // ajuste posicionamento se necessário
-  },
-  backdrop: {
+  fullscreen: {
     position: "absolute",
-    top: -1000, // cobre mais área para impedir toques indesejados (ajuste conforme necessidade)
-    left: -1000,
-    right: -1000,
-    bottom: -1000,
-    zIndex: 1,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   menu: {
     position: "absolute",
-    top: 28, // posiciona logo abaixo do botão
-    right: 0,
-    backgroundColor: "#E9E9E9",
-    borderRadius: 10,
-    paddingHorizontal: 10,
+    backgroundColor: "white",
+    borderRadius: 8,
     paddingVertical: 6,
-    zIndex: 2,
+    paddingHorizontal: 10,
     elevation: 6,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
-    shadowRadius: 4,
+    shadowRadius: 5,
+    zIndex: 999,
   },
   menuItem: {
     paddingVertical: 8,
-    paddingHorizontal: 6,
   },
-  menuText: {
+  text: {
     fontSize: 14,
     color: "#222",
   },

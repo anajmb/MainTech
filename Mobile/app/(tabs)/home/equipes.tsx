@@ -2,300 +2,286 @@ import SetaVoltar from "@/components/setaVoltar";
 import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
-import { Wrench, UserPlus, Users, Scroll } from "lucide-react-native";
-import { use, useEffect, useState } from "react";
-import DropDownPicker from 'react-native-dropdown-picker';
-import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { Wrench, UserPlus, Users } from "lucide-react-native";
+import { useEffect, useState } from "react";
+import DropDownPicker from "react-native-dropdown-picker";
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useAuth } from "@/contexts/authContext";
 
-// mudar ou tirar icone dos times, pq esta vindo os mesmos para todas as equipes
-
 export interface Team {
-    id: number;
-    name: string;
-    description: string;
-    members: any[];
+  id: number;
+  name: string;
+  description: string;
+  members: any[];
 }
 
 export interface Employees {
-    id: number;
-    name: string;
-    email: string;
+  id: number;
+  name: string;
+  email: string;
 }
 
-
 export default function Equipes() {
-    const [TeamData, setTeamData] = useState<Team[]>([]);
-    const [employeesData, setEmployeesData] = useState<Employees[]>([]);
-    const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-    const [selectedEmployee, setSelectedEmployee] = useState<Employees | null>(null);
-    // state antigo do Modal de equipe removido em favor do dropdown inline
-    const [modalEmployeeVisible, setModalEmployeeVisible] = useState(false);
-    // seleção de equipe usando DropDownPicker
-    const [teamOpen, setTeamOpen] = useState(false);
-    const [teamValue, setTeamValue] = useState<number | null>(null);
-    const [teamItems, setTeamItems] = useState<{ label: string; value: number }[]>([]);
-    // seleção de membro usando DropDownPicker (para ficar igual à página de máquinas)
-    const [employeeOpen, setEmployeeOpen] = useState(false);
-    const [employeeValue, setEmployeeValue] = useState<number | null>(null);
-    const [employeeItems, setEmployeeItems] = useState<{ label: string; value: number }[]>([]);
-    const [feedback, setFeedback] = useState<string>("");
-    const { user } = useAuth();
+  const { user } = useAuth();
 
+  // Equipe do usuário
+  const [userTeam, setUserTeam] = useState<Team | null>(null);
 
-    
-    async function fetchTeams() {
-        if (!user?.id) return;
-        
-        try {
-        const res = await api.get(`/team/getByUser/${user.id}`);
+  // Todas as equipes (para usar nos dropdowns)
+  const [allTeams, setAllTeams] = useState<Team[]>([]);
 
-        // getByUser retorna APENAS UMA equipe, então envolvemos em array
-        setTeamData([res.data]);
+  // Funcionários
+  const [employeesData, setEmployeesData] = useState<Employees[]>([]);
 
+  // Dropdown states
+  const [teamOpen, setTeamOpen] = useState(false);
+  const [employeeOpen, setEmployeeOpen] = useState(false);
+  const [teamItems, setTeamItems] = useState<any[]>([]);
+  const [employeeItems, setEmployeeItems] = useState<any[]>([]);
+
+  const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<number | null>(null);
+
+  const [feedback, setFeedback] = useState("");
+
+  // --------------------------------------------------------------------
+  // BUSCA APENAS A EQUIPE DO USUÁRIO
+  // --------------------------------------------------------------------
+  async function loadMyTeam() {
+    try {
+      const res = await api.get(`/team/getByUSer/${user?.id}`);
+      setUserTeam(res.data);
+    } catch (err) {
+      console.log("Erro ao buscar equipe do usuário:", err);
+    }
+  }
+
+  // --------------------------------------------------------------------
+  // BUSCA TODAS AS EQUIPES (só para mover/adicionar membros)
+  // --------------------------------------------------------------------
+  async function fetchAllTeams() {
+    try {
+      const res = await api.get("/team/get");
+      setAllTeams(res.data);
     } catch (error) {
-        console.log("Erro ao buscar equipe do usuário:", error);
+      console.log("Erro ao buscar equipes:", error);
     }
-} 
+  }
 
-useEffect(() => {
-    fetchTeams(); // agora busca só a equipe do usuário
-
-    async function fetchEmployees() {
-        try {
-            const res = await api.get('/employees/get');
-            setEmployeesData(res.data);
-        } catch (error) {
-            console.log(error);
-        }
+  // --------------------------------------------------------------------
+  // BUSCA TODOS OS FUNCIONÁRIOS
+  // --------------------------------------------------------------------
+  async function fetchEmployees() {
+    try {
+      const res = await api.get("/employees/get");
+      setEmployeesData(res.data);
+    } catch (error) {
+      console.log("Erro ao buscar funcionários:", error);
     }
+  }
 
+  useEffect(() => {
+    loadMyTeam();
+    fetchAllTeams();
     fetchEmployees();
-}, []);
+  }, []);
 
+  // Dropdown de equipes
+  useEffect(() => {
+    setTeamItems(allTeams.map(t => ({ label: t.name, value: t.id })));
+  }, [allTeams]);
 
+  // Dropdown de funcionários
+  useEffect(() => {
+    setEmployeeItems(
+      employeesData.map(e => ({
+        label: `${e.name} (${e.email})`,
+        value: e.id,
+      }))
+    );
+  }, [employeesData]);
 
-    useEffect(() => {
-        setTeamItems(TeamData.map(t => ({ label: t.name, value: t.id })));
-    }, [TeamData]);
-
-
-    useEffect(() => {
-        setEmployeeItems(employeesData.map(e => ({ label: `${e.name} (${e.email})`, value: e.id })));
-    }, [employeesData]);
-
-
-    useEffect(() => {
-        if (teamValue != null) {
-            const found = TeamData.find(t => t.id === teamValue) || null;
-            setSelectedTeam(found);
-        } else {
-            setSelectedTeam(null);
-        }
-    }, [teamValue, TeamData]);
-
-
-    useEffect(() => {
-        if (employeeValue != null) {
-            const found = employeesData.find(e => e.id === employeeValue) || null;
-            setSelectedEmployee(found);
-        } else {
-            setSelectedEmployee(null);
-        }
-    }, [employeeValue, employeesData]);
-
-    async function handleAddMember() {
-        if (!selectedTeam || !selectedEmployee) {
-            setFeedback("Selecione uma equipe e um membro.");
-            return;
-        }
-
-        console.log(selectedTeam, selectedEmployee);
-        try {
-            const res = await api.post("/teamMember/create", {
-                teamId: selectedTeam.id,
-                personId: selectedEmployee.id,
-            });
-            setFeedback(res.data.msg || "Membro adicionado!");
-
-            setSelectedTeam(null);
-            setSelectedEmployee(null);
-            // setTeamData(prev => prev.map(team => 
-            //     team.id === selectedTeam.id 
-            //     ? { ...team, members: [...team.members, selectedEmployee] } 
-            //     : team.members.find(m => m.id === selectedEmployee.id)? {...team, members: [...team.members.filter(m => m.id !== selectedEmployee.id)]} : team
-            // ));
-
-            fetchTeams();
-        } catch (error: any) {
-            setFeedback(error.response?.data?.msg || "Erro ao adicionar membro.");
-        }
-
+  // --------------------------------------------------------------------
+  // ADICIONAR MEMBRO (remove da equipe antiga antes)
+  // --------------------------------------------------------------------
+  async function handleAddMember() {
+    if (!selectedTeam || !selectedEmployee) {
+      setFeedback("Selecione uma equipe e um membro.");
+      return;
     }
 
+    try {
+      const oldTeam = allTeams.find(t =>
+        t.members.some(m => m.id === selectedEmployee)
+      );
 
-    return (
-        <ScrollView style={TabsStyles.container} >
+      // remover da equipe antiga
+      if (oldTeam) {
+        await api.delete("/teamMember/delete", {
+          data: {
+            teamId: oldTeam.id,
+            personId: selectedEmployee,
+          },
+        });
+      }
 
-            <View style={TabsStyles.headerPrincipal}>
-                <SetaVoltar />
+      // adicionar na nova
+      const res = await api.post("/teamMember/create", {
+        teamId: selectedTeam,
+        personId: selectedEmployee,
+      });
 
-                <View style={TabsStyles.conjHeaderPrincipal}>
-                    <View style={style.EquipesHeader}>
+      setFeedback(res.data.msg || "Membro movido com sucesso!");
 
-                        <Text style={TabsStyles.tituloPrincipal}>Equipes</Text>
+      await loadMyTeam();
+      await fetchAllTeams();
 
-                        <View style={style.buttonEquipes}>
+      setSelectedTeam(null);
+      setSelectedEmployee(null);
 
-                            <TouchableOpacity >
-                                <Link href={'/home/cadastrarUsuario'}>
-                                    <View style={style.iconeAcao}>
-                                        <UserPlus color="#fff" size={17} style={{ alignItems: "center" }} />
-                                    </View >
-                                </Link>
-                            </TouchableOpacity>
+    } catch (error: any) {
+      setFeedback(error.response?.data?.msg || "Erro ao adicionar membro.");
+    }
+  }
 
-                            <View style={style.iconeAcao}>
-                                <TouchableOpacity >
-                                    <Link href={'/home/criarEquipe'}>
-                                        <Users color="#fff" size={17} />
-                                    </Link>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <Text style={TabsStyles.subtituloPrincipal}>Gerencie suas equipes e membros</Text>
+  return (
+    <ScrollView style={TabsStyles.container}>
+      <View style={TabsStyles.headerPrincipal}>
+        <SetaVoltar />
+
+        <View style={TabsStyles.conjHeaderPrincipal}>
+          <View style={style.EquipesHeader}>
+            <Text style={TabsStyles.tituloPrincipal}>Equipes</Text>
+
+            <View style={style.buttonEquipes}>
+              <TouchableOpacity>
+                <Link href={"/home/cadastrarUsuario"}>
+                  <View style={style.iconeAcao}>
+                    <UserPlus color="#fff" size={17} />
+                  </View>
+                </Link>
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+                <Link href={"/home/criarEquipe"}>
+                  <View style={style.iconeAcao}>
+                    <Users color="#fff" size={17} />
+                  </View>
+                </Link>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Text style={TabsStyles.subtituloPrincipal}>
+            Gerencie suas equipes e membros
+          </Text>
+        </View>
+      </View>
+
+      {/* ------------------------- MINHA EQUIPE ------------------------- */}
+      <View style={TabsStyles.todosCard}>
+        <View style={style.card}>
+          <Text style={style.cardTitle}>Minha equipe</Text>
+
+          {userTeam ? (
+            <View style={{ marginTop: 20 }}>
+              <View style={style.groupEqui}>
+                <View style={style.iconeEquipe}>
+                  <Wrench color="white" />
                 </View>
 
-            </View>
-
-
-            {/* input data */}
-            <View style={TabsStyles.todosCard}>
-                <View style={style.card}>
-                    <ScrollView>
-                        <View>
-                            <Text style={style.cardTitle}>Minha equipe</Text>
-                        </View>
-
-                        {TeamData.map((team) => (
-                            <View key={team.id} style={{ marginTop: 20 }}>
-                                <View style={style.groupEqui}>
-
-                                    <View style={style.iconeEquipe}>
-                                        <Wrench color="white" />
-                                    </View>
-
-                                    <View style={style.infoEqui}>
-                                        <Text style={style.tituloEqui}>{team.name}</Text>
-                                        <Text style={style.descricaoEqui}>{team.description}</Text>
-
-                                    </View>
-                                </View>
-
-                                <View style={style.footerCard}>
-                                    <Text style={style.quantMembro}>
-                                        {team.members ? team.members.length : 0} membros
-                                    </Text>
-
-                                    < TouchableOpacity>
-                                        <Link href={`/home/verEquipe?teamId=${team.id}`}>
-                                            <View>
-                                                <Text style={style.verEquipe}>Ver equipe</Text>
-
-                                            </View>
-                                        </Link>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        ))}
-
-                    </ScrollView>
-
+                <View style={style.infoEqui}>
+                  <Text style={style.tituloEqui}>{userTeam.name}</Text>
+                  <Text style={style.descricaoEqui}>{userTeam.description}</Text>
                 </View>
+              </View>
 
+              <View style={style.footerCard}>
+                <Text style={style.quantMembro}>
+                  {userTeam.members.length} membros
+                </Text>
 
-
-
-                {/* card adicionar membro */}
-                <ScrollView nestedScrollEnabled>
-                    <View style={style.cardAdicionar}>
-                        <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
-                        <View style={{ marginTop: 12 }}>
-                            <Text style={style.labelAdicionar}>Nome da equipe:</Text>
-                            <DropDownPicker
-                                open={teamOpen}
-                                value={teamValue}
-                                items={teamItems}
-                                setOpen={setTeamOpen}
-                                setValue={setTeamValue}
-                                setItems={setTeamItems}
-                                placeholder="Selecione a equipe"
-                                style={style.inputAdicionar}
-                                dropDownContainerStyle={{
-                                    backgroundColor: '#e6e6e6',
-                                    borderRadius: 10,
-                                    borderColor: 'transparent',
-                                    maxHeight: 300,
-                                }}
-                                listMode="SCROLLVIEW"
-                                scrollViewProps={{
-                                    nestedScrollEnabled: true,
-                                }}
-                                placeholderStyle={{ color: '#6c6c6c' }}
-                                disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                                textStyle={{ color: teamValue ? '#000' : '#6c6c6c' }}
-                                zIndex={1000}
-                                zIndexInverse={999}
-                            />
-                        </View>
-                        <View style={{ marginTop: 12, marginBottom: 4 }}>
-                            <Text style={style.labelAdicionar}>Membro:</Text>
-                            <DropDownPicker
-                                open={employeeOpen}
-                                value={employeeValue}
-                                items={employeeItems}
-                                setOpen={setEmployeeOpen}
-                                setValue={setEmployeeValue}
-                                setItems={setEmployeeItems}
-                                placeholder="Selecione o membro"
-                                style={[style.inputAdicionar, { borderWidth: 0, borderColor: 'transparent' }]}
-                                dropDownContainerStyle={{
-                                    backgroundColor: '#e6e6e6',
-                                    borderRadius: 10,
-                                    borderColor: 'transparent',
-                                    maxHeight: 100,
-                                }}
-                                listMode="SCROLLVIEW"
-                                scrollViewProps={{
-                                    nestedScrollEnabled: true,
-                                }}
-                                dropDownDirection="BOTTOM"
-                                placeholderStyle={{ color: '#6c6c6c' }}
-                                disabledItemLabelStyle={{ color: '#6c6c6c' }}
-                                textStyle={{ color: employeeValue ? '#000' : '#6c6c6c' }}
-                                zIndex={1000}
-                                zIndexInverse={999}
-
-                            />
-                        </View>
-                        <TouchableOpacity onPress={handleAddMember}>
-                            <View style={{ alignItems: "center", marginTop: 18 }}>
-                                <View style={style.botaoAdicionar}>
-                                    <Text style={style.textoBotaoAdicionar}>Adicionar membro</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                        {feedback ? (
-                            <Text style={{ color: feedback.includes("Erro") ? "red" : "green", marginTop: 10, textAlign: "center" }}>
-                                {feedback}
-                            </Text>
-                        ) : null}
-                    </View>
-                </ScrollView>
+                <TouchableOpacity>
+                  <Link href={`/home/verEquipe?teamId=${userTeam.id}`}>
+                    <Text style={style.verEquipe}>Ver equipe</Text>
+                  </Link>
+                </TouchableOpacity>
+              </View>
             </View>
-        </ScrollView >
-    )
+          ) : (
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              Você não está em nenhuma equipe
+            </Text>
+          )}
+        </View>
+
+        {/* --------------------- ADICIONAR MEMBRO ----------------------- */}
+        <View style={style.cardAdicionar}>
+          <Text style={style.tituloAdicionar}>Adicionar Membro</Text>
+
+          <Text style={style.labelAdicionar}>Nome da equipe:</Text>
+
+          <DropDownPicker
+            open={teamOpen}
+            value={selectedTeam}
+            items={teamItems}
+            setOpen={setTeamOpen}
+            setValue={setSelectedTeam}
+            setItems={setTeamItems}
+            placeholder="Selecione a equipe"
+            style={style.inputAdicionar}
+            dropDownContainerStyle={{
+              backgroundColor: "#e6e6e6",
+              borderRadius: 10,
+              borderColor: "transparent",
+            }}
+            zIndex={1000}
+            zIndexInverse={999}
+          />
+
+          <Text style={[style.labelAdicionar, { marginTop: 12 }]}>Membro:</Text>
+
+          <DropDownPicker
+            open={employeeOpen}
+            value={selectedEmployee}
+            items={employeeItems}
+            setOpen={setEmployeeOpen}
+            setValue={setSelectedEmployee}
+            setItems={setEmployeeItems}
+            placeholder="Selecione o membro"
+            style={style.inputAdicionar}
+            dropDownContainerStyle={{
+              backgroundColor: "#e6e6e6",
+              borderRadius: 10,
+              borderColor: "transparent",
+            }}
+            zIndex={999}
+            zIndexInverse={1000}
+          />
+
+          <TouchableOpacity onPress={handleAddMember}>
+            <View style={{ alignItems: "center", marginTop: 22 }}>
+              <View style={style.botaoAdicionar}>
+                <Text style={style.textoBotaoAdicionar}>Adicionar membro</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          {feedback ? (
+            <Text
+              style={{
+                color: feedback.includes("Erro") ? "red" : "green",
+                marginTop: 10,
+                textAlign: "center",
+              }}
+            >
+              {feedback}
+            </Text>
+          ) : null}
+        </View>
+      </View>
+    </ScrollView>
+  );
 }
 
 const style = StyleSheet.create({
