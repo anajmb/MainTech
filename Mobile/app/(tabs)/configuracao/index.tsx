@@ -87,8 +87,6 @@ export default function Configuracao() {
         }
     };
 
-    console.log("Usuário no Configuração:", user);
-
     return (
 
 

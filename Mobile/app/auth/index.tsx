@@ -85,7 +85,6 @@ export default function Login() {
         await AsyncStorage.setItem("keepConnected", isAgree ? "true" : "false");
         await AsyncStorage.setItem("user", JSON.stringify(user));
         await AsyncStorage.setItem("token", token);
-        console.log("Usuário salvo:", user);
       } else {
         console.warn("⚠️ Nenhum usuário retornado. Verifique o backend do login.");
       }
