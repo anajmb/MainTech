@@ -1,3 +1,4 @@
+// ...existing code...
 import Logo from "@/components/logo";
 import SetaVoltar from "@/components/setaVoltar"; // ❗️ Verifique se a importação está correta (com ou sem {})
 import { TabsStyles } from "@/styles/globalTabs";
@@ -118,16 +119,16 @@ export default function Documento() {
         </View>
       </View>
 
-
+      {/* filtro atualizado com mesma estilização do componente "Tarefas" */}
       <View style={styles.filtro}>
         <TouchableOpacity onPress={() => setFiltro("todas")}>
-          <Text style={[styles.filtroTitulo, filtro === "todas" && { color: "#fff", backgroundColor: "#CF0000" }]}>Todas</Text>
+          <Text style={[styles.filtroTitulo, filtro === "todas" && styles.filtroAtivo]}>Todas</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setFiltro("analise")}>
-          <Text style={[styles.filtroTitulo, filtro === "analise" && { color: "#fff", backgroundColor: "#CF0000" }]}>Em análise</Text>
+          <Text style={[styles.filtroTitulo, filtro === "analise" && styles.filtroAtivo]}>Em análise</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setFiltro("concluida")}>
-          <Text style={[styles.filtroTitulo, filtro === "concluida" && { color: "#fff", backgroundColor: "#CF0000" }]}>Concluídas</Text>
+          <Text style={[styles.filtroTitulo, filtro === "concluida" && styles.filtroAtivo]}>Concluídas</Text>
         </TouchableOpacity>
       </View>
 
@@ -164,7 +165,7 @@ export default function Documento() {
                     </View>
                   </View>
                   <Text style={[styles.statusText, getStatusStyle(ordem.status)]}>
-                    {formatRole(ordem.status)}
+                    {formatRole(ordem.status as any)}
                   </Text>
                 </View>
 
@@ -186,24 +187,32 @@ export default function Documento() {
   );
 }
 
-// (Os estilos são os mesmos que você me enviou na outra mensagem)
+// (Os estilos foram alinhados com os do componente "Tarefas")
 const styles = StyleSheet.create({
-  
   filtro: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 30,
+    marginBottom: 50,
     marginTop: 5,
     backgroundColor: "#eeeeee",
-    paddingVertical: 18,
+    paddingVertical: 25,
     borderRadius: 12,
-    paddingHorizontal: 5,
-    elevation: 2,
+    paddingHorizontal: 45,
+    // sombra idêntica ao filtro de "Tarefas"
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   filtroTitulo: {
     padding: 10,
     borderRadius: 20,
     paddingHorizontal: 20,
+  },
+  filtroAtivo: {
+    color: "#fff",
+    backgroundColor: "#CF0000"
   },
   documentosList: {
     gap: 20,
@@ -281,3 +290,4 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   }
 });
+// ...existing
