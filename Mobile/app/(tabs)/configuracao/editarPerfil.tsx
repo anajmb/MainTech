@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {Alert,Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Calendar, Camera, IdCard, Mail, Phone, User } from "lucide-react-native";
 import SetaVoltar from "@/components/setaVoltar";
@@ -7,6 +7,8 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import ToastManager, { Toast } from 'toastify-react-native'
+
 
 export default function EditarPerfil() {
   const [image, setImage] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export default function EditarPerfil() {
         setImage(data.photo || null);
       } catch (error) {
         console.log("Erro ao carregar dados do usuário:", error);
-        Alert.alert("Erro", "Não foi possível carregar os dados do perfil.");
+        Toast.error("Não foi possível carregar os dados do perfil.");
       }
     }
     loadUserData();
@@ -75,7 +77,7 @@ export default function EditarPerfil() {
 
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") return Alert.alert("Permissão necessária", "Precisamos da permissão da galeria!");
+    if (status !== "granted") return Toast.error("Precisamos da permissão da galeria!");
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, allowsEditing: true, aspect: [1, 1], quality: 1 });
     if (!result.canceled && result.assets.length > 0) {
       const uri = result.assets[0].uri;
@@ -86,7 +88,7 @@ export default function EditarPerfil() {
 
   const takePhotoWithCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") return Alert.alert("Permissão necessária", "Precisamos da permissão da câmera!");
+    if (status !== "granted") return Toast.error("Precisamos da permissão da câmera!");
     const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [1, 1], quality: 1 });
     if (!result.canceled && result.assets.length > 0) {
       const uri = result.assets[0].uri;
@@ -141,7 +143,7 @@ export default function EditarPerfil() {
 
   const savePhotoAutomatically = async (uri: string) => {
     if (!user?.id) {
-      Alert.alert("Erro", "Usuário não encontrado para salvar a foto.");
+      Toast.error("Usuário não encontrado para salvar a foto.");
       return;
     }
 
@@ -167,12 +169,12 @@ export default function EditarPerfil() {
 
     } catch (error) {
       console.log("Erro ao atualizar foto automaticamente:", error);
-      Alert.alert("Erro", "Não foi possível atualizar a foto do perfil.");
+      Toast.error("Não foi possível atualizar a foto do perfil.");
     }
   };
 
   async function handleSave() {
-    if (!canSave || !user?.id) return Alert.alert("Erro", "Preencha todos os campos corretamente antes de salvar.");
+    if (!canSave || !user?.id) return Toast.error("Preencha todos os campos corretamente antes de salvar.");
 
     try {
       let base64Image = image;
@@ -199,10 +201,10 @@ export default function EditarPerfil() {
         photo: base64Image || undefined,
       });
 
-      Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
+      Toast.success("Perfil atualizado com sucesso!");
     } catch (error) {
       console.log("Erro ao atualizar perfil:", error);
-      Alert.alert("Erro", "Não foi possível atualizar o perfil.");
+      Toast.error("Não foi possível atualizar o perfil.");
     }
   }
 

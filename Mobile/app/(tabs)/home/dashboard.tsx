@@ -19,7 +19,7 @@ interface ServiceOrder {
     id: number;
     status: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED';
     updatedAt: string;
-    maintainerId?: number; // Adicionado para garantir tipagem
+    maintainerId?: number;
 }
 
 export default function Dashboard() {

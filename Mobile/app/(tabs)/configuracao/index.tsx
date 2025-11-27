@@ -8,6 +8,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/contexts/authContext";
 import Logo from "@/components/logo";
+import { Toast } from "toastify-react-native";
 
 export default function Configuracao() {
 
@@ -30,7 +31,7 @@ export default function Configuracao() {
 
         } catch (error) {
             console.error('Erro ao fazer logout:', error);
-            Alert.alert('Erro', 'Não foi possível sair, tente novamente.');
+            Toast.error('Não foi possível sair, tente novamente.');
         }
     };
 
@@ -61,7 +62,7 @@ export default function Configuracao() {
         if (inAppNotificationsEnabled) {
             setInAppNotificationsEnabled(false);
             await AsyncStorage.setItem('notificationsEnabled', 'false');
-            Alert.alert("Notificações Desativadas", "Você não receberá mais notificações.");
+            Toast.warn("Você não receberá mais notificações.");
             return;
         }
 
@@ -72,12 +73,12 @@ export default function Configuracao() {
             if (newStatus === 'granted') {
                 setInAppNotificationsEnabled(true);
                 await AsyncStorage.setItem('notificationsEnabled', 'true');
-                Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+                Toast.success("Você voltará a receber notificações.");
             }
         } else if (status === 'granted') {
             setInAppNotificationsEnabled(true);
             await AsyncStorage.setItem('notificationsEnabled', 'true');
-            Alert.alert("Notificações Ativadas", "Você voltará a receber notificações.");
+            Toast.success("Você voltará a receber notificações.");
         } else {
             Alert.alert(
                 "Ação Necessária",
@@ -91,7 +92,7 @@ export default function Configuracao() {
 
 
         <ScrollView style={TabsStyles.container} contentContainerStyle={{ paddingBottom: 120 }}>
- <Logo />
+            <Logo />
             <View style={TabsStyles.headerPrincipal}>
                 <View>
                     <SetaVoltar />

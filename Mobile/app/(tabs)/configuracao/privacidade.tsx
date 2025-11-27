@@ -6,6 +6,7 @@ import { use, useState } from "react";
 import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
 import { getToken } from "@/lib/auth";
+import { Toast } from "toastify-react-native";
 
 const dicasDeSeguranca = [
   "Use senhas únicas e complexas;",
@@ -19,7 +20,7 @@ export default function Privacidade() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   // valores dos inputs
   const [currentPwd, setCurrentPwd] = useState("");
@@ -28,9 +29,10 @@ export default function Privacidade() {
 
   const canSubmit = currentPwd.trim() !== "" && newPwd.trim() !== "" && confirmPwd.trim() !== "";
 
-  
+  const [erroMsg, setErroMsg] = useState("");
 
-    const validarSenhaForte = (senha: string) => {
+
+  const validarSenhaForte = (senha: string) => {
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -38,45 +40,44 @@ export default function Privacidade() {
   };
 
 
-async function handleChangePassword() {
-  if (!canSubmit) {
-    return Alert.alert("Preencher campos", "Por favor preencha todos os campos para alterar a senha.");
+  async function handleChangePassword() {
+    if (!canSubmit) {
+      return Toast.error("Preencha todos os campos para alterar a senha.");
+    }
+
+    if (newPwd !== confirmPwd) {
+      return Toast.error("A nova senha e a confirmação devem ser iguais.");
+    }
+
+    // aparecer como uma mensagem
+    if (!validarSenhaForte(newPwd)) {
+      return setErroMsg(
+        "A senha deve conter no mínimo:\n• 8 caracteres\n• 1 letra maiúscula\n• 1 número\n• 1 caractere especial"
+      );
+    }
+
+    try {
+      await getToken();
+
+      const response = await api.put(`/employees/change-password/${user!.id}`, {
+        currentPassword: currentPwd,
+        newPassword: newPwd,
+      });
+
+      Toast.success("Senha alterada com sucesso.");
+      setCurrentPwd("");
+      setNewPwd("");
+      setConfirmPwd("");
+      setShowCurrent(false);
+      setShowNew(false);
+      setShowConfirm(false);
+    } catch (error: any) {
+      console.log("Erro ao alterar senha:", error.response?.data || error.message);
+      Toast.error(
+        error.response?.data?.msg || "Ocorreu um erro ao tentar alterar a senha."
+      );
+    }
   }
-
-  if (newPwd !== confirmPwd) {
-    return Alert.alert("Senhas não conferem", "A nova senha e a confirmação devem ser iguais.");
-  }
-
-  if (!validarSenhaForte(newPwd)) {
-    return Alert.alert(
-      "Senha fraca",
-      "A senha deve conter no mínimo:\n• 8 caracteres\n• 1 letra maiúscula\n• 1 número\n• 1 caractere especial"
-    );
-  }
-
-  try {
-    await getToken();
-
-    const response = await api.put(`/employees/change-password/${user!.id}` , {
-      currentPassword: currentPwd,
-      newPassword: newPwd,
-    });
-
-    Alert.alert("Sucesso", "Senha alterada com sucesso.");
-    setCurrentPwd("");
-    setNewPwd("");
-    setConfirmPwd("");
-    setShowCurrent(false);
-    setShowNew(false);
-    setShowConfirm(false);
-  } catch (error: any) {
-    console.log("Erro ao alterar senha:", error.response?.data || error.message);
-    Alert.alert(
-      "Erro",
-      error.response?.data?.msg || "Ocorreu um erro ao tentar alterar a senha."
-    );
-  }
-}
 
 
   return (
@@ -100,7 +101,7 @@ async function handleChangePassword() {
               <Text style={styles.cardSubtitle}>Seus dados estão protegidos conosco</Text>
             </View>
           </View>
-        
+
           <View style={styles.statsContainer}>
           </View>
         </View>
@@ -146,6 +147,12 @@ async function handleChangePassword() {
               {showNew ? <EyeOff color="#666" size={20} /> : <Eye color="#666" size={20} />}
             </TouchableOpacity>
           </View>
+
+          {erroMsg && (
+            <View style={TabsStyles.erroMsg}>
+              {erroMsg}
+            </View>
+          )}
 
           <Text style={styles.inputLabel}>Confirmar nova senha</Text>
           <View style={styles.inputWrapper}>
@@ -210,7 +217,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: -10,
-    
+
   },
   cardIconContainer: {
     backgroundColor: 'rgba(46, 125, 50, 0.1)',
@@ -273,12 +280,12 @@ const styles = StyleSheet.create({
     color: "#555",
     marginBottom: 8,
     marginTop: 12,
-    
+
   },
   inputWrapper: {
     position: 'relative',
     marginBottom: 4,
-    
+
   },
   textInput: {
     borderRadius: 8,
@@ -296,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
+
   tipItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -330,4 +337,4 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     textAlign: "center",
   },
-});''
+}); ''
