@@ -160,6 +160,7 @@ export default function FazerTarefa() {
                 setSelectionsBySet(selections);
             } catch (e) {
                 console.error("Falha ao atualizar seleções:", e);
+                // Não precisa de alert, pois o erro é interno na navegação
             }
         }
     }, [updatedSelections]);
@@ -229,15 +230,28 @@ export default function FazerTarefa() {
             return;
         }
 
+        // --- INÍCIO DA ALTERAÇÃO: LÓGICA DO PAYLOAD "MACHINE OK" ---
+
+        let payloadToSend: any = result;
+        let successMessage = "Inspeção enviada e tarefa concluída.";
+
+        // Se o array 'result' estiver vazio, significa que não há avarias
+        if (result.length === 0) {
+            payloadToSend = "machine ok";
+            successMessage = "Inspeção concluída: Máquina em perfeito estado.";
+        }
+
         const dataToSend = {
             machineId: machineData.id,
             machineName: machineData.name,
             location: machineData.location,
             priority: selectedPrioridade,
-            payload: result,
+            payload: payloadToSend, // Pode ser o array de avarias ou "machine ok"
             inspectorId: inspectorId,
             inspectorName: inspectorName,
         };
+
+        // --- FIM DA ALTERAÇÃO ---
 
         console.log("Enviando:", dataToSend);
 
@@ -250,7 +264,7 @@ export default function FazerTarefa() {
                 await api.patch(`/tasks/complete/${taskId}`);
             }
 
-            Alert.alert("Sucesso", res.data?.msg || "Inspeção enviada e tarefa concluída.");
+            Alert.alert("Sucesso", res.data?.msg || successMessage);
             
             router.push('/(tabs)/tarefas');
 
@@ -385,8 +399,6 @@ export default function FazerTarefa() {
         </ScrollView>
     );
 }
-
-
 
 
 const styles = StyleSheet.create({
