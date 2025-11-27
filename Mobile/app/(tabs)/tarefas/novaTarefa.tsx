@@ -92,7 +92,13 @@ export default function NovaTarefa() {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.log("Erro ao criar tarefa:", errorData);
-                alert("Erro ao criar tarefa!");
+
+                const errorMessage = errorData.msg
+                    ? errorData.msg
+                    : "Erro desconhecido ao tentar criar a tarefa.";
+
+                alert(errorMessage);
+
                 return;
             }
 
