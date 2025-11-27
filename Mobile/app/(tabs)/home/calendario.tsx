@@ -45,6 +45,13 @@ export default function AgendaScreen() {
   const [filteredItems, setFilteredItems] = useState<CalendarItem[]>([]);
   const { user } = useAuth();
 
+  const toLocalISO = (dateStr: string) => {
+    const d = new Date(dateStr);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split("T")[0];
+  };
+
+
   useEffect(() => {
     fetchItems();
   }, []);
@@ -87,7 +94,7 @@ export default function AgendaScreen() {
       const date = new Date(dateStr);
       if (isNaN(date.getTime())) return;
 
-      const isoDate = date.toISOString().split("T")[0];
+      const isoDate = toLocalISO(dateStr);
       const isOverdue = new Date() > date;
       const isSelected = selected === isoDate;
 
@@ -110,8 +117,7 @@ export default function AgendaScreen() {
 
     const filtered = items.filter((item) => {
       const dateStr = "expirationDate" in item ? item.expirationDate : item.createdAt;
-      if (!dateStr) return false;
-      return new Date(dateStr).toISOString().split("T")[0] === day.dateString;
+      return toLocalISO(dateStr) === day.dateString;
     });
 
     setFilteredItems(filtered);
