@@ -6,6 +6,13 @@ import { useAuth } from "@/contexts/authContext";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 
+interface Subset {
+  id: number;
+  name: string;
+  changes: boolean;
+  repairs: boolean;
+}
+
 interface MachineTask {
   id: number;
   title: string;
@@ -24,6 +31,7 @@ interface MachineSet {
   machineId: number | null;
   createDate: string;
   updateDate: string;
+  subsets: Subset[]; 
 }
 
 interface Machines {
@@ -35,8 +43,8 @@ interface Machines {
   temperature: number | null;
   createDate: string;
   updateDate: string;
-  sets: MachineSet[];   // Array de MachineSet
-  tasks: MachineTask[]; // Array de MachineTask
+  sets: MachineSet[]; 
+  tasks: MachineTask[];
 }
 
 export default function InfosMaquina() {
@@ -57,12 +65,25 @@ export default function InfosMaquina() {
         setMachineData(res.data);
 
       } catch (error) {
-        console.log(error);
+        console.log("Erro ao carregar máquina:", error);
       }
     }
 
     loadMachineById();
   }, [info.id]);
+
+  const pendingTasks = machineData?.tasks?.filter(task => task.status === "PENDING") || [];
+  const hasPendingTasks = pendingTasks.length > 0;
+  const firstPendingTask = hasPendingTasks ? pendingTasks[0] : null;
+
+  useEffect(() => {
+    if (firstPendingTask) {
+        console.log("DEBUG: Tarefa PENDENTE encontrada. ID a ser enviado:", firstPendingTask.id);
+    } else {
+        console.log("DEBUG: Nenhuma tarefa PENDENTE encontrada para envio.");
+    }
+  }, [firstPendingTask]);
+
 
   return (
     <View style={styles.container}>
@@ -73,129 +94,133 @@ export default function InfosMaquina() {
           <Text style={TabsStyles.subtituloPrincipal}>Atualize suas informações</Text>
         </View>
       </View>
-      {machineData ? (
-        <>
-          {/* Mudei aqui: card agora segue padrão dos outros cards do app */}
-          <View style={styles.cardInfoMaquina}>
-            <Text style={styles.fieldsTitle}>Nome da máquina</Text>
-            <Text style={styles.fieldsContent}>{machineData.name}</Text>
+      <ScrollView>
+        {machineData ? (
+          <>
+            <View style={styles.cardInfoMaquina}>
+              <Text style={styles.fieldsTitle}>Nome da máquina</Text>
+              <Text style={styles.fieldsContent}>{machineData.name}</Text>
 
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 1, padding: 5 }}>
-              <View style={{ alignItems: "center", width: "50%" }}>
-                <Text style={styles.fieldsTitle} >Ultima atualização</Text>
-                <Text style={styles.fieldsContent}>
-                  {new Date(machineData.updateDate).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })}
-                </Text>
-              </View>
-              <View style={{ alignItems: "center", width: "50%" }}>
-                <Text style={styles.fieldsTitle}>Conjuntos</Text>
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
-                  <Text style={styles.fieldsContentInspe}>
-                    {selectedSet ? selectedSet.name : `Ver conjuntos`}
+              <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 1, padding: 5 }}>
+                <View style={{ alignItems: "center", width: "50%" }}>
+                  <Text style={styles.fieldsTitle} >Ultima atualização</Text>
+                  <Text style={styles.fieldsContent}>
+                    {new Date(machineData.updateDate).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
                   </Text>
-                </TouchableOpacity>
-                <Modal
-                  visible={modalVisible}
-                  transparent
-                  animationType="fade"
-                  onRequestClose={() => setModalVisible(false)}
-                >
-                  <View style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "rgba(0,0,0,0.3)"
-                  }}>
-                    <View style={{
-                      backgroundColor: "#eeeeeee", // Mudei aqui: fundo branco igual aos outros cards
-                      borderRadius: 16,        // Mudei aqui: borda arredondada igual aos outros cards
-                      padding: 24,
-                      minWidth: 270,
-                      maxHeight: 340,
-                      elevation: 4,
-                      shadowColor: "#000",
-                      shadowOpacity: 0.08,
-                      shadowRadius: 8,
-                    }}>
-                      <Text style={{ fontSize: 20, marginBottom: 10 }}>Conjuntos desta máquina:</Text>
-                      <ScrollView>
-                        {machineData.sets.map((set: any) => (
-                          <View
-                            key={set.id}
-                            style={{
-                              padding: 10,
-                              borderBottomWidth: 1,
-                              borderColor: "#e6e6e6",
-                            }}
-                          >
-                            <Text style={{ fontSize: 15 }}>{set.name}</Text>
-                          </View>
-                        ))}
-                      </ScrollView>
-                      <TouchableOpacity
-                        style={{
-                          marginTop: 16,
-                          alignSelf: "center",
-                          backgroundColor: "#A50702",
-                          paddingVertical: 12, // aumentei a altura do botão
-                          paddingHorizontal: 32, // aumentei a largura do botão
-                          borderRadius: 12,
-                        }}
-                        onPress={() => setModalVisible(false)}
-                      >
-                        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Fechar</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </Modal>
-              </View>
-            </View>
-
-            <Text style={styles.fieldsTitle}>Descrição:</Text>
-            <Text style={styles.fieldsContent}>{machineData.description}</Text>
-
-            <Text style={styles.fieldsTitle}>Temperatura:</Text>
-            <Text style={styles.fieldsContent}>{machineData.temperature} °C</Text>
-
-            {machineData.tasks && machineData.tasks.length > 0 ? (
-              <>
-                <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
-                {user?.role === "INSPECTOR" ? (
-                  <Link
-                    href={{
-                      pathname: '/(tabs)/tarefas/fazerTarefaInspe',
-                      params: { codigo: codigo }
-                    }}
-                    asChild
+                </View>
+                <View style={{ alignItems: "center", width: "50%" }}>
+                  <Text style={styles.fieldsTitle}>Conjuntos</Text>
+                  <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Text style={styles.fieldsContentInspe}>
+                      {selectedSet ? selectedSet.name : `Ver conjuntos`}
+                    </Text>
+                  </TouchableOpacity>
+                  <Modal
+                    visible={modalVisible}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setModalVisible(false)}
                   >
-                    <TouchableOpacity>
-                      <Text style={styles.fieldsContentInspe}>
-                        Clique aqui para realizar {machineData.tasks.length > 1 ? "tarefas" : "tarefa"}
-                      </Text>
-                    </TouchableOpacity>
-                  </Link>
-                ) : (
-                  <View style={{ alignItems: "center" }}>
-                    {machineData.tasks.map((task) => (
-                      <Text key={task.id} style={styles.fieldsContent}>
-                        {task.title}
-                      </Text>
-                    ))}
-                  </View>
-                )}
-              </>
-            ) : (
-              <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
-            )}
-          </View>
-        </>
-      ) : (
-        <Text style={{ alignSelf: "center" }}>Carregando...</Text>
-      )}
+                    <View style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "rgba(0,0,0,0.3)"
+                    }}>
+                      <View style={{
+                        backgroundColor: "#eeeeee",
+                        borderRadius: 16,
+                        padding: 24,
+                        minWidth: 270,
+                        maxHeight: 340,
+                        elevation: 4,
+                        shadowColor: "#000",
+                        shadowOpacity: 0.08,
+                        shadowRadius: 8,
+                      }}>
+                        <Text style={{ fontSize: 20, marginBottom: 10 }}>Conjuntos desta máquina:</Text>
+                        <ScrollView>
+                          {machineData.sets.map((set: MachineSet) => ( 
+                            <View
+                              key={set.id}
+                              style={{
+                                padding: 10,
+                                borderBottomWidth: 1,
+                                borderColor: "#e6e6e6",
+                              }}
+                            >
+                              <Text style={{ fontSize: 15 }}>{set.name}</Text>
+                            </View>
+                          ))}
+                        </ScrollView>
+                        <TouchableOpacity
+                          style={{
+                            marginTop: 16,
+                            alignSelf: "center",
+                            backgroundColor: "#A50702",
+                            paddingVertical: 12,
+                            paddingHorizontal: 32,
+                            borderRadius: 12,
+                          }}
+                          onPress={() => setModalVisible(false)}
+                        >
+                          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Fechar</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </Modal>
+                </View>
+              </View>
+
+              <Text style={styles.fieldsTitle}>Descrição:</Text>
+              <Text style={styles.fieldsContent}>{machineData.description}</Text>
+
+              <Text style={styles.fieldsTitle}>Temperatura:</Text>
+              <Text style={styles.fieldsContent}>{machineData.temperature} °C</Text>
+
+              {hasPendingTasks ? (
+                <>
+                  <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
+                  {user?.role === "INSPECTOR" ? (
+                    <Link
+                      href={{
+                        pathname: '/(tabs)/tarefas/fazerTarefaInspe',
+                        params: {
+                          codigo: codigo,
+                          taskId: firstPendingTask ? String(firstPendingTask.id) : undefined 
+                        }
+                      }}
+                      asChild
+                    >
+                      <TouchableOpacity>
+                        <Text style={styles.fieldsContentInspe}>
+                          Clique aqui para realizar {pendingTasks.length > 1 ? `as ${pendingTasks.length} tarefas` : "a tarefa"}
+                        </Text>
+                      </TouchableOpacity>
+                    </Link>
+                  ) : (
+                    <View style={{ alignItems: "center" }}>
+                      {pendingTasks.map((task) => (
+                        <Text key={task.id} style={styles.fieldsContent}>
+                          {task.title}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+                </>
+              ) : (
+                <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
+              )}
+            </View>
+          </>
+        ) : (
+          <Text style={{ alignSelf: "center" }}>Carregando...</Text>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -222,10 +247,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     alignSelf: "center",
     marginBottom: 12,
+    fontWeight: 'bold', 
+    color: '#333',
   },
   fieldsContent: {
     backgroundColor: "#e6e6e6",
-    color: "rgba(0,0,0,0.44)",
+    color: "rgba(0,0,0,0.7)", 
     padding: 10,
     borderRadius: 8,
     marginBottom: 12,
@@ -233,7 +260,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     textAlign: "center",
     width: "80%",
-    flexDirection: "row",
   },
   fieldsContentInspe: {
     backgroundColor: "#A50702",
@@ -245,6 +271,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     textAlign: "center",
     width: "80%",
-    flexDirection: "row",
+
+    shadowColor: "#A50702",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   }
 });
