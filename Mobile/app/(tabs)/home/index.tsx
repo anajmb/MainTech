@@ -159,6 +159,7 @@ function UsersHome() {
       setRefreshing(false);
     }, 2000);
   }, []);
+  
   return (
     <ScrollView
       style={TabsStyles.container}
