@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/authContext";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 
+// NOVA INTERFACE: Sub-conjuntos
 interface Subset {
   id: number;
   name: string;
@@ -31,7 +32,7 @@ interface MachineSet {
   machineId: number | null;
   createDate: string;
   updateDate: string;
-  subsets: Subset[]; 
+  subsets: Subset[]; // Adicionado subsets
 }
 
 interface Machines {
@@ -84,6 +85,18 @@ export default function InfosMaquina() {
     }
   }, [firstPendingTask]);
 
+
+  let codigoComTaskId = codigo;
+  if (firstPendingTask && info) {
+
+    const updatedInfo = {
+        ...info, 
+        taskId: firstPendingTask.id 
+    };
+
+    codigoComTaskId = JSON.stringify(updatedInfo); 
+    console.log("DEBUG: Novo 'codigo' (JSON string) com taskId:", codigoComTaskId);
+  }
 
   return (
     <View style={styles.container}>
@@ -190,8 +203,7 @@ export default function InfosMaquina() {
                       href={{
                         pathname: '/(tabs)/tarefas/fazerTarefaInspe',
                         params: {
-                          codigo: codigo,
-                          taskId: firstPendingTask ? String(firstPendingTask.id) : undefined 
+                          codigo: codigoComTaskId, 
                         }
                       }}
                       asChild
