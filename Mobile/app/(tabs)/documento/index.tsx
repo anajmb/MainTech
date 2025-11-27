@@ -1,4 +1,3 @@
-// ...existing code...
 import Logo from "@/components/logo";
 import SetaVoltar from "@/components/setaVoltar"; // ❗️ Verifique se a importação está correta (com ou sem {})
 import { TabsStyles } from "@/styles/globalTabs";
@@ -290,4 +289,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   }
 });
-// ...existing
