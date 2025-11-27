@@ -544,20 +544,20 @@ const styles = StyleSheet.create({
 
 
     botaoConfirmar: {
-        backgroundColor: '#A50702',
-        borderRadius: 100,
-        paddingVertical: 7,
-        paddingHorizontal: 10,
-        width: '70%',
+        backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 10,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 20,
-        marginBottom: 30,
-        alignSelf: "center",
+        alignSelf: "center"
     },
     textoBotao: {
         color: "#fff",
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: "400",
     },
 });

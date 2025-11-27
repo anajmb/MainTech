@@ -115,11 +115,11 @@ export default function ConjuntosInspe() {
     }
 
     function handleSaveAndReturn() {
-        if (!currentSet || !machineData) return; 
-        
+        if (!currentSet || !machineData) return;
+
         // --- MUDANÇA 4: Verificar se o taskId foi carregado ---
         if (!taskId) {
-            Alert.alert("Erro", "ID da Tarefa não encontrado. Tente voltar e entrar novamente.");
+            Alert.alert("Erro", "ID da Ta refa não encontrado. Tente voltar e entrar novamente.");
             return;
         }
         // --- Fim da Mudança 4 ---
@@ -167,7 +167,7 @@ export default function ConjuntosInspe() {
             pathname: "/(tabs)/tarefas/fazerTarefaInspe",
             params: {
                 // 'codigo' agora envia o 'taskId' de volta
-                codigo: JSON.stringify({ taskId: taskId }), 
+                codigo: JSON.stringify({ taskId: taskId }),
                 updatedSelections: JSON.stringify(updatedSelections),
                 detailedSelection: JSON.stringify(currentDetailedSelection)
             }
@@ -186,6 +186,13 @@ export default function ConjuntosInspe() {
 
     const changeSubsets = currentSet.subsets.filter((s) => s.changes) || [];
     const repairSubsets = currentSet.subsets.filter((s) => s.repairs) || [];
+
+    const isAvariado = currentStatus === 'avariado';
+    const hasChange = Object.values(selectedChanges).some(Boolean);
+    const hasRepair = Object.values(selectedRepairs).some(Boolean);
+
+
+    const canConfirm = !isAvariado || hasChange || hasRepair;
 
     return (
         <ScrollView style={TabsStyles.container}>
@@ -257,7 +264,15 @@ export default function ConjuntosInspe() {
                 )}
 
                 <View style={styles.navigationContainer}>
-                    <TouchableOpacity onPress={handleSaveAndReturn} style={[styles.navButton, styles.primaryNavButton]}>
+                    <TouchableOpacity
+                        onPress={canConfirm ? handleSaveAndReturn : undefined}
+                        style={[
+                            styles.navButton,
+                            styles.primaryNavButton,
+                            !canConfirm && { opacity: 0.5 }
+                        ]}
+                        disabled={!canConfirm}
+                    >
                         <Text style={[styles.navButtonText, styles.primaryNavButtonText]}>
                             Confirmar
                         </Text>
@@ -313,7 +328,7 @@ const styles = StyleSheet.create({
     },
 
     opcaoSelecionadaVermelha: {
-        backgroundColor: '#CE221E',
+        backgroundColor: '#A50702',
         borderColor: '#CE221E',
     },
 
@@ -326,12 +341,12 @@ const styles = StyleSheet.create({
     textoVermelho: {
         color: "#CE221E",
         fontSize: 15,
-        fontWeight: "500",
+        fontWeight: "400",
     },
 
     textoOpcaoSelecionada: {
         color: "#FFFFFF",
-        fontWeight: "bold",
+        fontWeight: "400",
     },
 
     divisorHorizontal: {
@@ -399,7 +414,6 @@ const styles = StyleSheet.create({
     },
 
     checkText: {
-        color: '#333',
         fontSize: 14,
         flexShrink: 1,
     },
@@ -443,7 +457,7 @@ const styles = StyleSheet.create({
 
     primaryNavButtonText: {
         color: '#FFFFFF',
-        fontWeight: 'bold',
+        fontWeight: '400',
     },
 
 });
