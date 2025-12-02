@@ -79,22 +79,38 @@ export default function EditarPerfil() {
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") return Toast.error("Precisamos da permissão da galeria!");
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, allowsEditing: true, aspect: [1, 1], quality: 1 });
+    
+    // FILTRO DE SEGURANÇA: Garante que apenas arquivos de imagem podem ser selecionados.
+    const result = await ImagePicker.launchImageLibraryAsync({ 
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+      allowsEditing: true, 
+      aspect: [1, 1], 
+      quality: 1 
+    });
+    
     if (!result.canceled && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       setImage(uri);
-      await savePhotoAutomatically(uri); // <-- 🔥 ALTERAÇÃO AQUI
+      await savePhotoAutomatically(uri);
     }
   };
 
   const takePhotoWithCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") return Toast.error("Precisamos da permissão da câmera!");
-    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [1, 1], quality: 1 });
+    
+    // FILTRO DE SEGURANÇA: Garante que apenas fotos (imagens) são capturadas.
+    const result = await ImagePicker.launchCameraAsync({ 
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+      allowsEditing: true, 
+      aspect: [1, 1], 
+      quality: 1 
+    });
+    
     if (!result.canceled && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       setImage(uri);
-      await savePhotoAutomatically(uri); // <-- 🔥 ALTERAÇÃO AQUI
+      await savePhotoAutomatically(uri);
     }
   };
 
@@ -167,6 +183,8 @@ export default function EditarPerfil() {
       await updateUser({
         photo: base64Image,
       });
+      
+      Toast.success("Foto do perfil atualizada!");
 
     } catch (error) {
       console.log("Erro ao atualizar foto automaticamente:", error);
@@ -179,6 +197,7 @@ export default function EditarPerfil() {
 
     try {
       let base64Image = image;
+      // Se a imagem for uma URI local (selecionada/tirada agora), converte para Base64 antes de enviar
       if (image && image.startsWith("file://")) {
         base64Image = await toBase64(image);
       }
@@ -192,6 +211,7 @@ export default function EditarPerfil() {
         photo: base64Image,
       });
 
+      // Atualiza o contexto de autenticação com os novos dados
       await updateUser({
         ...user,
         name: nome,
