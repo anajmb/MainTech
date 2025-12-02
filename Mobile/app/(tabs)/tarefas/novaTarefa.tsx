@@ -2,10 +2,11 @@ import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Calendar, User } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Alert, LogBox } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, LogBox } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { api } from "../../../lib/axios";
+import { Toast } from "toastify-react-native";
 
 // Ignora avisos de listas aninhadas
 LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
@@ -20,6 +21,7 @@ export default function NovaTarefa() {
     const today = new Date();
     const sixMonthsFromNow = new Date();
     sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+    const [erroMsg, setErroMsg] = useState("");
 
     const showDatePicker = () => setDatePickerVisibility(true);
     const hideDatePicker = () => setDatePickerVisibility(false);
@@ -57,15 +59,15 @@ export default function NovaTarefa() {
     // --- ESTADOS DO FORMULÁRIO ---
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    
+
     // --- ESTADOS DO DROPDOWN ---
     const [openMachine, setOpenMachine] = useState(false);
     const [machineValue, setMachineValue] = useState(null);
-    const [machineItems, setMachineItems] = useState<{label: string, value: number}[]>([]);
+    const [machineItems, setMachineItems] = useState<{ label: string, value: number }[]>([]);
 
     const [openInspector, setOpenInspector] = useState(false);
     const [inspectorValue, setInspectorValue] = useState(null);
-    const [inspectorItems, setInspectorItems] = useState<{label: string, value: number}[]>([]);
+    const [inspectorItems, setInspectorItems] = useState<{ label: string, value: number }[]>([]);
 
     const [loadingOptions, setLoadingOptions] = useState(true);
 
@@ -96,7 +98,7 @@ export default function NovaTarefa() {
 
             } catch (err) {
                 console.error('Erro ao buscar opções:', err);
-                Alert.alert('Erro', 'Não foi possível carregar as opções.');
+                setErroMsg('Não foi possível carregar as opções.');
             } finally {
                 setLoadingOptions(false);
             }
@@ -109,7 +111,7 @@ export default function NovaTarefa() {
 
     const handleCreateTask = async () => {
         if (!title || !description || !inspectorValue || !machineValue || !date) {
-            alert("Por favor, preencha todos os campos obrigatórios!");
+            setErroMsg("Por favor, preencha todos os campos obrigatórios!");
             return;
         }
 
@@ -125,11 +127,11 @@ export default function NovaTarefa() {
 
             if (response.status !== 200 && response.status !== 201) {
                 const errorMessage = response.data?.msg || "Erro ao criar tarefa.";
-                alert(errorMessage);
+                Toast.error(errorMessage);
                 return;
             }
 
-            Alert.alert("Sucesso", "Tarefa criada com sucesso!");
+            Toast.success("Tarefa criada com sucesso!");
             setTitle("");
             setDescription("");
             setInspectorValue(null);
@@ -139,7 +141,7 @@ export default function NovaTarefa() {
 
         } catch (error: any) {
             console.error("Erro:", error);
-            alert(error.response?.data?.msg || "Erro de conexão!");
+            Toast.error(error.response?.data?.msg || "Erro de conexão!");
         }
     };
 
@@ -154,7 +156,7 @@ export default function NovaTarefa() {
             </View>
 
             <View style={TabsStyles.todosCard}>
-                
+
                 {/* --- CARD 1: DADOS BÁSICOS + MÁQUINA --- */}
                 <View style={styles.card}>
                     <View>
@@ -176,7 +178,7 @@ export default function NovaTarefa() {
                             onChangeText={setDescription}
                         />
                     </View>
-                    
+
                     {/* DROPDOWN MÁQUINA */}
                     <View>
                         <Text style={styles.label}>Máquina</Text>
@@ -205,7 +207,7 @@ export default function NovaTarefa() {
                                 }}
                                 // Estilo de cada item individual (para ficarem compactos e juntos)
                                 listItemContainerStyle={{
-                                    height: 40, 
+                                    height: 40,
                                     borderBottomWidth: 0,
                                     margin: 0
                                 }}
@@ -272,7 +274,7 @@ export default function NovaTarefa() {
 
                     {/* DROPDOWN INSPETOR */}
                     <View>
-                         {loadingOptions ? (
+                        {loadingOptions ? (
                             <ActivityIndicator color="#A50702" />
                         ) : (
                             <DropDownPicker
@@ -297,7 +299,7 @@ export default function NovaTarefa() {
                                 }}
                                 // Estilo dos itens
                                 listItemContainerStyle={{
-                                    height: 40, 
+                                    height: 40,
                                     borderBottomWidth: 0,
                                     margin: 0
                                 }}
@@ -308,6 +310,12 @@ export default function NovaTarefa() {
                         )}
                     </View>
                 </View>
+
+                {erroMsg !== "" && (
+                    <View style={TabsStyles.erroMsg}>
+                        <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                    </View>
+                )}
 
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity style={styles.botaoSalvar} onPress={handleCreateTask} activeOpacity={0.8}>
@@ -328,7 +336,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingVertical: 12,
         width: "62%",
-        marginTop: 10, 
+        marginTop: 10,
         marginBottom: 50,
         alignItems: "center",
         justifyContent: "center",
@@ -343,12 +351,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 4,
-        marginBottom: 10 
+        marginBottom: 10
     },
     label: {
         fontSize: 15,
         color: "#222",
-        marginBottom: 10, 
+        marginBottom: 10,
         fontWeight: "400",
         marginTop: 10,
     },
@@ -390,6 +398,6 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom: 8,
         marginRight: 20,
-        width: 130 
+        width: 130
     }
 })
