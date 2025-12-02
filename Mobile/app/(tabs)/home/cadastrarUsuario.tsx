@@ -45,9 +45,38 @@ const getInitials = (name: string): string => {
     return `${firstInitial}${lastInitial}`.toUpperCase();
 };
 
+/**
+ * Função de validação de CPF.
+ * @param cpf O CPF como string (com ou sem formatação).
+ * @returns boolean indicando se o CPF é válido.
+ */
+const validarCPF = (cpf: string) => {
+    cpf = cpf.replace(/\D/g, "");
 
+    // Verifica se o CPF tem 11 dígitos e se não são todos iguais (ex: 111.111.111-11)
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
 
+    let soma = 0;
+    let resto;
 
+    // Validação do primeiro dígito
+    for (let i = 1; i <= 9; i++)
+        soma += parseInt(cpf[i - 1]) * (11 - i);
+
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf[9])) return false;
+
+    soma = 0;
+    // Validação do segundo dígito
+    for (let i = 1; i <= 10; i++)
+        soma += parseInt(cpf[i - 1]) * (12 - i);
+
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+
+    return resto === parseInt(cpf[10]);
+};
 
 
 export default function CadastrarUsuario() {
@@ -62,6 +91,7 @@ export default function CadastrarUsuario() {
         { label: 'Manutentor', value: 'MAINTAINER' },
     ]);
     const [erroMsg, setErroMsg] = useState("");
+    const [cpfErroMsg, setCpfErroMsg] = useState(""); // Novo estado para erro do CPF
 
     async function fetchEmployees() {
         try {
@@ -79,8 +109,10 @@ export default function CadastrarUsuario() {
 
     // Formata CPF
     const formatCPF = (value: string) => {
-        return value
-            .replace(/\D/g, "")
+        // Limita o tamanho máximo da string formatada para evitar que o usuário digite mais de 11 números
+        const cleanedValue = value.replace(/\D/g, "").slice(0, 11);
+
+        return cleanedValue
             .replace(/(\d{3})(\d)/, "$1.$2")
             .replace(/(\d{3})(\d)/, "$1.$2")
             .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
@@ -89,20 +121,42 @@ export default function CadastrarUsuario() {
     // Remove a máscara
     const limparCPF = (value: string) => value.replace(/\D/g, "");
 
-
     const handlePreRegister = async () => {
+        setErroMsg(""); // Limpa o erro geral
+        setCpfErroMsg(""); // Limpa o erro do CPF
+
+        const cpfLimpo = limparCPF(cpfData);
+        let hasError = false;
+
         if (!name || !cpfData || !cargo) {
             setErroMsg("Preencha todos os campos!");
+            hasError = true;
+        }
+
+        // 1. Validação de formato/comprimento do CPF (11 dígitos)
+        if (cpfLimpo.length !== 11) {
+             setCpfErroMsg("O CPF deve ter 11 dígitos.");
+             hasError = true;
+        }
+
+        // 2. Validação da lógica do CPF
+        if (cpfLimpo.length === 11 && !validarCPF(cpfLimpo)) {
+            setCpfErroMsg("CPF inválido.");
+            hasError = true;
+        }
+
+        if (hasError) {
             return;
         }
+
         setIsLoading(true);
         try {
             await api.post('/employees/preRegister', {
                 name: name,
-                cpf: limparCPF(cpfData),
+                cpf: cpfLimpo, // Envia o CPF limpo para a API
                 role: cargo,
             });
-            Toast.success("Usuário pré-cadastrado com sucesso!");
+            Toast.success("Usuário pré-cadastrado com sucesso! ✅");
             setName('');
             setCpfData('');
             setCargo('');
@@ -111,7 +165,7 @@ export default function CadastrarUsuario() {
             if (error.response?.data?.msg) {
                 alert(error.response.data.msg);
             } else {
-                Toast.error("Erro ao cadastrar usuário.");
+                Toast.error("Erro ao cadastrar usuário. ❌");
             }
         } finally {
             setIsLoading(false);
@@ -133,7 +187,7 @@ export default function CadastrarUsuario() {
                 <View style={style.cardCadastro}>
                     <Text style={style.tituloCardCadastro}>Informe os dados para liberar o cadastro</Text>
                     <View>
-                        <Text style={style.label}>Nome  Completo</Text>
+                        <Text style={style.label}>Nome Completo</Text>
                         <TextInput
                             style={style.input}
                             placeholder="Nome do Usuário"
@@ -145,15 +199,21 @@ export default function CadastrarUsuario() {
                     <View style={{ marginTop: 8 }}>
                         <Text style={style.label}>CPF</Text>
                         <TextInput
-                            style={style.input}
+                            style={[style.input, cpfErroMsg && style.inputError]} // Aplica estilo de erro se houver
                             placeholder="___.___.___-__"
                             placeholderTextColor="#8B8686"
                             value={cpfData}
-                            onChangeText={(text) => setCpfData(formatCPF(text))}
+                            onChangeText={(text) => {
+                                setCpfData(formatCPF(text));
+                                setCpfErroMsg(""); // Limpa o erro ao digitar
+                            }}
                             keyboardType="numeric"
                             maxLength={14}
                         />
-
+                         {/* Exibe a mensagem de erro específica para CPF */}
+                        {cpfErroMsg !== "" && (
+                            <Text style={style.textError}>{cpfErroMsg}</Text>
+                        )}
                     </View>
                     <View style={{ flex: 1 }}>
                         <Text style={style.labelCargo}>Cargo</Text>
@@ -165,15 +225,17 @@ export default function CadastrarUsuario() {
                             setValue={setCargo}
                             setItems={setCargos}
                             placeholder="Selecione"
+                            // Aumenta o zIndex para garantir que o dropdown fique acima dos outros elementos
+                            zIndex={3000}
+                            zIndexInverse={1000}
                             style={[style.input, { borderWidth: 0, borderColor: 'transparent' }]}
                             dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderRadius: 10, borderColor: 'transparent' }}
                             placeholderStyle={{ color: '#6c6c6c' }}
-                            disabledItemLabelStyle={{ color: '#6c6c6c' }}
                             textStyle={{ color: cargo ? '#000' : '#6c6c6c' }}
                         />
                     </View>
 
-                    {erroMsg !== "" && (
+                    {erroMsg !== "" && cpfErroMsg === "" && ( // Exibe o erro geral APENAS se não houver erro de CPF
                         <View style={TabsStyles.erroMsg}>
                             <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
                         </View>
@@ -266,6 +328,18 @@ const style = StyleSheet.create({
         paddingVertical: 10,
         justifyContent: "center",
     },
+    // Novo estilo para indicar erro no input
+    inputError: {
+        borderColor: '#A50702', // Borda vermelha para erro
+        borderWidth: 1,
+    },
+    // Novo estilo para texto de erro
+    textError: {
+        color: '#A50702',
+        fontSize: 12,
+        marginTop: 4,
+        marginLeft: 4,
+    },
     inputText: {
         color: "#6c6c6c",
         fontSize: 14,
@@ -356,5 +430,5 @@ const style = StyleSheet.create({
         color: "#000000",
         fontSize: 12,
         fontWeight: "500",
-    },
+        },
 });
