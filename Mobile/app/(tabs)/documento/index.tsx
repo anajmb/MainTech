@@ -8,21 +8,19 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacit
 import { api } from "../../../lib/axios";
 import { useAuth } from "@/contexts/authContext"; // ❗️ Importe useAuth
 
-// --- MUDANÇA 1: Interface atualizada ---
 interface OrdemServico {
   id: number;
   machineId: number;
   machineName: string;
   location: string;
   priority: 'low' | 'medium' | 'high';
-  // Adicionados os novos status
   status: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED';
   payload: any;
   createdAt: string;
   inspectorName: string;
   maintainerName?: string;
 }
-// --- Fim da Mudança 1 ---
+
 
 function formatarData(isoString: string) {
   try {
@@ -32,6 +30,17 @@ function formatarData(isoString: string) {
     return "Data inválida";
   }
 }
+
+export const formatStatus = (status: OrdemServico['status']): string => {
+    switch (status) {
+        case 'PENDING': return 'Pendente';
+        case 'ASSIGNED': return 'Atribuída';
+        case 'IN_PROGRESS': return 'Em Progresso';
+        case 'IN_REVIEW': return 'Em Revisão';
+        case 'COMPLETED': return 'Concluída';
+        default: return 'Desconhecido';
+    }
+};
 
 function getStatusStyle(status: OrdemServico['status']) {
   switch (status) {
@@ -65,18 +74,14 @@ export default function Documento() {
   const [filtro, setFiltro] = useState("todas");
   const [ordens, setOrdens] = useState<OrdemServico[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth(); // Pega o usuário logado
+  const { user } = useAuth(); 
 
-  // --- MUDANÇA 2: Usar 'useFocusEffect' ---
-  // Isso garante que a lista recarregue toda vez que você voltar para esta tela
   const fetchOrdens = useCallback(() => {
     async function loadData() {
       try {
         setLoading(true);
-        // ❗️ CHAMA A ROTA CORRETA (agora é a raiz '/')
         const response = await api.get("/serviceOrders/get");
 
-        // O backend já filtrou (Manutentor só recebe o dele, Admin vê tudo)
         setOrdens(response.data || []);
 
       } catch (error: any) {
@@ -90,19 +95,14 @@ export default function Documento() {
   }, []);
 
   useFocusEffect(fetchOrdens);
-  // --- Fim da Mudança 2 ---
-
-  // --- MUDANÇA 3: Filtros atualizados ---
   const ordensFiltradas = ordens.filter((doc) => {
     if (filtro === "todas") return true;
-    // "Em análise" agora inclui PENDING, ASSIGNED, IN_PROGRESS, e IN_REVIEW
     if (filtro === "analise") {
       return doc.status !== "COMPLETED";
     }
     if (filtro === "concluida") return doc.status === "COMPLETED";
     return true;
   });
-  // --- Fim da Mudança 3 ---
 
   return (
     <ScrollView style={TabsStyles.container}>
@@ -118,7 +118,7 @@ export default function Documento() {
         </View>
       </View>
 
-      {/* filtro atualizado com mesma estilização do componente "Tarefas" */}
+
       <View style={styles.filtro}>
         <TouchableOpacity onPress={() => setFiltro("todas")}>
           <Text style={[styles.filtroTitulo, filtro === "todas" && styles.filtroAtivo]}>Todas</Text>
@@ -164,7 +164,7 @@ export default function Documento() {
                     </View>
                   </View>
                   <Text style={[styles.statusText, getStatusStyle(ordem.status)]}>
-                    {formatRole(ordem.status as any)}
+                    {formatStatus(ordem.status as any)}
                   </Text>
                 </View>
 
