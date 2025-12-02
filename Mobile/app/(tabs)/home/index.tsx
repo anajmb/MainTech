@@ -1,7 +1,7 @@
 
 import { Link } from "expo-router";
-import { Bell, Calendar, ChartColumn, CheckCircle, Plus, User, Users, AlertTriangle, Grid2X2, Grid2X2Plus, History } from "lucide-react-native";
-import { ActivityIndicator, Image, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Bell, Calendar, ChartColumn, User, Users, Grid2X2Plus, History } from "lucide-react-native";
+import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TabsStyles } from "../../../styles/globalTabs";
 import { useCallback, useState } from "react";
 import { CustomText } from "@/components/customText";

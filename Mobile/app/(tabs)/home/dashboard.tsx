@@ -1,5 +1,5 @@
-import { StyleSheet, ScrollView, Text, View, ActivityIndicator, Alert } from "react-native";
-import { CheckCircle, ListTodo, ClipboardList, BarChartBig, ChartPie, FileCheck, FolderCheck } from "lucide-react-native";
+import { StyleSheet, ScrollView, Text, View, ActivityIndicator } from "react-native";
+import { CheckCircle, ListTodo, ClipboardList, BarChartBig, ChartPie, FolderCheck } from "lucide-react-native";
 import { TabsStyles } from "@/styles/globalTabs";
 import SetaVoltar from "@/components/setaVoltar";
 import ChartWebView from "../../../components/chartWebView";
@@ -7,6 +7,7 @@ import type { ChartConfiguration } from 'chart.js';
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/axios";
 import { useAuth } from "@/contexts/authContext";
+import { Toast } from "toastify-react-native";
 
 // --- INTERFACES ---
 interface Task {
@@ -55,7 +56,7 @@ export default function Dashboard() {
 
         } catch (error) {
             console.error("Erro ao buscar dados do dashboard:", error);
-            Alert.alert("Erro", "Não foi possível carregar os dados.");
+            Toast.error("Não foi possível carregar os dados.");
         } finally {
             setLoading(false);
         }

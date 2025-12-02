@@ -1,9 +1,9 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useLocalSearchParams } from "expo-router";
-import { MoreVertical, Wrench } from "lucide-react-native";
+import { Wrench } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../../lib/axios";
 import { useAuth } from "@/contexts/authContext";
 import TresPontinhos from "@/hooks/tresPontinhos";

@@ -3,7 +3,7 @@ import { TabsStyles } from "@/styles/globalTabs";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Link, useRouter, useFocusEffect } from "expo-router";
-import { BellRing, CircleQuestionMark, LogOut, PersonStanding, Shield, User, LockKeyhole, PersonStandingIcon } from "lucide-react-native";
+import { BellRing, LogOut, Shield, User, LockKeyhole, } from "lucide-react-native";
 import { useEffect, useState, useCallback } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "@/contexts/authContext";

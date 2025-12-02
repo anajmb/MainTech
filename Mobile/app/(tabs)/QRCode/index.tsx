@@ -1,10 +1,11 @@
-import { Text, View, Button, Modal, StyleSheet, Alert, TextInput } from "react-native";
+import { Text, View, Button, Modal, StyleSheet, } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera"
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef} from "react";
 import { useFocusEffect, useRouter } from "expo-router";
-import { IdCard, Scan, ScanBarcode } from "lucide-react-native";
+import { ScanBarcode } from "lucide-react-native";
 import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
+import { Toast } from "toastify-react-native";
 
 
 export default function QRCode() {
@@ -22,7 +23,7 @@ export default function QRCode() {
     try {
       const { granted } = await requestPermission()
       if (!granted) {
-        return Alert.alert("Camera", "Voce precisa habilitar o uso da camera")
+        return Toast.error("Voce precisa habilitar o uso da camera")
       }
       setModalIsVisible(true)
       qrCodeLock.current = false

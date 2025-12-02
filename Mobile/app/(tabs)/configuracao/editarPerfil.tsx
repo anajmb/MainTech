@@ -7,7 +7,7 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
-import ToastManager, { Toast } from 'toastify-react-native'
+import { Toast } from 'toastify-react-native'
 
 
 export default function EditarPerfil() {
@@ -24,6 +24,7 @@ export default function EditarPerfil() {
 
   const emailRef = useRef<TextInput | null>(null);
   const cpfRef = useRef<TextInput | null>(null);
+  const [erroMsg, setErroMsg] = useState("");
 
   const { user, updateUser } = useAuth();
 
@@ -174,7 +175,7 @@ export default function EditarPerfil() {
   };
 
   async function handleSave() {
-    if (!canSave || !user?.id) return Toast.error("Preencha todos os campos corretamente antes de salvar.");
+    if (!canSave || !user?.id) return setErroMsg("Preencha todos os campos corretamente antes de salvar.");
 
     try {
       let base64Image = image;
@@ -326,6 +327,14 @@ export default function EditarPerfil() {
                   </View>
                 </TouchableOpacity>
               </View>
+
+
+              {erroMsg !== "" && (
+                <View style={TabsStyles.erroMsg}>
+                  <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                </View>
+              )}
+
             </View>
           </View>
 

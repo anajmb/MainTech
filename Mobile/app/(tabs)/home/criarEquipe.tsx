@@ -2,10 +2,11 @@ import SetaVoltar from "@/components/setaVoltar";
 import { api } from "@/lib/axios";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Link } from "expo-router";
-import { Users, Wrench } from "lucide-react-native";
+import { Users } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Toast } from "toastify-react-native";
 
 export interface Team {
     id: number;
@@ -18,7 +19,7 @@ export default function CriarEquipe() {
     // Dados da Lista
     const [teamData, setTeamData] = useState<Team[]>([]);
     const [refreshKey, setRefreshKey] = useState(0);
-    
+
     // --- NOVO: Lista de IDs de funcionários que já estão em equipes ---
     const [idsOcupados, setIdsOcupados] = useState<number[]>([]);
 
@@ -33,12 +34,13 @@ export default function CriarEquipe() {
     const [funcionarios, setFuncionarios] = useState([
         { label: 'Carregando...', value: -1, disabled: true },
     ]);
+    const [erroMsg, setErroMsg] = useState("");
 
     // 1. Busca as Equipes e CALCULA quem já está ocupado
     useEffect(() => {
         async function fetchTeams() {
             try {
-                const res = await api.get('/team/get'); 
+                const res = await api.get('/team/get');
                 const equipes: Team[] = res.data;
                 setTeamData(equipes);
 
@@ -92,12 +94,12 @@ export default function CriarEquipe() {
         }
         // Executa sempre que a lista de ocupados mudar (ou seja, quando as equipes carregarem)
         fetchEmployees();
-    }, [idsOcupados]); 
+    }, [idsOcupados]);
 
     // 3. Função para Criar a Equipe
     async function handleCriarEquipe() {
         if (!nome.trim() || !descricao.trim() || membrosSelecionados.length === 0) {
-            Alert.alert("Erro", "Por favor, preencha todos os campos e selecione ao menos um membro.");
+            setErroMsg("Por favor, preencha todos os campos e selecione ao menos um membro.");
             return;
         }
 
@@ -106,24 +108,24 @@ export default function CriarEquipe() {
         const payload = {
             name: nome,
             description: descricao,
-            members: membrosSelecionados 
+            members: membrosSelecionados
         };
 
         try {
-            await api.post('/team/create', payload); 
-            Alert.alert("Sucesso", "Equipe criada com sucesso!");
-            
+            await api.post('/team/create', payload);
+            Toast.success("Equipe criada com sucesso!");
+
             // Limpar campos
             setNome("");
             setDescricao("");
             setMembrosSelecionados([]);
-            
+
             // Atualizar a lista (isso vai recalcular os ocupados automaticamente)
             setRefreshKey(prev => prev + 1);
 
         } catch (error: any) {
             console.error("Erro ao criar equipe:", error.response?.data || error.message);
-            Alert.alert("Erro", "Não foi possível criar a equipe.");
+            Toast.error("Não foi possível criar a equipe.");
         } finally {
             setLoadingSubmit(false);
         }
@@ -140,106 +142,112 @@ export default function CriarEquipe() {
             </View>
             <View style={TabsStyles.todosCard}>
 
-            {/* Card de cadastro */}
-            <View style={style.cardCriarEquipe}>
-                <Text style={style.tituloCardCriarEquipe}>Informe os dados para criar uma equipe</Text>
-                
-                <Text style={style.label}>Nome da Equipe</Text>
-                <TextInput
-                    style={style.input}
-                    placeholder="Nome da Equipe"
-                    placeholderTextColor="#8B8686"
-                    value={nome}
-                    onChangeText={setNome}
-                />
+                {/* Card de cadastro */}
+                <View style={style.cardCriarEquipe}>
+                    <Text style={style.tituloCardCriarEquipe}>Informe os dados para criar uma equipe</Text>
 
-                <Text style={style.labelDescrição}>Descrição</Text>
-                <TextInput
-                    style={style.inputDescrição}
-                    placeholder="Descreva os detalhes"
-                    placeholderTextColor="#8B8686"
-                    multiline={true}
-                    numberOfLines={4}
-                    value={descricao}
-                    onChangeText={setDescricao}
-                />
-
-                {/* Dropdown de Membros */}
-                <View style={{ marginBottom: 10, marginTop: 5, zIndex: 2000 }}>
-                    <Text style={style.label}>Membros (Disponíveis)</Text>
-                    <DropDownPicker
-                        open={openMembros}
-                        value={membrosSelecionados}
-                        items={funcionarios}
-                        setOpen={setOpenMembros}
-                        setValue={setMembrosSelecionados}
-                        setItems={setFuncionarios}
-                        multiple={true}
-                        mode="BADGE"
-                        placeholder="Selecione os membros"
+                    <Text style={style.label}>Nome da Equipe</Text>
+                    <TextInput
                         style={style.input}
-                        dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderColor: '#e6e6e6' }}
-                        placeholderStyle={{ color: '#8B8686' }}
-                        textStyle={{ color: '#222' }}
-                        listMode="SCROLLVIEW"
-                        zIndex={3000}
-                        zIndexInverse={1000}
-                        ListEmptyComponent={() => (
-                            <Text style={{padding: 10, color: '#666', textAlign: 'center'}}>
-                                Todos os funcionários já estão em equipes.
-                            </Text>
-                        )}
+                        placeholder="Nome da Equipe"
+                        placeholderTextColor="#8B8686"
+                        value={nome}
+                        onChangeText={setNome}
                     />
+
+                    <Text style={style.labelDescrição}>Descrição</Text>
+                    <TextInput
+                        style={style.inputDescrição}
+                        placeholder="Descreva os detalhes"
+                        placeholderTextColor="#8B8686"
+                        multiline={true}
+                        numberOfLines={4}
+                        value={descricao}
+                        onChangeText={setDescricao}
+                    />
+
+                    {/* Dropdown de Membros */}
+                    <View style={{ marginBottom: 10, marginTop: 5, zIndex: 2000 }}>
+                        <Text style={style.label}>Membros (Disponíveis)</Text>
+                        <DropDownPicker
+                            open={openMembros}
+                            value={membrosSelecionados}
+                            items={funcionarios}
+                            setOpen={setOpenMembros}
+                            setValue={setMembrosSelecionados}
+                            setItems={setFuncionarios}
+                            multiple={true}
+                            mode="BADGE"
+                            placeholder="Selecione os membros"
+                            style={style.input}
+                            dropDownContainerStyle={{ backgroundColor: '#e6e6e6', borderColor: '#e6e6e6' }}
+                            placeholderStyle={{ color: '#8B8686' }}
+                            textStyle={{ color: '#222' }}
+                            listMode="SCROLLVIEW"
+                            zIndex={3000}
+                            zIndexInverse={1000}
+                            ListEmptyComponent={() => (
+                                <Text style={{ padding: 10, color: '#666', textAlign: 'center' }}>
+                                    Todos os funcionários já estão em equipes.
+                                </Text>
+                            )}
+                        />
+                    </View>
+
+                    {erroMsg !== "" && (
+                        <View style={TabsStyles.erroMsg}>
+                            <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                        </View>
+                    )}
+
+                    <TouchableOpacity
+                        style={style.botaoCriarEquipe}
+                        onPress={handleCriarEquipe}
+                        disabled={loadingSubmit}
+                    >
+                        {loadingSubmit ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={style.textoBotaoCriarEquipe}>Criar Equipe</Text>
+                        )}
+                    </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity 
-                    style={style.botaoCriarEquipe} 
-                    onPress={handleCriarEquipe}
-                    disabled={loadingSubmit}
-                >
-                    {loadingSubmit ? (
-                        <ActivityIndicator color="#fff" />
-                    ) : (
-                        <Text style={style.textoBotaoCriarEquipe}>Criar Equipe</Text>
+
+                {/* Lista de Equipes Cadastradas */}
+                <View style={[style.cardEquipesCadastradas, { zIndex: -1 }]}>
+                    <Text style={style.tituloCadastradas}>Equipes cadastradas</Text>
+
+                    {teamData.map((team) => (
+                        <View key={team.id} style={style.card}>
+                            <View style={style.groupEqui}>
+                                <View style={style.iconeEquipe}>
+                                    <Users color="white" size={24} />
+                                </View>
+                                <View style={style.infoEqui}>
+                                    <Text style={style.tituloEqui}>{team.name}</Text>
+                                    <Text style={style.descricaoEqui}>{team.description}</Text>
+                                </View>
+                            </View>
+
+                            <View style={style.footerCard}>
+                                <TouchableOpacity>
+                                    <Link href={`/home/verEquipe?teamId=${team.id}`} asChild>
+                                        <TouchableOpacity>
+                                            <Text style={style.verEquipe}>Ver equipe</Text>
+                                        </TouchableOpacity>
+                                    </Link>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    ))}
+
+                    {teamData.length === 0 && (
+                        <Text style={{ textAlign: 'center', color: '#888', marginTop: 10 }}>
+                            Nenhuma equipe cadastrada.
+                        </Text>
                     )}
-                </TouchableOpacity>
-            </View>
-
-            
-            {/* Lista de Equipes Cadastradas */}
-            <View style={[style.cardEquipesCadastradas, { zIndex: -1 }]}>
-                <Text style={style.tituloCadastradas}>Equipes cadastradas</Text>
-
-                {teamData.map((team) => (
-                    <View key={team.id} style={style.card}>
-                        <View style={style.groupEqui}>
-                            <View style={style.iconeEquipe}>
-                                <Users color="white" size={24} />
-                            </View>
-                            <View style={style.infoEqui}>
-                                <Text style={style.tituloEqui}>{team.name}</Text>
-                                <Text style={style.descricaoEqui}>{team.description}</Text>
-                            </View>
-                        </View>
-
-                        <View style={style.footerCard}>
-                             <TouchableOpacity>
-                                <Link href={`/home/verEquipe?teamId=${team.id}`} asChild>
-                                    <TouchableOpacity>
-                                        <Text style={style.verEquipe}>Ver equipe</Text>
-                                    </TouchableOpacity>
-                                </Link>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                ))}
-                
-                {teamData.length === 0 && (
-                    <Text style={{textAlign: 'center', color: '#888', marginTop: 10}}>
-                        Nenhuma equipe cadastrada.
-                    </Text>
-                )}
-            </View>
+                </View>
 
             </View>
         </ScrollView>
@@ -264,7 +272,7 @@ const style = StyleSheet.create({
         shadowRadius: 4,
         padding: 20,
         elevation: 4,
-        zIndex: 2000 
+        zIndex: 2000
     },
     tituloCardCriarEquipe: {
         fontSize: 18,
@@ -286,7 +294,7 @@ const style = StyleSheet.create({
         paddingVertical: 10,
         marginBottom: 8,
         fontSize: 14,
-        borderWidth: 0, 
+        borderWidth: 0,
     },
     labelDescrição: {
         fontSize: 15,
@@ -324,7 +332,7 @@ const style = StyleSheet.create({
     cardEquipesCadastradas: {
         backgroundColor: "#eeeeee",
         borderRadius: 10,
-        
+
         marginVertical: 12,
         marginHorizontal: 8,
         shadowColor: "#000",
@@ -332,7 +340,7 @@ const style = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         padding: 20,
-        elevation: 4, 
+        elevation: 4,
         zIndex: -1,
     },
     tituloCadastradas: {

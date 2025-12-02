@@ -14,6 +14,7 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
+import { Toast } from "toastify-react-native";
 
 // --- Interfaces para a API ---
 interface ApiPerson {
@@ -96,6 +97,7 @@ export default function FazerTarefa() {
     const [inspectorId, setInspectorId] = useState<number | null>(null);
     const [inspectorName, setInspectorName] = useState<string | null>(null);
     const [taskId, setTaskId] = useState<number | null>(null);
+    const [erroMsg, setErroMsg] = useState("");
 
     useEffect(() => {
         async function loadTaskAndMachineData() {
@@ -108,7 +110,7 @@ export default function FazerTarefa() {
 
                 if (!info.taskId) {
                     setLoading(false);
-                    Alert.alert("Erro", "ID da Tarefa (taskId) não recebido no parâmetro 'codigo'.");
+                    setErroMsg("ID da Tarefa (taskId) não recebido no parâmetro 'codigo'.");
                     router.back();
                     return;
                 }
@@ -137,7 +139,7 @@ export default function FazerTarefa() {
 
             } catch (error: any) {
                 console.log("Erro ao carregar dados:", error?.response?.data || error.message);
-                Alert.alert("Erro", "Falha ao carregar dados da tarefa ou máquina.");
+                Toast.error("Falha ao carregar dados da tarefa ou máquina.");
                 router.back();
             } finally {
                 setLoading(false);
@@ -160,7 +162,6 @@ export default function FazerTarefa() {
                 setSelectionsBySet(selections);
             } catch (e) {
                 console.error("Falha ao atualizar seleções:", e);
-                // Não precisa de alert, pois o erro é interno na navegação
             }
         }
     }, [updatedSelections]);
@@ -169,12 +170,12 @@ export default function FazerTarefa() {
         if (!machineData) return;
 
         if (!inspectorId || !inspectorName) {
-            Alert.alert("Erro", "Não foi possível identificar o inspetor. Tente novamente.");
+            Toast.error("Não foi possível identificar o inspetor. Tente novamente.");
             return;
         }
 
         if (!machineData.location) {
-            Alert.alert("Erro", "Localização da máquina não encontrada. Não é possível enviar.");
+            Toast.error("Localização da máquina não encontrada. Não é possível enviar.");
             return;
         }
 
@@ -226,7 +227,7 @@ export default function FazerTarefa() {
         });
 
         if (Object.keys(selectionsBySet).length !== machineData.sets.length) {
-            Alert.alert("Atenção", "Você precisa inspecionar todos os conjuntos antes de finalizar.");
+            setErroMsg("Você precisa inspecionar todos os conjuntos.");
             return;
         }
 
@@ -264,13 +265,13 @@ export default function FazerTarefa() {
                 await api.patch(`/tasks/complete/${taskId}`);
             }
 
-            Alert.alert("Sucesso", res.data?.msg || successMessage);
-            
+            Toast.success("Sucesso", res.data?.msg || successMessage);
+
             router.push('/(tabs)/tarefas');
 
         } catch (error: any) {
             console.log("Erro ao enviar:", error?.response ?? error);
-            Alert.alert("Erro", error.response?.data?.msg || "Falha ao enviar dados.");
+            Toast.error("Erro", error.response?.data?.msg || "Falha ao enviar dados.");
         }
     }
 
@@ -390,6 +391,12 @@ export default function FazerTarefa() {
                         })}
                     </View>
                 </View>
+
+                {erroMsg !== "" && (
+                    <View style={TabsStyles.erroMsg}>
+                        <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                    </View>
+                )}
 
                 <TouchableOpacity onPress={handleConfirm} style={styles.botaoConfirmar}>
                     <Text style={styles.textoBotao}>Finalizar Checklist</Text>

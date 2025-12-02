@@ -5,6 +5,7 @@ import React, { useEffect, useState, useCallback } from "react"; // Importe o us
 import { Relatorio } from "../../../components/telaRelatorio"; // Importando o componente Relatorio
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router"; // Importe useRouter e useFocusEffect
 import { api } from "../../../lib/axios";
+import { Toast } from "toastify-react-native";
 
 // --- MUDANÇA 1: Interface ATUALIZADA ---
 // (Deve ser idêntica à interface do seu componente Relatorio)
@@ -39,7 +40,7 @@ export default function OrdemServico() {
     const fetchOrdem = useCallback(async () => {
         if (!id) {
             setLoading(false);
-            Alert.alert("Erro", "Nenhum ID de ordem de serviço foi fornecido.");
+            Toast.error("Nenhum ID de ordem de serviço foi fornecido.");
             return;
         }
         try {
@@ -49,7 +50,7 @@ export default function OrdemServico() {
             setOrdem(response.data);
         } catch (error: any) {
             console.log("Erro ao buscar OS:", error.response?.data);
-            Alert.alert("Erro", "Falha ao carregar dados da ordem de serviço.");
+            Toast.error("Falha ao carregar dados da ordem de serviço.");
         } finally {
             setLoading(false);
         }

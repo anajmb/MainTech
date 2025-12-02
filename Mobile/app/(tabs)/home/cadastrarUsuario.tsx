@@ -4,6 +4,7 @@ import { TabsStyles } from "@/styles/globalTabs";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
+import { Toast } from "toastify-react-native";
 
 export interface Employees {
     id: number;
@@ -60,6 +61,7 @@ export default function CadastrarUsuario() {
         { label: 'Inspetor', value: 'INSPECTOR' },
         { label: 'Manutentor', value: 'MAINTAINER' },
     ]);
+    const [erroMsg, setErroMsg] = useState("");
 
     async function fetchEmployees() {
         try {
@@ -90,7 +92,7 @@ export default function CadastrarUsuario() {
 
     const handlePreRegister = async () => {
         if (!name || !cpfData || !cargo) {
-            alert("Preencha todos os campos!");
+            setErroMsg("Preencha todos os campos!");
             return;
         }
         setIsLoading(true);
@@ -100,7 +102,7 @@ export default function CadastrarUsuario() {
                 cpf: limparCPF(cpfData),
                 role: cargo,
             });
-            alert("Usuário pré-cadastrado com sucesso!");
+            Toast.success("Usuário pré-cadastrado com sucesso!");
             setName('');
             setCpfData('');
             setCargo('');
@@ -109,7 +111,7 @@ export default function CadastrarUsuario() {
             if (error.response?.data?.msg) {
                 alert(error.response.data.msg);
             } else {
-                alert("Erro ao cadastrar usuário.");
+                Toast.error("Erro ao cadastrar usuário.");
             }
         } finally {
             setIsLoading(false);
@@ -170,6 +172,12 @@ export default function CadastrarUsuario() {
                             textStyle={{ color: cargo ? '#000' : '#6c6c6c' }}
                         />
                     </View>
+
+                    {erroMsg !== "" && (
+                        <View style={TabsStyles.erroMsg}>
+                            <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                        </View>
+                    )}
 
                     <TouchableOpacity
                         style={style.botaoCadastro}

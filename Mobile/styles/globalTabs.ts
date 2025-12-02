@@ -58,8 +58,13 @@ export const TabsStyles = StyleSheet.create({
         paddingBottom: 80,
     },
     erroMsg: {
-    fontSize: 15,
-    color: "#a50702",
-    textAlign: "left",
-}
+        marginTop: 10,
+    },
+    erroMsgText: {
+        fontSize: 15,
+        color: "#BF201C",
+        fontWeight: 400,
+        textAlign: "left",
+    },
+
 })

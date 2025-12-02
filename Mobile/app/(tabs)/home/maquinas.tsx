@@ -1,11 +1,12 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
-import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useEffect, useState, useRef } from 'react';
 import { Pencil, Trash2, Wrench } from "lucide-react-native";
 import { api } from "../../../lib/axios";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Toast } from "toastify-react-native";
 
 interface Machines {
     id: number;
@@ -21,6 +22,8 @@ interface SetFromAPI {
 }
 
 export default function Maquinas() {
+
+    const [erroMsg, setErroMsg] = useState("");
     const [machines, setMachines] = useState<Machines[]>([]);
     const [oficinaSelecionada, setOficinaSelecionada] = useState("");
     const [open, setOpen] = useState(false);
@@ -138,7 +141,7 @@ export default function Maquinas() {
         const trimmed = (editName ?? "").trim();
 
         if (!trimmed) {
-            Alert.alert('Erro', 'Nome não pode ficar vazio.');
+            setErroMsg('Nome não pode ficar vazio.');
             return;
         }
 
@@ -154,10 +157,10 @@ export default function Maquinas() {
                 )
             );
 
-            Alert.alert('Sucesso', 'Máquina atualizada.');
+            Toast.success('Máquina atualizada.');
         } catch (err: any) {
             console.error('Erro ao atualizar máquina:', err.response?.data || err.message);
-            Alert.alert('Erro', 'Não foi possível atualizar a máquina.');
+            Toast.error('Não foi possível atualizar a máquina.');
         } finally {
             setEditModalVisible(false);
             setSelectedMachine(null);
@@ -169,7 +172,7 @@ export default function Maquinas() {
 
     async function handleCadastro() {
         if (!nome.trim() || !descricao.trim() || !oficinaSelecionada || conjuntoSelecionado.length === 0) {
-            Alert.alert("Erro", "Por favor, preencha todos os campos.");
+            setErroMsg("Por favor, preencha todos os campos.");
             return;
         }
 
@@ -186,7 +189,7 @@ export default function Maquinas() {
 
         try {
             await api.post('/machines/create', payload);
-            Alert.alert("Sucesso", "Máquina cadastrada com sucesso!");
+            Toast.success("Máquina cadastrada com sucesso!");
             setNome("");
             setDescricao("");
             setOficinaSelecionada("");
@@ -194,7 +197,7 @@ export default function Maquinas() {
             setRefreshKey(key => key + 1);
         } catch (error: any) {
             console.error("Erro ao cadastrar máquina:", error.response?.data || error.message);
-            Alert.alert("Erro", "Não foi possível cadastrar a máquina.");
+            Toast.error("Não foi possível cadastrar a máquina.");
         } finally {
             setLoadingSubmit(false);
         }
@@ -284,6 +287,12 @@ export default function Maquinas() {
                                 listMode="SCROLLVIEW"
                             />
                         </View>
+
+                        {erroMsg !== "" && (
+                            <View style={TabsStyles.erroMsg}>
+                                <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                            </View>
+                        )}
 
                         <TouchableOpacity
                             style={styles.botaoCad}

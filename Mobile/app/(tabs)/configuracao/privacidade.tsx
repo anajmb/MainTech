@@ -1,8 +1,8 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Lock, Shield, TriangleAlert, Eye, EyeOff } from "lucide-react-native";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
-import { use, useState } from "react";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { useState } from "react";
 import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
 import { getToken } from "@/lib/auth";
@@ -148,9 +148,9 @@ export default function Privacidade() {
             </TouchableOpacity>
           </View>
 
-          {erroMsg && (
+          {erroMsg !== "" && (
             <View style={TabsStyles.erroMsg}>
-              {erroMsg}
+              <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
             </View>
           )}
 

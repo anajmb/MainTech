@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
+import { Toast } from "toastify-react-native";
 
 interface SubSet {
     id: number;
@@ -60,6 +61,7 @@ export default function ConjuntosInspe() {
     const [currentStatus, setCurrentStatus] = useState<'perfeito' | 'avariado' | null>(null);
     const [selectedChanges, setSelectedChanges] = useState<Record<number, boolean>>({});
     const [selectedRepairs, setSelectedRepairs] = useState<Record<number, boolean>>({});
+    const [erroMsg, setErroMsg] = useState("");
 
     useEffect(() => {
         // --- MUDANÇA 3: Salvar o 'taskId' no state ---
@@ -102,7 +104,7 @@ export default function ConjuntosInspe() {
                 }
             } catch (e) {
                 console.error("Falha ao parsear dados da inspeção:", e);
-                Alert.alert("Erro", "Não foi possível carregar os dados do conjunto.");
+                Toast.error("Não foi possível carregar os dados do conjunto.");
             }
         }
     }, [machineDataJSON, selectionsJSON, setId, taskIdParam]); // Adicionado taskIdParam
@@ -119,13 +121,13 @@ export default function ConjuntosInspe() {
 
         // --- MUDANÇA 4: Verificar se o taskId foi carregado ---
         if (!taskId) {
-            Alert.alert("Erro", "ID da Ta refa não encontrado. Tente voltar e entrar novamente.");
+            Toast.error("ID da Tarefa não encontrado. Tente entrar novamente.");
             return;
         }
         // --- Fim da Mudança 4 ---
 
         if (currentStatus === null) {
-            Alert.alert("Atenção", "Por favor, selecione o estado do conjunto (Perfeito ou Avariado).");
+            setErroMsg("Por favor, selecione o estado do conjunto (Perfeito ou Avariado).");
             return;
         }
 
@@ -260,6 +262,12 @@ export default function ConjuntosInspe() {
 
                         </View>
                         <Text style={styles.obsCheck}>*Selecione mais de uma opção se necessário</Text>
+                    </View>
+                )}
+
+                {erroMsg !== "" && (
+                    <View style={TabsStyles.erroMsg}>
+                        <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
                     </View>
                 )}
 
