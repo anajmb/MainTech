@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   statusInProgress: {
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
-    color: '#ffc107',
+    color: '#d6a103ff',
   },
   statusCompleted: {
     backgroundColor: 'rgba(40, 167, 69, 0.1)',
