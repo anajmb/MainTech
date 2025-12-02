@@ -8,6 +8,8 @@ import {
   ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View
 } from "react-native";
 import { useAuth } from "@/contexts/authContext";
+import { TabsStyles } from "@/styles/globalTabs";
+import { Toast } from "toastify-react-native";
 
 export default function Login() {
   const [isAgree, setIsAgree] = useState(false);
@@ -19,6 +21,7 @@ export default function Login() {
   const router = useRouter();
   const { loginUser } = useAuth();
   const toggleSwitch = () => setIsAgree((previous) => !previous);
+  const [erroMsg, setErroMsg] = useState("");
 
 
   const formatCPF = (value: string) => {
@@ -33,7 +36,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!cpfData.trim() || !passwordData.trim()) {
-      Alert.alert("Erro", "Preencha CPF e senha.");
+      setErroMsg("Preencha CPF e senha.");
       return;
     }
 
@@ -56,7 +59,7 @@ export default function Login() {
       console.log(token)
 
       if (!token) {
-        Alert.alert("Erro", "Resposta de login inválida: " + JSON.stringify(res.data));
+        Toast.error("Resposta de login inválida: " + JSON.stringify(res.data));
         setIsLoading(false);
         return;
       }
@@ -98,8 +101,7 @@ export default function Login() {
         error.response?.data ||
         error.message ||
         "Erro ao fazer login";
-      Alert.alert(
-        "Falha no login",
+      Toast.error(
         typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg)
       );
     } finally {
@@ -180,6 +182,12 @@ export default function Login() {
                 style={{ transform: [{ scaleX: 0.6 }, { scaleY: 0.6 }] }}
               />
             </View>
+
+            {erroMsg !== "" && (
+              <View style={TabsStyles.erroMsg}>
+                <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+              </View>
+            )}
 
             <View style={{ alignItems: "center" }}>
               <TouchableOpacity

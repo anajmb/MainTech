@@ -66,5 +66,11 @@ export const TabsStyles = StyleSheet.create({
         fontWeight: 400,
         textAlign: "left",
     },
+    sucMsg: {
+        fontSize: 15,
+        color: "#1cbf65ff",
+        fontWeight: 400,
+        textAlign: "left",
+    },
 
 })

@@ -2,28 +2,31 @@ import { Link, router } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
-import { api } from "@/lib/axios"; 
+import { api } from "@/lib/axios";
+import { TabsStyles } from "@/styles/globalTabs";
 
 export default function RedefinirSenha() {
 
-    const [email, setEmail] = useState(""); 
+    const [email, setEmail] = useState("");
     const [isAgree, setIsAgree] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [erroMsg, setErroMsg] = useState("");
+    const [sucMsg, setSucMsg] = useState("");
 
     const handleSendCode = async () => {
         try {
             if (!email) {
-                Alert.alert("Atenção", "Digite seu e-mail!");
+                setErroMsg("Digite seu e-mail!");
                 return;
             }
 
-            await api.post("/auth/send-code", { email }); 
-            Alert.alert("Sucesso", "Código enviado para seu e-mail!");
+            await api.post("/auth/send-code", { email });
+            setSucMsg("Código enviado para seu e-mail!");
             router.push({ pathname: "./recuperarCodigo", params: { email } });
 
         } catch (error) {
             console.log(error);
-            Alert.alert("Erro", "Não foi possível enviar o código.");
+            setErroMsg("Não foi possível enviar o código.");
         }
     };
 
@@ -51,6 +54,18 @@ export default function RedefinirSenha() {
                                 onChangeText={setEmail} // ✅ controla o input
                             />
                         </View>
+
+                        {erroMsg !== "" && (
+                            <View style={TabsStyles.erroMsg}>
+                                <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                            </View>
+                        )}
+
+                        {sucMsg !== "" && (
+                            <View style={TabsStyles.erroMsg}>
+                                <Text style={TabsStyles.sucMsg}>{sucMsg}</Text>
+                            </View>
+                        )}
 
                         <View style={{ alignItems: "center" }}>
                             <TouchableOpacity style={styles.botaoLogin} onPress={handleSendCode}>

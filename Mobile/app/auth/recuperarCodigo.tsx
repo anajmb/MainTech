@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from "react-native-confirmation-code-field";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { api } from "@/lib/axios";
 import { AxiosError } from "axios";
+import { TabsStyles } from "@/styles/globalTabs";
+import { Toast } from "toastify-react-native";
 
 export default function RecuperarCodigo() {
   const { email } = useLocalSearchParams();
   const [value, setValue] = useState("");
   const CELL_COUNT = 4;
   const router = useRouter();
+  const [erroMsg, setErroMsg] = useState("");
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -19,7 +22,7 @@ export default function RecuperarCodigo() {
 
   const handleVerifyCode = async () => {
     if (!value.trim()) {
-      Alert.alert("Atenção", "Digite o código de verificação!");
+      setErroMsg("Digite o código de verificação!");
       return;
     }
 
@@ -27,13 +30,13 @@ export default function RecuperarCodigo() {
       const res = await api.post("/auth/verify-code", { email, code: value });
 
       if (res.data.valid) {
-        Alert.alert("Sucesso", "Código verificado!");
+        Toast.success("Código verificado!");
         router.push({
           pathname: "/redefinirsenha",
           params: { email },
         });
       } else {
-        Alert.alert("Erro", "Código incorreto.");
+        Toast.error("Código incorreto.");
       }
     } catch (err: unknown) {
       const error = err as AxiosError<{ error?: string; message?: string }>;
@@ -46,7 +49,7 @@ export default function RecuperarCodigo() {
         error.message ||
         "Não foi possível verificar o código.";
 
-      Alert.alert("Erro", msg);
+      Toast.error(msg);
     }
   };
 
@@ -97,6 +100,12 @@ export default function RecuperarCodigo() {
                 </View>
               )}
             />
+
+            {erroMsg !== "" && (
+              <View style={TabsStyles.erroMsg}>
+                <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+              </View>
+            )}
 
             <View style={{ alignItems: "center" }}>
               <TouchableOpacity style={styles.botaoLogin} onPress={handleVerifyCode}>

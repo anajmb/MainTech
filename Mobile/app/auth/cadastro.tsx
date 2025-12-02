@@ -1,9 +1,11 @@
 import { api } from "@/lib/axios";
+import { TabsStyles } from "@/styles/globalTabs";
 import { Link, useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
 import { Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Toast } from "toastify-react-native";
 
 export default function Cadastro() {
 
@@ -19,6 +21,7 @@ export default function Cadastro() {
   // const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [erroMsg, setErroMsg] = useState("");
 
 
   const showDatePicker = () => setDatePickerVisibility(true);
@@ -60,18 +63,18 @@ export default function Cadastro() {
   };
 
   const handleCadastro = async () => {
-  if (!cpfData || !name || !email || !phone || !date || !password) {
-    Alert.alert("Erro", "Preencha todos os campos!");
-    return;
-  }
+    if (!cpfData || !name || !email || !phone || !date || !password) {
+      setErroMsg("Preencha todos os campos!");
+      return;
+    }
 
-  if (!validarSenhaForte(password)) {
-    Alert.alert(
-      "Senha fraca",
-      "A senha deve conter no mínimo:\n• 8 caracteres\n• 1 letra maiúscula\n• 1 número\n• 1 caractere especial"
-    );
-    return;
-  }
+    if (!validarSenhaForte(password)) {
+      Alert.alert(
+        "Senha fraca",
+        "A senha deve conter no mínimo:\n• 8 caracteres\n• 1 letra maiúscula\n• 1 número\n• 1 caractere especial"
+      );
+      return;
+    }
 
     const cpfLimpo = limparCPF(cpfData); // <= aqui!
 
@@ -96,11 +99,11 @@ export default function Cadastro() {
       // Não precisa salvar o user aqui!
     } catch (error: any) {
       if (error.response?.status === 409) {
-        Alert.alert("Erro", error.response.data.msg);
+        Toast.error("Erro", error.response.data.msg);
       } else if (error.response?.status === 404) {
-        Alert.alert("Erro", "Não existe um pré-cadastro para este CPF.");
+        Toast.error("Não existe um pré-cadastro para este CPF.");
       } else {
-        Alert.alert("Erro", "Erro ao completar cadastro.");
+        Toast.error("Erro ao completar cadastro.");
       }
     } finally {
       setIsLoading(false);
@@ -227,6 +230,12 @@ export default function Cadastro() {
               </TouchableOpacity>
 
             </View>
+
+            {erroMsg !== "" && (
+              <View style={TabsStyles.erroMsg}>
+                <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+              </View>
+            )}
 
             <View style={styles.hrefLogin}>
               <Link href={'/'} style={{ color: "#D40303" }}>

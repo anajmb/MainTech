@@ -3,6 +3,8 @@ import { Eye, EyeOff } from "lucide-react-native";
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import { api } from "@/lib/axios";
+import { TabsStyles } from "@/styles/globalTabs";
+import { Toast } from "toastify-react-native";
 
 export default function RedefinirSenha() {
   const { email } = useLocalSearchParams();
@@ -11,8 +13,9 @@ export default function RedefinirSenha() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const router = useRouter();
+  const [erroMsg, setErroMsg] = useState("");
 
-    const validarSenhaForte = (senha: string) => {
+  const validarSenhaForte = (senha: string) => {
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -20,9 +23,9 @@ export default function RedefinirSenha() {
   };
 
 
-    const handleResetPassword = async () => {
+  const handleResetPassword = async () => {
     if (password !== confirm) {
-      Alert.alert("Erro", "As senhas não coincidem");
+      setErroMsg("As senhas não coincidem");
       return;
     }
 
@@ -36,10 +39,10 @@ export default function RedefinirSenha() {
 
     try {
       await api.post("/auth/reset-password", { email, newPassword: password });
-      Alert.alert("Sucesso", "Senha redefinida com sucesso!");
+      Toast.success("Senha redefinida com sucesso!");
       router.push("/");
     } catch (error: any) {
-      Alert.alert("Erro", error.response?.data?.error || "Falha ao redefinir senha");
+      Toast.error("Erro", error.response?.data?.error || "Falha ao redefinir senha");
     }
   };
 
@@ -92,6 +95,12 @@ export default function RedefinirSenha() {
                 </TouchableOpacity>
               </View>
             </View>
+
+            {erroMsg !== "" && (
+              <View style={TabsStyles.erroMsg}>
+                <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+              </View>
+            )}
 
             <View style={{ alignItems: "center" }}>
               <TouchableOpacity style={styles.botaoLogin} onPress={handleResetPassword}>
