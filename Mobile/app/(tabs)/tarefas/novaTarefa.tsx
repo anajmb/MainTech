@@ -244,7 +244,7 @@ export default function NovaTarefa() {
                                 locale="pt-BR"
                             />
                         </View>
-                        <View style={styles.subtituloData}>
+                        <View style={styles.subtituloData2}>
                             <Text style={styles.label}>Horário</Text>
                             <TouchableOpacity style={styles.input} onPress={showTimePicker} disabled={!date}>
                                 <Text style={{ color: time ? "#000" : "#6c6c6c", marginTop: 2 }}>
@@ -396,6 +396,12 @@ const styles = StyleSheet.create({
     },
     subtituloData: {
         marginTop: 8,
+        marginBottom: 8,
+        marginRight: 20,
+        width: 130
+    },
+    subtituloData2: {
+        marginTop: 25,
         marginBottom: 8,
         marginRight: 20,
         width: 130
