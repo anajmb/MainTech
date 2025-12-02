@@ -111,8 +111,11 @@ export default function InfosMaquina() {
         {machineData ? (
           <>
             <View style={styles.cardInfoMaquina}>
+
+              <View>
               <Text style={styles.fieldsTitle}>Nome da máquina</Text>
               <Text style={styles.fieldsContent}>{machineData.name}</Text>
+              </View>
 
               <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 1, padding: 5 }}>
                 <View style={{ alignItems: "center", width: "50%" }}>
@@ -155,7 +158,7 @@ export default function InfosMaquina() {
                         shadowOpacity: 0.08,
                         shadowRadius: 8,
                       }}>
-                        <Text style={{ fontSize: 20, marginBottom: 10 }}>Conjuntos desta máquina:</Text>
+                        <Text style={{ textAlign: "center", fontSize: 20, marginBottom: 10 }}>Conjuntos desta máquina:</Text>
                         <ScrollView>
                           {machineData.sets.map((set: MachineSet) => ( 
                             <View
@@ -166,7 +169,7 @@ export default function InfosMaquina() {
                                 borderColor: "#e6e6e6",
                               }}
                             >
-                              <Text style={{ fontSize: 15 }}>{set.name}</Text>
+                              <Text style={{ fontSize: 17 }}>{set.name}</Text>
                             </View>
                           ))}
                         </ScrollView>
@@ -181,7 +184,7 @@ export default function InfosMaquina() {
                           }}
                           onPress={() => setModalVisible(false)}
                         >
-                          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>Fechar</Text>
+                          <Text style={{ marginBottom: -1, marginTop: -1, paddingVertical: 3, paddingHorizontal: 20, backgroundColor: "#A50702", color: "#fff", fontWeight: "400", fontSize: 16 }}>Fechar</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -189,14 +192,21 @@ export default function InfosMaquina() {
                 </View>
               </View>
 
+              <View>
+
               <Text style={styles.fieldsTitle}>Descrição:</Text>
               <Text style={styles.fieldsContent}>{machineData.description}</Text>
+              </View>
+
+              <View>
 
               <Text style={styles.fieldsTitle}>Temperatura:</Text>
               <Text style={styles.fieldsContent}>{machineData.temperature} °C</Text>
+              </View>
 
               {hasPendingTasks ? (
                 <>
+                <View>
                   <Text style={styles.fieldsTitle}>Tarefas Pendentes</Text>
                   {user?.role === "INSPECTOR" ? (
                     <Link
@@ -214,6 +224,7 @@ export default function InfosMaquina() {
                         </Text>
                       </TouchableOpacity>
                     </Link>
+                    
                   ) : (
                     <View style={{ alignItems: "center" }}>
                       {pendingTasks.map((task) => (
@@ -223,8 +234,10 @@ export default function InfosMaquina() {
                       ))}
                     </View>
                   )}
+                  </View>
                 </>
               ) : (
+
                 <Text style={styles.fieldsTitle}>Nenhuma Tarefa Pendente</Text>
               )}
             </View>
@@ -242,18 +255,20 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 70,
     padding: 22,
+    
   },
   cardInfoMaquina: {
     backgroundColor: "#eeeeee",
     borderRadius: 16,
     padding: 18,
     marginVertical: 12,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.13,
     shadowRadius: 4,
     elevation: 3,
+    gap: 12,
   },
   fieldsTitle: {
     fontSize: 16,
@@ -283,11 +298,5 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     textAlign: "center",
     width: "80%",
-
-    shadowColor: "#A50702",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
   }
 });
