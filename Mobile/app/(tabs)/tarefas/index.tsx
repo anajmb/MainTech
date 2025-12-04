@@ -1,8 +1,7 @@
 import SetaVoltar from "@/components/setaVoltar";
 import { TabsStyles } from "@/styles/globalTabs";
 import { Plus } from "lucide-react-native";
-import { useEffect, useState } from "react";
-// --- Removido 'ScrollView' ---
+import { useEffect, useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import { Link, useRouter } from "expo-router";
 import TasksCards from "./tasksCard";
@@ -10,7 +9,6 @@ import { api } from "@/lib/axios";
 import Logo from "@/components/logo";
 import { useAuth } from "@/contexts/authContext";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
 
 interface Task {
     id: number;
@@ -31,40 +29,40 @@ export default function Tarefas() {
     const [loading, setLoading] = useState(true);
 
     useFocusEffect(
-    useCallback(() => {
-        async function fetchTasks() {
-            if (!user) return;
-            setLoading(true);
+        useCallback(() => {
+            async function fetchTasks() {
+                if (!user) return;
+                setLoading(true);
 
-            try {
-                const params: { status?: string; inspectorId?: number | string } = {};
+                try {
+                    const params: { status?: string; inspectorId?: number | string } = {};
 
-                if (filtro === "pendente") params.status = "PENDING";
-                if (filtro === "concluida") params.status = "COMPLETED";
+                    if (filtro === "pendente") params.status = "PENDING";
+                    if (filtro === "concluida") params.status = "COMPLETED";
 
-                if (user.role === "INSPECTOR") {
-                    const inspectorId = (user as any).id;
-                    if (inspectorId) params.inspectorId = inspectorId;
+                    if (user.role === "INSPECTOR") {
+                        const inspectorId = (user as any).id;
+                        if (inspectorId) params.inspectorId = inspectorId;
+                    }
+
+                    const response = await api.get('/tasks/get', { params });
+
+                    const tarefasOrdenadas = response.data.sort(
+                        (a: Task, b: Task) =>
+                            new Date(b.updateDate).getTime() - new Date(a.updateDate).getTime()
+                    );
+
+                    setTasks(tarefasOrdenadas);
+                } catch (error) {
+                    console.error('Error fetching tasks:', error);
+                } finally {
+                    setLoading(false);
                 }
-
-                const response = await api.get('/tasks/get', { params });
-
-                const tarefasOrdenadas = response.data.sort(
-                    (a: Task, b: Task) =>
-                        new Date(b.updateDate).getTime() - new Date(a.updateDate).getTime()
-                );
-
-                setTasks(tarefasOrdenadas);
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-            } finally {
-                setLoading(false);
             }
-        }
 
-        fetchTasks();
-    }, [filtro, user])
-);
+            fetchTasks();
+        }, [filtro, user])
+    );
 
     if (!user) return <ActivityIndicator size="large" color="#CF0000" style={{ flex: 1 }} />;
 
@@ -92,6 +90,8 @@ export default function Tarefas() {
                                 </Link>
                             )}
                         </View>
+                        
+                        {/* Filtro Ajustado */}
                         <View style={styles.filtro}>
                             <TouchableOpacity onPress={() => setFiltro("todas")}>
                                 <Text style={[styles.filtroTitulo, filtro === "todas" && styles.filtroAtivo]}>
@@ -155,8 +155,6 @@ export default function Tarefas() {
     );
 }
 
-
-// Seus estilos permanecem os mesmos
 const styles = StyleSheet.create({
     plusButton: {
         backgroundColor: "#D10B03",
@@ -169,18 +167,25 @@ const styles = StyleSheet.create({
     },
     filtro: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between', // ALTERADO: Garante espaçamento igual
+        alignItems: 'center', // ADICIONADO: Centraliza verticalmente
         marginBottom: 50,
         backgroundColor: '#eeeeee',
         paddingVertical: 25,
         borderRadius: 12,
-        paddingHorizontal: 45,
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
+        paddingHorizontal: 30, // AJUSTADO: Reduzido de 45 para 30 para equilibrar
+        // Sombra compatível com Android e iOS
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
     },
     filtroTitulo: {
         padding: 10,
         borderRadius: 20,
         paddingHorizontal: 20,
+        textAlign: 'center', // Garante alinhamento do texto
     },
     filtroAtivo: {
         color: "#fff",
