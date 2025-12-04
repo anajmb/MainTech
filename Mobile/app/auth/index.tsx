@@ -80,14 +80,15 @@ export default function Login() {
         }
       }
 
-      // ✅ Salva o usuário no AsyncStorage
+      // ✅ Salva o usuário no AsyncStorage (OTIMIZADO)
       if (user) {
         loginUser(user);
 
-        // ✅ Salva o keepConnected
-        await AsyncStorage.setItem("keepConnected", isAgree ? "true" : "false");
-        await AsyncStorage.setItem("user", JSON.stringify(user));
-        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.multiSet([
+          ["keepConnected", isAgree ? "true" : "false"],
+          ["user", JSON.stringify(user)],
+          ["token", token]
+        ]);
       } else {
         console.warn("⚠️ Nenhum usuário retornado. Verifique o backend do login.");
       }
