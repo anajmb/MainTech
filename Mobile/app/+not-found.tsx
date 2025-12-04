@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons'; // Biblioteca de ícones padr�
 
 // Importação da imagem (ajuste o caminho '../' conforme sua estrutura de pastas)
 // Supondo que este arquivo esteja na pasta 'app' e a imagem em 'assets/images'
-const backgroundImage = require('../../assets/images/background-mobile.png');
+const backgroundImage = require('../assets/images/background-mobile.png');
 
 export default function NotFoundScreen() {
     return (
@@ -30,7 +30,7 @@ export default function NotFoundScreen() {
                 </View>
 
                 {/* Botão de Voltar (Estilizado) */}
-                <Link href={'/_sitemap'} style={styles.linkButton}>
+                <Link href={'/'} style={styles.linkButton}>
                     <Text style={styles.linkText}>Voltar para o início</Text>
                 </Link>
 

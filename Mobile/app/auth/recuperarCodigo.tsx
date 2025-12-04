@@ -32,7 +32,7 @@ export default function RecuperarCodigo() {
       if (res.data.valid) {
         Toast.success("Código verificado!");
         router.push({
-          pathname: "./redefinirSenha",
+          pathname: "./redefinirsenha",
           params: { email },
         });
       } else {

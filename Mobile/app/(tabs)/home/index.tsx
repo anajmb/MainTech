@@ -11,6 +11,7 @@ import { useFocusEffect } from "expo-router";
 import Logo from "@/components/logo";
 import { useAuth } from "@/contexts/authContext";
 import AtividadesRecentes from "@/components/ativRecent";
+import { api } from "@/lib/axios";
 
 
 function AdminHome() {
@@ -35,7 +36,7 @@ function AdminHome() {
       setRefreshing(false);
     }, 2000);
   }, []);
-   
+
   return (
     <ScrollView
       style={TabsStyles.container}
@@ -86,7 +87,7 @@ function AdminHome() {
           />
         </View>
       </View>
-       
+
       {/* Ações rápidas */}
       <View style={TabsStyles.todosCard}>
 
@@ -132,7 +133,7 @@ function AdminHome() {
             <AtividadesRecentes />
           </View>
         </View>
-        </View>
+      </View>
     </ScrollView>
   )
 }
@@ -143,6 +144,29 @@ function UsersHome() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const { user } = useAuth();
 
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [loadingTeam, setLoadingTeam] = useState(true);
+
+  // BUSCA A EQUIPE DO USUÁRIO (Manutentor/Inspetor)
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchUserTeam() {
+        if (!user) return;
+
+        try {
+          const res = await api.get(`/team/getByUser/${user.id}`);
+          setTeamId(res.data?.id || null);
+        } catch (error) {
+          console.log("Erro ao buscar equipe do usuário:", error);
+        } finally {
+          setLoadingTeam(false);
+        }
+      }
+
+      fetchUserTeam();
+    }, [user])
+  );
+
   useFocusEffect(
     useCallback(() => {
       const loadPreference = async () => {
@@ -152,14 +176,14 @@ function UsersHome() {
       loadPreference();
     }, [])
   );
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    console.log("Recarregando dados da página Home (Users)...");
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
   }, []);
-  
+
   return (
     <ScrollView
       style={TabsStyles.container}
@@ -211,44 +235,46 @@ function UsersHome() {
 
       <View style={TabsStyles.todosCard}>
 
-      {/* Ações rápidas para Inspetor/Manutentor: Máquinas -> Históricos, Equipes -> Minha equipe */}
-      <View>
-        <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
-        <View style={styles.cardsAcoes} >
-          <Link href="/(tabs)/historico" asChild>
-            <TouchableOpacity style={styles.acaoCard}>
-              <History color={"#FF9705"} size={33} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Histórico</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/(tabs)/home/calendario" asChild>
-            <TouchableOpacity style={styles.acaoCard}>
-              <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Agenda</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link
-            href={{
-              pathname: "/(tabs)/home/verEquipe",
-              params: { userId: user?.id }
-            }}
-            asChild
-          >
-            <TouchableOpacity style={styles.acaoCard}>
-              <Users color={'#11C463'} size={35} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Minha equipe</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/(tabs)/home/dashboard" asChild>
-            <TouchableOpacity style={styles.acaoCard}>
-              <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
-              <Text style={styles.tituloAcao}>Dashboard</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-        <View style={styles.ativRecente}>
-          <Text style={styles.titulo}>Atividades Recentes</Text>
-          {/* <View style={styles.ativRecenteCard}>
+        {/* Ações rápidas para Inspetor/Manutentor: Máquinas -> Históricos, Equipes -> Minha equipe */}
+        <View>
+          <CustomText style={styles.titulo}>Ações Rápidas</CustomText>
+          <View style={styles.cardsAcoes} >
+            <Link href="/(tabs)/historico" asChild>
+              <TouchableOpacity style={styles.acaoCard}>
+                <History color={"#FF9705"} size={33} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>Histórico</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href="/(tabs)/home/calendario" asChild>
+              <TouchableOpacity style={styles.acaoCard}>
+                <Calendar color={'#438BE9'} size={30} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>Agenda</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link
+              href={{
+                pathname: "/(tabs)/home/verEquipe",
+                params: { teamId }
+              }}
+              asChild
+            >
+              <TouchableOpacity style={styles.acaoCard} disabled={loadingTeam || !teamId}>
+                <Users color={"#11C463"} size={35} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>
+                  {loadingTeam ? "Carregando..." : "Minha equipe"}
+                </Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href="/(tabs)/home/dashboard" asChild>
+              <TouchableOpacity style={styles.acaoCard}>
+                <ChartColumn color={'#AC53F3'} size={35} style={styles.iconAcao} />
+                <Text style={styles.tituloAcao}>Dashboard</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+          <View style={styles.ativRecente}>
+            <Text style={styles.titulo}>Atividades Recentes</Text>
+            {/* <View style={styles.ativRecenteCard}>
             <View style={styles.iconAtivRecente}>
               <CheckCircle color={'#51C385'} size={22} />
             </View>
@@ -257,10 +283,10 @@ function UsersHome() {
               <Text style={styles.ativInfoSubtitulo}>2h atrás</Text>
             </View>
           </View> */}
-           <AtividadesRecentes />
-        </View>
+            <AtividadesRecentes />
+          </View>
 
-      </View>
+        </View>
       </View>
 
     </ScrollView>
