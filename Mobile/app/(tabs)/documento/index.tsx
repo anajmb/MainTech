@@ -104,6 +104,11 @@ export default function Documento() {
     return true;
   });
 
+  const ordensOrdenadas = [...ordensFiltradas].sort((a, b) => {
+  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+});
+
+
   return (
     <ScrollView style={TabsStyles.container}>
       <Logo />
@@ -135,10 +140,10 @@ export default function Documento() {
       <View style={styles.documentosList}>
         {loading ? (
           <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 30 }} />
-        ) : ordensFiltradas.length === 0 ? (
+        ) : ordensOrdenadas.length === 0 ? (
           <Text style={styles.textoVazio}>Nenhuma ordem de serviço encontrada.</Text>
         ) : (
-          ordensFiltradas.map((ordem) => (
+          ordensOrdenadas.map((ordem) => (
             <Link
               key={ordem.id}
               href={{

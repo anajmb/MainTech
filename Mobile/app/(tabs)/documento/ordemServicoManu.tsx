@@ -7,8 +7,6 @@ import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router"; /
 import { api } from "../../../lib/axios";
 import { Toast } from "toastify-react-native";
 
-// --- MUDANÇA 1: Interface ATUALIZADA ---
-// (Deve ser idêntica à interface do seu componente Relatorio)
 interface OrdemServico {
     id: number;
     machineId: number;
@@ -26,7 +24,6 @@ interface OrdemServico {
     materialsUsed?: string;
     status?: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'IN_REVIEW' | 'COMPLETED'; 
 }
-// --- Fim da Mudança 1 ---
 
 export default function OrdemServico() {
 
@@ -36,7 +33,7 @@ export default function OrdemServico() {
     const [ordem, setOrdem] = useState<OrdemServico | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // --- MUDANÇA 2: fetchOrdem agora usa useCallback ---
+   
     const fetchOrdem = useCallback(async () => {
         if (!id) {
             setLoading(false);
@@ -45,7 +42,7 @@ export default function OrdemServico() {
         }
         try {
             setLoading(true);
-            // Rota correta (como você tinha)
+            
             const response = await api.get(`/serviceOrders/getUnique/${id}`); 
             setOrdem(response.data);
         } catch (error: any) {
@@ -63,19 +60,13 @@ export default function OrdemServico() {
             fetchOrdem();
         }, [fetchOrdem])
     );
-    // --- Fim da Mudança 2 ---
 
 
-    // --- MUDANÇA 3: Função 'onUpdate' real ---
-    // Esta função é passada para o Relatorio.tsx.
-    // Quando o Relatorio.tsx (filho) terminar uma ação (atribuir, submeter),
-    // ele chamará esta função, que navegará de volta.
     const handleUpdate = () => {
-        // A tela anterior (Documentos) já usa useFocusEffect,
-        // então ela será recarregada automaticamente quando voltarmos.
+       
         router.back();
     };
-    // --- Fim da Mudança 3 ---
+  
 
 
     if (loading) {
@@ -112,14 +103,9 @@ export default function OrdemServico() {
             </View>
              <View style={TabsStyles.todosCard}>
 
-            {/* --- MUDANÇA 4: Passando a prop 'onUpdate' correta --- */}
-            {/* Agora o componente Relatorio tem o 'ordem' e a função 'handleUpdate' */}
+            
             <Relatorio ordem={ordem} onUpdate={handleUpdate} />
-            {/* --- Fim da Mudança 4 --- */}
-
-
-            {/* --- MUDANÇA 5: Botões antigos REMOVIDOS --- */}
-            {/* O componente 'Relatorio' agora cuida de todos os botões */}
+           
             </View>
         </ScrollView>
     );

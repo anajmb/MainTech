@@ -9,6 +9,8 @@ import TasksCards from "./tasksCard";
 import { api } from "@/lib/axios";
 import Logo from "@/components/logo";
 import { useAuth } from "@/contexts/authContext";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 interface Task {
     id: number;
@@ -28,26 +30,31 @@ export default function Tarefas() {
     const [filtro, setFiltro] = useState<"todas" | "pendente" | "concluida">("todas");
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    useFocusEffect(
+    useCallback(() => {
         async function fetchTasks() {
-            if (!user) return; // espera user carregado
+            if (!user) return;
             setLoading(true);
+
             try {
                 const params: { status?: string; inspectorId?: number | string } = {};
 
-                if (filtro === "pendente") {
-                    params.status = "PENDING";
-                }
-                if (filtro === "concluida") {
-                    params.status = "COMPLETED";
-                }
+                if (filtro === "pendente") params.status = "PENDING";
+                if (filtro === "concluida") params.status = "COMPLETED";
+
                 if (user.role === "INSPECTOR") {
                     const inspectorId = (user as any).id;
                     if (inspectorId) params.inspectorId = inspectorId;
                 }
 
                 const response = await api.get('/tasks/get', { params });
-                setTasks(response.data);
+
+                const tarefasOrdenadas = response.data.sort(
+                    (a: Task, b: Task) =>
+                        new Date(b.updateDate).getTime() - new Date(a.updateDate).getTime()
+                );
+
+                setTasks(tarefasOrdenadas);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
             } finally {
@@ -56,7 +63,8 @@ export default function Tarefas() {
         }
 
         fetchTasks();
-    }, [filtro, user]);
+    }, [filtro, user])
+);
 
     if (!user) return <ActivityIndicator size="large" color="#CF0000" style={{ flex: 1 }} />;
 

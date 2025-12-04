@@ -59,6 +59,17 @@ const actionLabel = {
     repair: "Reparo Necessário"
 };
 
+export const formatStatus = (status: OrdemServico['status']): string => {
+    switch (status) {
+        case 'PENDING': return 'Pendente';
+        case 'ASSIGNED': return 'Atribuída';
+        case 'IN_PROGRESS': return 'Em Progresso';
+        case 'IN_REVIEW': return 'Em Revisão';
+        case 'COMPLETED': return 'Concluída';
+        default: return 'Desconhecido';
+    }
+};
+
 // --- COMPONENTE SEÇÃO ---
 export default function Secao({ title, children, noBottomBorder }: SecaoProps) {
     return (
@@ -375,7 +386,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                     </View>
                     <View style={[styles.tableCell, { flex: 0.5 }]}>
                         <Text style={styles.label}>Status:</Text>
-                        <Text style={[styles.value, getStatusStyle(ordem.status)]}>{ordem.status}</Text>
+                        <Text style={[styles.value, getStatusStyle(ordem.status)]}>{formatStatus(ordem.status as any)}</Text>
                     </View>
                 </View>
 
