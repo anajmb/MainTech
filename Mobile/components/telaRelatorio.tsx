@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator, Modal, FlatList } from "react-native";
 import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
+import { Toast } from "toastify-react-native";
+import { TabsStyles } from "@/styles/globalTabs";
 
 // --- TIPAGEM ---
 type SecaoProps = {
@@ -100,6 +102,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
 
     const isMaintainer = user?.role === 'MAINTAINER';
     const isAdmin = user?.role === 'ADMIN';
+    const [erroMsg, setErroMsg] = useState("");
 
     useEffect(() => {
         if (ordem) {
@@ -155,12 +158,12 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
 
     const handleAssignMaintainer = async () => {
         if (!selectedMaintainerId) {
-            Alert.alert("Erro", "Por favor, selecione um manutentor da lista.");
+            setErroMsg("Por favor, selecione um manutentor da lista.");
             return;
         }
         const selectedMaintainer = manutentores.find(m => m.id === selectedMaintainerId);
         if (!selectedMaintainer) {
-            Alert.alert("Erro", "Manutentor selecionado inválido.");
+            setErroMsg("Manutentor selecionado inválido.");
             return;
         }
 
@@ -170,11 +173,11 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                 maintainerId: selectedMaintainer.id,
                 maintainerName: selectedMaintainer.name
             });
-            Alert.alert("Sucesso", "Ordem de Serviço atribuída.");
+           Toast.success( "Ordem de Serviço atribuída.");
             onUpdate();
         } catch (error: any) {
             console.error("Erro ao atribuir:", error.response?.data);
-            Alert.alert("Erro", error.response?.data?.msg || "Não foi possível atribuir a OS.");
+            Toast.error("Erro", error.response?.data?.msg || "Não foi possível atribuir a OS.");
         } finally {
             setLoading(false);
         }
@@ -182,7 +185,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
 
     const handleSubmitWork = async () => {
         if (!serviceNotes || !materialsUsed) {
-            Alert.alert("Erro", "Por favor, preencha os campos 'Serviço Realizado' e 'Materiais Utilizados'.");
+            setErroMsg("Por favor, preencha os campos 'Serviço Realizado' e 'Materiais Utilizados'.");
             return;
         }
         setLoading(true);
@@ -191,11 +194,11 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                 serviceNotes,
                 materialsUsed
             });
-            Alert.alert("Sucesso", "Relatório enviado para aprovação.");
+            Toast.success("Relatório enviado para aprovação.");
             onUpdate();
         } catch (error: any) {
             console.error("Erro ao submeter:", error.response?.data);
-            Alert.alert("Erro", error.response?.data?.msg || "Não foi possível submeter o relatório.");
+            Toast.error(error.response?.data?.msg || "Não foi possível submeter o relatório.");
         } finally {
             setLoading(false);
         }
@@ -205,11 +208,11 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
         setLoading(true);
         try {
             await api.patch(`/serviceOrders/approve/${ordem.id}`);
-            Alert.alert("Sucesso", "Ordem de Serviço concluída.");
+            Toast.success("Ordem de Serviço concluída.");
             onUpdate();
         } catch (error: any) {
             console.error("Erro ao aprovar:", error.response?.data);
-            Alert.alert("Erro", error.response?.data?.msg || "Não foi possível aprovar a OS.");
+            Toast.error(error.response?.data?.msg || "Não foi possível aprovar a OS.");
         } finally {
             setLoading(false);
         }
@@ -414,7 +417,14 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                         onChangeText={setMaterialsUsed}
                     />
                 </View>
+                
             </Secao>
+
+               {erroMsg !== "" && (
+                                <View style={TabsStyles.erroMsg}>
+                                    <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                                </View>
+                            )}
 
             {/* BOTÕES DE AÇÃO */}
             <View style={styles.actionButtonContainer}>
@@ -424,25 +434,25 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                     <>
                         {isAdmin && ordem.status === 'PENDING' && (
                             <TouchableOpacity style={styles.buttonAssign} onPress={handleAssignMaintainer}>
-                                <Text style={styles.buttonText}>CONFIRMAR ATRIBUIÇÃO</Text>
+                                <Text style={styles.buttonText}>Confirmar atribuição</Text>
                             </TouchableOpacity>
                         )}
 
                         {isEditable && (
                             <TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmitWork}>
-                                <Text style={styles.buttonText}>SUBMETER PARA APROVAÇÃO</Text>
+                                <Text style={styles.buttonText}>Submeter para aprovação</Text>
                             </TouchableOpacity>
                         )}
 
                         {isAdmin && ordem.status === 'IN_REVIEW' && (
                             <View style={styles.buttonsContainer}>
                                 <TouchableOpacity style={styles.buttonApprove} onPress={handleApproveWork}>
-                                    <Text style={styles.buttonText}>APROVAR OS</Text>
+                                    <Text style={styles.buttonText}>Aprovar OS</Text>
                                 </TouchableOpacity>
 
                                 {/* Botão Atualizado para chamar handleRefuseWork */}
                                 <TouchableOpacity style={styles.buttonDesapprove} onPress={handleRefuseWork}>
-                                    <Text style={styles.buttonText}>DESAPROVAR OS</Text>
+                                    <Text style={styles.buttonText}>Desaprovar OS</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -474,9 +484,7 @@ const styles = StyleSheet.create({
     titleSecao: {
         color: 'white',
         fontSize: 15,
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        fontWeight: 500,
     },
     contentContainer: {
         backgroundColor: '#fff',
@@ -517,7 +525,7 @@ const styles = StyleSheet.create({
     },
 
     label: {
-        fontSize: 12,
+        fontSize: 13,
         color: '#666',
         marginBottom: 4,
         fontWeight: '500',
@@ -671,15 +679,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
     buttonAssign: {
-        backgroundColor: '#A50702',
-        paddingVertical: 15,
-        borderRadius: 12,
-        alignItems: 'center',
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 3,
+       backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center"
     },
     buttonSubmit: {
         backgroundColor: '#A50702',
@@ -708,10 +717,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-        letterSpacing: 1,
+         color: "#fff",
+        fontSize: 15,
+        fontWeight: "400",
     },
 
     // Status

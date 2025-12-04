@@ -134,6 +134,9 @@ export default function Documento() {
         <TouchableOpacity onPress={() => setFiltro("concluida")}>
           <Text style={[styles.filtroTitulo, filtro === "concluida" && styles.filtroAtivo]}>Concluídas</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => setFiltro("atribuido")}>
+          <Text style={[styles.filtroTitulo, filtro === "atribuido" && styles.filtroAtivo]}>Atribuídos</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={TabsStyles.todosCard}>
@@ -212,7 +215,7 @@ const styles = StyleSheet.create({
   filtroTitulo: {
     padding: 10,
     borderRadius: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
   },
   filtroAtivo: {
     color: "#fff",

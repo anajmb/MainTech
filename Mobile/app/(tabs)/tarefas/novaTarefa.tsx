@@ -226,7 +226,7 @@ export default function NovaTarefa() {
                         <Text style={styles.tituloCard}>Data e Hora</Text>
                     </View>
 
-                    <View style={{ flexDirection: 'row', marginLeft: 18 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                         <View style={styles.subtituloData}>
                             <Text style={styles.label}>Data de vencimento</Text>
                             <TouchableOpacity style={styles.input} onPress={showDatePicker}>
@@ -266,7 +266,7 @@ export default function NovaTarefa() {
                 </View>
 
                 {/* --- CARD 3: INSPETOR --- */}
-                <View style={[styles.card, { marginBottom: 80 }]}>
+                <View style={[styles.card, { marginBottom: 10 }]}>
                     <View style={styles.groupTitulo}>
                         <User size={22} color={'#5C5C5C'} strokeWidth={1.6} style={styles.iconCard} />
                         <Text style={styles.tituloCard}>Inspetor</Text>
@@ -395,13 +395,11 @@ const styles = StyleSheet.create({
         marginRight: 8
     },
     subtituloData: {
-        marginTop: 8,
         marginBottom: 8,
         marginRight: 20,
         width: 130
     },
     subtituloData2: {
-        marginTop: 25,
         marginBottom: 8,
         marginRight: 20,
         width: 130
