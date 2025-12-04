@@ -32,14 +32,14 @@ function formatarData(isoString: string) {
 }
 
 export const formatStatus = (status: OrdemServico['status']): string => {
-    switch (status) {
-        case 'PENDING': return 'Pendente';
-        case 'ASSIGNED': return 'Atribuída';
-        case 'IN_PROGRESS': return 'Em Progresso';
-        case 'IN_REVIEW': return 'Em Revisão';
-        case 'COMPLETED': return 'Concluída';
-        default: return 'Desconhecido';
-    }
+  switch (status) {
+    case 'PENDING': return 'Pendente';
+    case 'ASSIGNED': return 'Atribuída';
+    case 'IN_PROGRESS': return 'Em Progresso';
+    case 'IN_REVIEW': return 'Em Revisão';
+    case 'COMPLETED': return 'Concluída';
+    default: return 'Desconhecido';
+  }
 };
 
 function getStatusStyle(status: OrdemServico['status']) {
@@ -58,23 +58,23 @@ function getStatusStyle(status: OrdemServico['status']) {
 type Role = 'INSPECTOR' | 'MAINTAINER' | 'ADMIN' | string;
 
 export const formatRole = (role: Role): string => {
-    switch (role) {
-        case 'INSPECTOR':
-            return 'Inspetor';
-        case 'MAINTAINER':
-            return 'Manutentor';
-        case 'ADMIN':
-            return 'Administrador';
-        default:
-            return role || 'Desconhecido';
-    }
+  switch (role) {
+    case 'INSPECTOR':
+      return 'Inspetor';
+    case 'MAINTAINER':
+      return 'Manutentor';
+    case 'ADMIN':
+      return 'Administrador';
+    default:
+      return role || 'Desconhecido';
+  }
 };
 
 export default function Documento() {
   const [filtro, setFiltro] = useState("todas");
   const [ordens, setOrdens] = useState<OrdemServico[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const fetchOrdens = useCallback(() => {
     async function loadData() {
@@ -105,8 +105,8 @@ export default function Documento() {
   });
 
   const ordensOrdenadas = [...ordensFiltradas].sort((a, b) => {
-  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-});
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
 
   return (
@@ -134,61 +134,58 @@ export default function Documento() {
         <TouchableOpacity onPress={() => setFiltro("concluida")}>
           <Text style={[styles.filtroTitulo, filtro === "concluida" && styles.filtroAtivo]}>Concluídas</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setFiltro("atribuido")}>
-          <Text style={[styles.filtroTitulo, filtro === "atribuido" && styles.filtroAtivo]}>Atribuídos</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={TabsStyles.todosCard}>
-      <View style={styles.documentosList}>
-        {loading ? (
-          <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 30 }} />
-        ) : ordensOrdenadas.length === 0 ? (
-          <Text style={styles.textoVazio}>Nenhuma ordem de serviço encontrada.</Text>
-        ) : (
-          ordensOrdenadas.map((ordem) => (
-            <Link
-              key={ordem.id}
-              href={{
-                pathname: "/(tabs)/documento/ordemServicoManu",
-                params: { id: ordem.id.toString() },
-              }}
-              asChild 
-            >
-              <TouchableOpacity style={styles.infosDocumentos}>
-                <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
-                  <View style={{ flexDirection: "row", gap: 15 }}>
-                    <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", alignSelf: 'flex-start' }}>
-                      <FileText color={"#fff"} />
+        <View style={styles.documentosList}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#CF0000" style={{ marginTop: 30 }} />
+          ) : ordensOrdenadas.length === 0 ? (
+            <Text style={styles.textoVazio}>Nenhuma ordem de serviço encontrada.</Text>
+          ) : (
+            ordensOrdenadas.map((ordem) => (
+              <Link
+                key={ordem.id}
+                href={{
+                  pathname: "/(tabs)/documento/ordemServicoManu",
+                  params: { id: ordem.id.toString() },
+                }}
+                asChild
+              >
+                <TouchableOpacity style={styles.infosDocumentos}>
+                  <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: "row", gap: 15 }}>
+                      <View style={{ padding: 8, borderRadius: 5, backgroundColor: "#dd3b3b", alignSelf: 'flex-start' }}>
+                        <FileText color={"#fff"} />
+                      </View>
+                      <View>
+                        <Text style={styles.documentosNome}>Ordem de serviço #{ordem.id}</Text>
+                        <Text style={styles.documentosDescricao}>
+                          Máquina: {ordem.machineName || 'N/A'}
+                        </Text>
+                        <Text style={styles.documentosDescricao}>
+                          Criada em: {formatarData(ordem.createdAt)}
+                        </Text>
+                      </View>
                     </View>
-                    <View>
-                      <Text style={styles.documentosNome}>Ordem de serviço #{ordem.id}</Text>
-                      <Text style={styles.documentosDescricao}>
-                        Máquina: {ordem.machineName || 'N/A'}
-                      </Text>
-                      <Text style={styles.documentosDescricao}>
-                        Criada em: {formatarData(ordem.createdAt)}
-                      </Text>
-                    </View>
-                  </View>
-                  <Text style={[styles.statusText, getStatusStyle(ordem.status)]}>
-                    {formatStatus(ordem.status as any)}
-                  </Text>
-                </View>
-
-                {ordem.maintainerName && (
-                  <View style={styles.maintainerInfo}>
-                    <UserCheck size={16} color="#000000ff" />
-                    <Text style={styles.maintainerText}>
-                      Atribuído a: {ordem.maintainerName}
+                    <Text style={[styles.statusText, getStatusStyle(ordem.status)]}>
+                      {formatStatus(ordem.status as any)}
                     </Text>
                   </View>
-                )}
-              </TouchableOpacity>
-            </Link>
-          ))
-        )}
-      </View>
+
+                  {ordem.maintainerName && (
+                    <View style={styles.maintainerInfo}>
+                      <UserCheck size={16} color="#000000ff" />
+                      <Text style={styles.maintainerText}>
+                        Atribuído a: {ordem.maintainerName}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </Link>
+            ))
+          )}
+        </View>
       </View>
     </ScrollView>
   );
@@ -197,25 +194,19 @@ export default function Documento() {
 // (Os estilos foram alinhados com os do componente "Tarefas")
 const styles = StyleSheet.create({
   filtro: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     marginBottom: 50,
-    marginTop: 5,
-    backgroundColor: "#eeeeee",
+    backgroundColor: '#eeeeee',
     paddingVertical: 25,
     borderRadius: 12,
     paddingHorizontal: 45,
-    // sombra idêntica ao filtro de "Tarefas"
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
   },
   filtroTitulo: {
     padding: 10,
     borderRadius: 20,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
   },
   filtroAtivo: {
     color: "#fff",
