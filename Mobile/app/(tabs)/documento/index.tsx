@@ -1,12 +1,12 @@
 import Logo from "@/components/logo";
-import SetaVoltar from "@/components/setaVoltar"; // ❗️ Verifique se a importação está correta (com ou sem {})
+import SetaVoltar from "@/components/setaVoltar"; 
 import { TabsStyles } from "@/styles/globalTabs";
-import { Link, useFocusEffect } from "expo-router"; // ❗️ Importe useFocusEffect
+import { Link, useFocusEffect } from "expo-router"; 
 import { Download, FileText, UserCheck } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../../lib/axios";
-import { useAuth } from "@/contexts/authContext"; // ❗️ Importe useAuth
+import { useAuth } from "@/contexts/authContext"; 
 
 interface OrdemServico {
   id: number;
@@ -20,7 +20,6 @@ interface OrdemServico {
   inspectorName: string;
   maintainerName?: string;
 }
-
 
 function formatarData(isoString: string) {
   try {
@@ -81,9 +80,7 @@ export default function Documento() {
       try {
         setLoading(true);
         const response = await api.get("/serviceOrders/get");
-
         setOrdens(response.data || []);
-
       } catch (error: any) {
         console.log("Erro ao buscar ordens:", error.response?.data || error.message);
         Alert.alert("Erro", "Não foi possível carregar as ordens de serviço.");
@@ -95,6 +92,7 @@ export default function Documento() {
   }, []);
 
   useFocusEffect(fetchOrdens);
+  
   const ordensFiltradas = ordens.filter((doc) => {
     if (filtro === "todas") return true;
     if (filtro === "analise") {
@@ -107,7 +105,6 @@ export default function Documento() {
   const ordensOrdenadas = [...ordensFiltradas].sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
-
 
   return (
     <ScrollView style={TabsStyles.container}>
@@ -123,7 +120,7 @@ export default function Documento() {
         </View>
       </View>
 
-
+      {/* Container do Filtro */}
       <View style={styles.filtro}>
         <TouchableOpacity onPress={() => setFiltro("todas")}>
           <Text style={[styles.filtroTitulo, filtro === "todas" && styles.filtroAtivo]}>Todas</Text>
@@ -191,22 +188,28 @@ export default function Documento() {
   );
 }
 
-// (Os estilos foram alinhados com os do componente "Tarefas")
 const styles = StyleSheet.create({
   filtro: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between', // ALTERADO: Garante espaço igual entre os itens
+    alignItems: 'center', // ADICIONADO: Centraliza verticalmente
     marginBottom: 50,
     backgroundColor: '#eeeeee',
     paddingVertical: 25,
     borderRadius: 12,
-    paddingHorizontal: 45,
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
+    paddingHorizontal: 30, // AJUSTADO: Reduzi levemente de 45 para 30 para evitar quebra de linha em telas pequenas
+    // Adicionando sombra padrão para Android/iOS (boxShadow string as vezes falha no RN nativo)
+    elevation: 4, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   filtroTitulo: {
     padding: 10,
     borderRadius: 20,
     paddingHorizontal: 20,
+    textAlign: 'center', // Garante que o texto fique centralizado no botão
   },
   filtroAtivo: {
     color: "#fff",
