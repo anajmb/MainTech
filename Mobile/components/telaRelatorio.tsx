@@ -75,6 +75,7 @@ export default function Secao({ title, children, noBottomBorder }: SecaoProps) {
     )
 }
 
+
 export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
     const { user } = useAuth();
 
@@ -211,7 +212,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             // Chama a nova rota que criamos no backend
             // Certifique-se de que a rota '/tasks/refuse/:id' esteja registrada no seu arquivo de rotas do backend
             await api.patch(`/serviceOrders/refuse/${ordem.id}`);
-            
+
             Alert.alert("Sucesso", "OS desaprovada e retornada para Pendente.");
             onUpdate(); // Atualiza a tela para refletir a mudança
         } catch (error: any) {
@@ -222,6 +223,17 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
         }
     };
     // -----------------------------------
+
+    const formatStatus = (status: OrdemServico['status']): string => {
+        switch (status) {
+            case 'PENDING': return 'Pendente';
+            case 'ASSIGNED': return 'Atribuída';
+            case 'IN_PROGRESS': return 'Em Progresso';
+            case 'IN_REVIEW': return 'Em Revisão';
+            case 'COMPLETED': return 'Concluída';
+            default: return 'Desconhecido';
+        }
+    };
 
     const getStatusStyle = (status?: string) => {
         switch (status) {
@@ -375,7 +387,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                     </View>
                     <View style={[styles.tableCell, { flex: 0.5 }]}>
                         <Text style={styles.label}>Status:</Text>
-                        <Text style={[styles.value, getStatusStyle(ordem.status)]}>{ordem.status}</Text>
+                        <Text style={[styles.value, getStatusStyle(ordem.status)]}>{formatStatus(ordem.status as any)}</Text>
                     </View>
                 </View>
 
