@@ -4,6 +4,9 @@ import { useAuth } from "@/contexts/authContext";
 import { api } from "@/lib/axios";
 import { Toast } from "toastify-react-native";
 import { TabsStyles } from "@/styles/globalTabs";
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import { Download } from "lucide-react-native";
 
 // --- TIPAGEM ---
 type SecaoProps = {
@@ -163,7 +166,7 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                 maintainerId: selectedMaintainer.id,
                 maintainerName: selectedMaintainer.name
             });
-           Toast.success( "Ordem de Serviço atribuída.");
+            Toast.success("Ordem de Serviço atribuída.");
             onUpdate();
         } catch (error: any) {
             console.error("Erro ao atribuir:", error.response?.data);
@@ -208,7 +211,6 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
         }
     };
 
-    // --- NOVA FUNÇÃO: RECUSAR TAREFA ---
     const handleRefuseWork = async () => {
         setLoading(true);
         try {
@@ -225,7 +227,6 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             setLoading(false);
         }
     };
-    // -----------------------------------
 
     const formatStatus = (status: OrdemServico['status']): string => {
         switch (status) {
@@ -246,6 +247,160 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
             case 'IN_REVIEW': return styles.statusInProgress;
             case 'COMPLETED': return styles.statusCompleted;
             default: return {};
+        }
+    };
+
+const handleDownloadPdf = async () => {
+        if (!ordem) return;
+
+        setLoading(true);
+
+        try {
+            // 1. Formata os dados para o HTML (Corrigido o uso de dateStyle/timeStyle)
+            
+            // Opções granulares para garantir a compatibilidade
+            const dateOptions: Intl.DateTimeFormatOptions = {
+                year: '2-digit',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false // Formato 24h (opcional)
+            };
+            
+            const dataEmissaoFormatada = ordem.createdAt 
+                ? new Date(ordem.createdAt).toLocaleString('pt-BR', dateOptions) 
+                : "N/A";
+                
+            const dataConclusaoFormatada = ordem.status === 'COMPLETED' && ordem.updatedAt 
+                ? new Date(ordem.updatedAt).toLocaleString('pt-BR', dateOptions) 
+                : 'Pendente';
+                
+            const prioridade = ordem.priority ? prioridadeLabel[ordem.priority] : "N/A";
+            const statusFormatado = formatStatus(ordem.status as any);
+
+            // Gera o HTML para o payload (itens de diagnóstico)
+            const payloadHtml = ordem.payload.map(item => `
+                <div class="payload-item">
+                    <p class="payload-action">• ${actionLabel[item.action]}</p>
+                    <p class="payload-sub">Conjunto: ${item.setName} | Subconjunto: ${item.subsetName}</p>
+                </div>
+            `).join('');
+
+            // 2. Define o conteúdo HTML
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+                    <title>OS #${ordem.id}</title>
+                    <style>
+                        body { font-family: 'Helvetica', sans-serif; padding: 20px; color: #333; }
+                        .header { background-color: #A50702; color: white; padding: 15px; border-radius: 8px 8px 0 0; text-align: center; }
+                        .header h1 { margin: 0; font-size: 20px; }
+                        .section { border: 1px solid #ddd; border-top: none; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9; }
+                        .section-title { font-size: 16px; font-weight: bold; color: #A50702; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #A50702; }
+                        .info-row { display: flex; flex-direction: row; margin-bottom: 10px; }
+                        .info-col { flex: 1; padding: 5px; }
+                        .label { font-size: 12px; color: #666; margin-bottom: 2px; font-style: italic; }
+                        .value { font-size: 14px; font-weight: bold; color: #212529; }
+                        .full-row { margin-bottom: 15px; }
+                        
+                        /* Relatório */
+                        .report-box { border: 1px solid #ccc; padding: 10px; border-radius: 8px; margin-top: 5px; background-color: white; white-space: pre-wrap; }
+                        .payload-action { font-size: 14px; font-weight: bold; margin-bottom: 2px; }
+                        .payload-sub { font-size: 12px; color: #555; margin-left: 10px; margin-bottom: 5px; }
+                        .status-completed { color: #28a745; font-weight: bold; }
+                        .status-label { font-style: normal; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Ordem de Serviço (OS) #${ordem.id}</h1>
+                    </div>
+
+                    <div class="section">
+                        <p class="section-title">Informações Gerais</p>
+                        <div class="info-row">
+                            <div class="info-col">
+                                <p class="label">Data de Emissão:</p>
+                                <p class="value">${dataEmissaoFormatada}</p>
+                            </div>
+                            <div class="info-col">
+                                <p class="label">Data de Conclusão:</p>
+                                <p class="value">${dataConclusaoFormatada}</p>
+                            </div>
+                            <div class="info-col">
+                                <p class="label">Status:</p>
+                                <p class="value status-completed status-label">${statusFormatado}</p>
+                            </div>
+                        </div>
+                        <div class="full-row">
+                            <p class="label">Prioridade da Anomalia:</p>
+                            <p class="value">${prioridade}</p>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <p class="section-title">Equipamento e Diagnóstico</p>
+                        <div class="info-row">
+                            <div class="info-col">
+                                <p class="label">Máquina:</p>
+                                <p class="value">${ordem.machineName} (#${ordem.machineId})</p>
+                            </div>
+                            <div class="info-col">
+                                <p class="label">Solicitante:</p>
+                                <p class="value">${ordem.inspectorName}</p>
+                            </div>
+                        </div>
+                        <div class="full-row">
+                            <p class="label">Diagnóstico:</p>
+                            ${payloadHtml}
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <p class="section-title">Relatório de Intervenção</p>
+                        <div class="full-row">
+                            <p class="label">Manutentor Responsável:</p>
+                            <p class="value">${ordem.maintainerName || 'Não Atribuído'}</p>
+                        </div>
+                        <div class="full-row">
+                            <p class="label">Serviço Realizado:</p>
+                            <div class="report-box">${ordem.serviceNotes || 'Não registrado.'}</div>
+                        </div>
+                        <div class="full-row" style="margin-bottom: 0;">
+                            <p class="label">Materiais Utilizados:</p>
+                            <div class="report-box">${ordem.materialsUsed || 'Não registrado.'}</div>
+                        </div>
+                    </div>
+
+                </body>
+                </html>
+            `;
+
+            // 3. Geração e Compartilhamento
+            const { uri } = await Print.printToFileAsync({
+                html: htmlContent,
+                base64: false,
+            });
+
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(uri, {
+                    mimeType: 'application/pdf',
+                    dialogTitle: `Download OS #${ordem.id} - ${ordem.machineName}`,
+                    UTI: 'com.adobe.pdf'
+                });
+                Toast.success("PDF gerado e pronto para download!");
+            } else {
+                Alert.alert("Erro", "Compartilhamento não disponível neste dispositivo.");
+            }
+
+        } catch (error) {
+            console.error('⚠️ Erro ao gerar/compartilhar PDF:', error);
+            Alert.alert("Erro", "Não foi possível gerar o PDF da Ordem de Serviço.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -418,14 +573,14 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                         onChangeText={setMaterialsUsed}
                     />
                 </View>
-                
+
             </Secao>
 
-               {erroMsg !== "" && (
-                                <View style={TabsStyles.erroMsg}>
-                                    <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
-                                </View>
-                            )}
+            {erroMsg !== "" && (
+                <View style={TabsStyles.erroMsg}>
+                    <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                </View>
+            )}
 
             {/* BOTÕES DE AÇÃO */}
             <View style={styles.actionButtonContainer}>
@@ -456,6 +611,12 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
                                     <Text style={styles.buttonText}>Desaprovar OS</Text>
                                 </TouchableOpacity>
                             </View>
+                        )}
+
+                        {isAdmin && ordem.status === 'COMPLETED' && (
+                            <TouchableOpacity style={styles.buttonDownload} onPress={handleDownloadPdf}>
+                                <Text style={styles.buttonText}>Baixar Relatório </Text> <Download color={"#ffff"} width={20} height={20} />
+                            </TouchableOpacity>
                         )}
                     </>
                 )}
@@ -680,7 +841,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
     buttonAssign: {
-       backgroundColor: "#A50702",
+        backgroundColor: "#A50702",
         color: "#fff",
         borderRadius: 10,
         paddingVertical: 12,
@@ -718,9 +879,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
-         color: "#fff",
+        color: "#fff",
         fontSize: 15,
         fontWeight: "400",
+    },
+    buttonDownload: {
+        backgroundColor: "#A50702",
+        color: "#fff",
+        borderRadius: 10,
+        paddingVertical: 12,
+        width: "62%",
+        marginTop: 25,
+        marginBottom: 10,
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        alignSelf: "center"
     },
 
     // Status
