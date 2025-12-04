@@ -4,7 +4,10 @@ import Logo from "@/components/logo";
 import { TabsStyles } from "@/styles/globalTabs";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Download } from "lucide-react-native";
 
 interface Machines {
     id: number;
@@ -32,6 +35,77 @@ export default function NovaTarefa() {
 
         fetchMachines();
     }, []);
+
+    // ... dentro de export default function NovaTarefa() { ...
+    // ... estados e useEffect existentes ...
+
+    const generatePdf = async (machineName: string, qrCodeUri: string) => {
+        // 1. Defina o conteúdo HTML para o PDF
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+                <style>
+                    body {
+                        font-family: sans-serif;
+                        padding: 20px;
+                        text-align: center;
+                    }
+                    h1 {
+                        color: #A50702;
+                        margin-bottom: 30px;
+                    }
+                    .machine-info {
+                        border: 1px solid #ccc;
+                        padding: 20px;
+                        border-radius: 10px;
+                        display: inline-block;
+                    }
+                    .qrcode {
+                        width: 550px;
+                        height: 550px;
+                        margin-top: 15px;
+                        border: 1px solid #eee;
+                    }
+                    .name {
+                        font-size: 50px;
+                        margin-bottom: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Ficha da Máquina</h1>
+                <div class="machine-info">
+                    <p class="name">${machineName}</p>
+                    <img class="qrcode" src="${qrCodeUri}" alt="QR Code da Máquina" />
+                </div>
+            </body>
+            </html>
+        `;
+
+        try {
+            // 2. Crie o PDF usando expo-print
+            const { uri } = await Print.printToFileAsync({
+                html: htmlContent,
+                base64: false, // Não precisamos do base64, apenas da URI do arquivo
+            });
+
+            // 3. Compartilhe/Salve o PDF usando expo-sharing
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(uri, {
+                    mimeType: 'application/pdf',
+                    dialogTitle: `Baixar QR Code da máquina ${machineName}`,
+                });
+            } else {
+                alert('Compartilhamento não disponível neste dispositivo.');
+            }
+
+        } catch (error) {
+            console.error('Erro ao gerar/compartilhar PDF:', error);
+            alert('Erro ao tentar gerar o PDF.');
+        }
+    };
 
     return (
         <ScrollView style={TabsStyles.container}>
@@ -91,7 +165,16 @@ export default function NovaTarefa() {
                                         <Text style={styles.maqTitle}>{machine.name}</Text>
                                         <Text style={styles.maqSubTitle}>{machine.location}</Text>
                                         <Text style={styles.maqId}>ID: {machine.id}</Text>
+
+
                                     </View>
+
+                                    <TouchableOpacity
+                                        style={styles.downloadBtn}
+                                        onPress={() => generatePdf(machine.name, machine.qrCode)}
+                                    >
+                                        <Text style={styles.downloadText}><Download/></Text>
+                                    </TouchableOpacity>
                                 </View>
                             )}
                         </View>
@@ -201,4 +284,18 @@ const styles = StyleSheet.create({
         marginTop: 3,
         fontSize: 11,
     },
+
+    downloadBtn: {
+        borderRadius: 6,
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+        marginTop: 20,
+        alignSelf: 'flex-start',
+    },
+    downloadText: {
+        color: "#fff",
+        fontSize: 12,
+        fontWeight: "500",
+    },
+    
 });
