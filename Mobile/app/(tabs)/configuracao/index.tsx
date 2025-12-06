@@ -100,18 +100,13 @@ export default function Configuracao() {
 
                 <View style={TabsStyles.conjHeaderPrincipal}>
                     <Text style={TabsStyles.tituloPrincipal}>Configuração</Text>
-                    {/* 🔥 8. Subtítulo adicionado */}
+    
                     <Text style={TabsStyles.subtituloPrincipal}>Gerencie sua conta e preferências</Text>
                 </View>
             </View>
 
             <View style={styles.cardContainer}>
 
-                {/* *** ALTERAÇÃO APLICADA AQUI ***
-          _       O TouchableOpacity agora usa 'styles.profileHeaderCard'.
-                A estrutura interna foi alterada para espelhar a do 'AdminHome',
-                removendo 'styles.opcao' e 'styles.infoCard' e usando Views inline.
-                */}
                 <Link href={'/(tabs)/configuracao/editarPerfil'} asChild>
                     <TouchableOpacity style={styles.profileHeaderCard}>
                         <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -158,7 +153,7 @@ export default function Configuracao() {
                                 <View style={styles.infoCardButton}>
                                     <LockKeyhole />
 
-                                    _ <View style={styles.infoCard1}>
+                                    <View style={styles.infoCard1}>
                                         <Text style={styles.tituloOpcao}>Politica de Privacidade</Text>
                                         <Text style={styles.subtitulo}>Entenda o uso dos seus dados</Text>
                                     </View>

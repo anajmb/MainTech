@@ -262,7 +262,11 @@ export default function EditarPerfil() {
                   <Camera color={"#CE221E"} size={20} />
                 </TouchableOpacity>
               </View>
+
+              <View>
               <Text style={{ color: "#858585", fontSize: 14 }}>Toque no ícone para editar a foto</Text>
+              </View>
+           
             </View>
           </View>
 

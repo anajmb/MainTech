@@ -234,7 +234,7 @@ export default function NovaTarefa() {
                                     {date ? date.toLocaleDateString("pt-BR") : "DD/MM/AA"}
                                 </Text>
                             </TouchableOpacity>
-                            <DateTimePickerModal
+                         <DateTimePickerModal
                                 isVisible={isDatePickerVisible}
                                 mode="date"
                                 onConfirm={handleConfirm}
@@ -397,11 +397,13 @@ const styles = StyleSheet.create({
     subtituloData: {
         marginBottom: 8,
         marginRight: 20,
-        width: 130
+        width: 130,
+        flex: 1
     },
     subtituloData2: {
         marginBottom: 8,
         marginRight: 20,
-        width: 130
+        width: 130,
+        flex: 1
     }
 })
