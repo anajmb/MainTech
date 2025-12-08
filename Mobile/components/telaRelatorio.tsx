@@ -250,14 +250,14 @@ export function Relatorio({ ordem, onUpdate }: RelatorioProps) {
         }
     };
 
-const handleDownloadPdf = async () => {
+    const handleDownloadPdf = async () => {
         if (!ordem) return;
 
         setLoading(true);
 
         try {
             // 1. Formata os dados para o HTML (Corrigido o uso de dateStyle/timeStyle)
-            
+
             // Opções granulares para garantir a compatibilidade
             const dateOptions: Intl.DateTimeFormatOptions = {
                 year: '2-digit',
@@ -267,15 +267,15 @@ const handleDownloadPdf = async () => {
                 minute: '2-digit',
                 hour12: false // Formato 24h (opcional)
             };
-            
-            const dataEmissaoFormatada = ordem.createdAt 
-                ? new Date(ordem.createdAt).toLocaleString('pt-BR', dateOptions) 
+
+            const dataEmissaoFormatada = ordem.createdAt
+                ? new Date(ordem.createdAt).toLocaleString('pt-BR', dateOptions)
                 : "N/A";
-                
-            const dataConclusaoFormatada = ordem.status === 'COMPLETED' && ordem.updatedAt 
-                ? new Date(ordem.updatedAt).toLocaleString('pt-BR', dateOptions) 
+
+            const dataConclusaoFormatada = ordem.status === 'COMPLETED' && ordem.updatedAt
+                ? new Date(ordem.updatedAt).toLocaleString('pt-BR', dateOptions)
                 : 'Pendente';
-                
+
             const prioridade = ordem.priority ? prioridadeLabel[ordem.priority] : "N/A";
             const statusFormatado = formatStatus(ordem.status as any);
 
@@ -454,7 +454,9 @@ const handleDownloadPdf = async () => {
                             </View>
                         ))
                     ) : (
-                        <Text style={styles.value}>Nenhum item de inspeção registrado.</Text>
+                        <View>
+                            <Text style={styles.value}>Nenhum item de inspeção registrado.</Text>
+                        </View>
                     )}
                 </View>
 
@@ -615,7 +617,10 @@ const handleDownloadPdf = async () => {
 
                         {isAdmin && ordem.status === 'COMPLETED' && (
                             <TouchableOpacity style={styles.buttonDownload} onPress={handleDownloadPdf}>
-                                <Text style={styles.buttonText}>Baixar Relatório </Text> <Download color={"#ffff"} width={20} height={20} />
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={styles.buttonText}>Baixar Relatório</Text>
+                                    <Download color="#fff" width={20} height={20} />
+                                </View>
                             </TouchableOpacity>
                         )}
                     </>

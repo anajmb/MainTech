@@ -205,86 +205,88 @@ export default function ConjuntosInspe() {
                 </View>
             </View>
 
-            <View style={styles.cardEstado}>
-                <Text style={styles.pergunta}>Qual o estado do conjunto?</Text>
+            <View style={TabsStyles.todosCard}>
+                <View style={styles.cardEstado}>
+                    <Text style={styles.pergunta}>Qual o estado do conjunto?</Text>
 
-                <TouchableOpacity
-                    style={[styles.opcao, currentStatus === 'perfeito' && styles.opcaoSelecionadaVerde]}
-                    onPress={() => setCurrentStatus('perfeito')}
-                >
-                    <Text style={[styles.textoVerde, currentStatus === 'perfeito' && styles.textoOpcaoSelecionada]}>
-                        Perfeito estado
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[styles.opcao, currentStatus === 'avariado' && styles.opcaoSelecionadaVermelha]}
-                    onPress={() => setCurrentStatus('avariado')}
-                >
-                    <Text style={[styles.textoVermelho, currentStatus === 'avariado' && styles.textoOpcaoSelecionada]}>
-                        Avariado
-                    </Text>
-                </TouchableOpacity>
-
-                {currentStatus === 'avariado' && (
-                    <View style={styles.columnsWrapper}>
-                        <View style={styles.divisorHorizontal} />
-                        <View style={styles.columns}>
-                            <View style={styles.checklistCol}>
-                                <Text style={styles.pergunta}>Trocar</Text>
-                                {changeSubsets.length === 0 ? (
-                                    <Text style={styles.noSubsetText}>Nenhum para trocar</Text>
-                                ) : (
-                                    changeSubsets.map((s) => (
-                                        <TouchableOpacity key={`chg-${s.id}`} style={styles.checkItem} onPress={() => toggleChange(s.id)}>
-                                            <View style={selectedChanges[s.id] ? styles.checkedBox : styles.checkBox}></View>
-                                            <Text style={styles.checkText}>{s.name}</Text>
-                                        </TouchableOpacity>
-                                    ))
-                                )}
-                            </View>
-
-                            <View style={styles.divisor} />
-
-                            <View style={styles.checklistCol}>
-                                <Text style={styles.pergunta}>Reparar</Text>
-                                {repairSubsets.length === 0 ? (
-                                    <Text style={styles.noSubsetText}>Nenhum para reparar</Text>
-                                ) : (
-                                    repairSubsets.map((s) => (
-                                        <TouchableOpacity key={`rep-${s.id}`} style={styles.checkItem} onPress={() => toggleRepair(s.id)}>
-                                            <View style={selectedRepairs[s.id] ? styles.checkedBox : styles.checkBox}></View>
-                                            <Text style={styles.checkText}>{s.name}</Text>
-                                        </TouchableOpacity>
-                                    ))
-                                )}
-                            </View>
-
-                        </View>
-                        <Text style={styles.obsCheck}>*Selecione mais de uma opção se necessário</Text>
-                    </View>
-                )}
-
-                {erroMsg !== "" && (
-                    <View style={TabsStyles.erroMsg}>
-                        <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
-                    </View>
-                )}
-
-                <View style={styles.navigationContainer}>
                     <TouchableOpacity
-                        onPress={canConfirm ? handleSaveAndReturn : undefined}
-                        style={[
-                            styles.navButton,
-                            styles.primaryNavButton,
-                            !canConfirm && { opacity: 0.5 }
-                        ]}
-                        disabled={!canConfirm}
+                        style={[styles.opcao, currentStatus === 'perfeito' && styles.opcaoSelecionadaVerde]}
+                        onPress={() => setCurrentStatus('perfeito')}
                     >
-                        <Text style={[styles.navButtonText, styles.primaryNavButtonText]}>
-                            Confirmar
+                        <Text style={[styles.textoVerde, currentStatus === 'perfeito' && styles.textoOpcaoSelecionada]}>
+                            Perfeito estado
                         </Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.opcao, currentStatus === 'avariado' && styles.opcaoSelecionadaVermelha]}
+                        onPress={() => setCurrentStatus('avariado')}
+                    >
+                        <Text style={[styles.textoVermelho, currentStatus === 'avariado' && styles.textoOpcaoSelecionada]}>
+                            Avariado
+                        </Text>
+                    </TouchableOpacity>
+
+                    {currentStatus === 'avariado' && (
+                        <View style={styles.columnsWrapper}>
+                            <View style={styles.divisorHorizontal} />
+                            <View style={styles.columns}>
+                                <View style={styles.checklistCol}>
+                                    <Text style={styles.pergunta}>Trocar</Text>
+                                    {changeSubsets.length === 0 ? (
+                                        <Text style={styles.noSubsetText}>Nenhum para trocar</Text>
+                                    ) : (
+                                        changeSubsets.map((s) => (
+                                            <TouchableOpacity key={`chg-${s.id}`} style={styles.checkItem} onPress={() => toggleChange(s.id)}>
+                                                <View style={selectedChanges[s.id] ? styles.checkedBox : styles.checkBox}></View>
+                                                <Text style={styles.checkText}>{s.name}</Text>
+                                            </TouchableOpacity>
+                                        ))
+                                    )}
+                                </View>
+
+                                <View style={styles.divisor} />
+
+                                <View style={styles.checklistCol}>
+                                    <Text style={styles.pergunta}>Reparar</Text>
+                                    {repairSubsets.length === 0 ? (
+                                        <Text style={styles.noSubsetText}>Nenhum para reparar</Text>
+                                    ) : (
+                                        repairSubsets.map((s) => (
+                                            <TouchableOpacity key={`rep-${s.id}`} style={styles.checkItem} onPress={() => toggleRepair(s.id)}>
+                                                <View style={selectedRepairs[s.id] ? styles.checkedBox : styles.checkBox}></View>
+                                                <Text style={styles.checkText}>{s.name}</Text>
+                                            </TouchableOpacity>
+                                        ))
+                                    )}
+                                </View>
+
+                            </View>
+                            <Text style={styles.obsCheck}>*Selecione mais de uma opção se necessário</Text>
+                        </View>
+                    )}
+
+                    {erroMsg !== "" && (
+                        <View style={TabsStyles.erroMsg}>
+                            <Text style={TabsStyles.erroMsgText}>{erroMsg}</Text>
+                        </View>
+                    )}
+
+                    <View style={styles.navigationContainer}>
+                        <TouchableOpacity
+                            onPress={canConfirm ? handleSaveAndReturn : undefined}
+                            style={[
+                                styles.navButton,
+                                styles.primaryNavButton,
+                                !canConfirm && { opacity: 0.5 }
+                            ]}
+                            disabled={!canConfirm}
+                        >
+                            <Text style={[styles.navButtonText, styles.primaryNavButtonText]}>
+                                Confirmar
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </ScrollView>
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
     cardEstado: {
         backgroundColor: "#fff",
         borderRadius: 10,
-        padding: 20,
+        padding: 30,
         margin: 15,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -355,6 +357,7 @@ const styles = StyleSheet.create({
     textoOpcaoSelecionada: {
         color: "#FFFFFF",
         fontWeight: "400",
+        wordWrap: 'break-word',
     },
 
     divisorHorizontal: {

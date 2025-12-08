@@ -48,7 +48,6 @@ export default function Login() {
       console.log("LOGIN PAYLOAD ->", payload);
 
       const res = await api.post("/employees/login", payload);
-      console.log("LOGIN RESPONSE ->", res.status, res.data);
 
       const token =
         res.data?.token ||
@@ -56,7 +55,7 @@ export default function Login() {
         res.data?.access_token ||
         res.data?.accessTokenRaw;
 
-      console.log(token)
+      
 
       if (!token) {
         Toast.error("Resposta de login inválida: " + JSON.stringify(res.data));

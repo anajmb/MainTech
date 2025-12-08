@@ -17,9 +17,8 @@ export default function Historico() {
         const fetchHistorico = async () => {
             if (!user) return;
             try {
-                console.log("🔍 Buscando histórico para o usuário:", user.id);
                 const response = await api.get(`/history/get/user/${user.id}`);
-                console.log("📦 Histórico recebido:", response.data);
+                
                 setHistorico(response.data);
             } catch (error) {
                 console.error("Erro ao carregar histórico:", error);

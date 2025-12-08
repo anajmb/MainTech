@@ -103,6 +103,8 @@ export default function OrdemServico() {
             </View>
              <View style={TabsStyles.todosCard}>
 
+                
+                
             
             <Relatorio ordem={ordem} onUpdate={handleUpdate} />
            
