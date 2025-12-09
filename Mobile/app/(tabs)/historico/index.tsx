@@ -188,8 +188,8 @@ const style = StyleSheet.create({
     horaHistorico: {
         fontSize: 13,
         color: "#888",
-        marginLeft: 110,
-        marginTop: -12.5,
+        marginLeft: 120,
+        marginTop: -16.5,
     },
     ConcluidoText: {
         color: "#CE221E",

@@ -28,41 +28,48 @@ export default function Tarefas() {
     const [filtro, setFiltro] = useState<"todas" | "pendente" | "concluida">("todas");
     const [loading, setLoading] = useState(true);
 
-    useFocusEffect(
-        useCallback(() => {
-            async function fetchTasks() {
-                if (!user) return;
-                setLoading(true);
+   useFocusEffect(
+    useCallback(() => {
+        async function fetchTasks() {
+            if (!user) return;
+            setLoading(true);
 
-                try {
-                    const params: { status?: string; inspectorId?: number | string } = {};
+            try {
+                const params: { status?: string; inspectorId?: number | string } = {};
 
-                    if (filtro === "pendente") params.status = "PENDING";
-                    if (filtro === "concluida") params.status = "COMPLETED";
+                if (filtro === "pendente") params.status = "PENDING";
+                if (filtro === "concluida") params.status = "COMPLETED";
 
-                    if (user.role === "INSPECTOR") {
-                        const inspectorId = (user as any).id;
-                        if (inspectorId) params.inspectorId = inspectorId;
+                if (user.role === "INSPECTOR") {
+                    const inspectorId = (user as any).id;
+                    if (inspectorId) {
+                        params.inspectorId = inspectorId;
+                        console.log("🔍 Buscando tarefas para inspetor ID:", inspectorId); // DEBUG
                     }
-
-                    const response = await api.get('/tasks/get', { params });
-
-                    const tarefasOrdenadas = response.data.sort(
-                        (a: Task, b: Task) =>
-                            new Date(b.updateDate).getTime() - new Date(a.updateDate).getTime()
-                    );
-
-                    setTasks(tarefasOrdenadas);
-                } catch (error) {
-                    console.error('Error fetching tasks:', error);
-                } finally {
-                    setLoading(false);
                 }
-            }
 
-            fetchTasks();
-        }, [filtro, user])
-    );
+                console.log("📤 Parâmetros enviados:", params); // DEBUG
+
+                const response = await api.get('/tasks/get', { params });
+                
+                console.log("📥 Tarefas retornadas:", response.data); // DEBUG
+
+                const tarefasOrdenadas = response.data.sort(
+                    (a: Task, b: Task) =>
+                        new Date(b.updateDate).getTime() - new Date(a.updateDate).getTime()
+                );
+
+                setTasks(tarefasOrdenadas);
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchTasks();
+    }, [filtro, user])
+);
 
     if (!user) return <ActivityIndicator size="large" color="#CF0000" style={{ flex: 1 }} />;
 
