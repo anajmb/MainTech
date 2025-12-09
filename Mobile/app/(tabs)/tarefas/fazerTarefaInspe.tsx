@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         width: "62%",
         marginTop: 25,
-        marginBottom: 10,
+        marginBottom: 150,
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center"

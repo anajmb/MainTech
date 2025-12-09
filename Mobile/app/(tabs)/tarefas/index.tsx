@@ -44,16 +44,15 @@ export default function Tarefas() {
                     const inspectorId = (user as any).id;
                     if (inspectorId) {
                         params.inspectorId = inspectorId;
-                        console.log("🔍 Buscando tarefas para inspetor ID:", inspectorId); // DEBUG
+                       
                     }
                 }
 
-                console.log("📤 Parâmetros enviados:", params); // DEBUG
+
 
                 const response = await api.get('/tasks/get', { params });
                 
-                console.log("📥 Tarefas retornadas:", response.data); // DEBUG
-
+              
                 const tarefasOrdenadas = response.data.sort(
                     (a: Task, b: Task) =>
                         new Date(b.updateDate).getTime() - new Date(a.updateDate).getTime()
